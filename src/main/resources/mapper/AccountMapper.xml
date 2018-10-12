@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qinglan.sdk.server.dao.Account">
+    <resultMap id="BaseResultMap" type="com.qinglan.sdk.server.dao.Account">
+        <result column="id" jdbcType="BIGINT" property="id"/>
+        <result column="platformId" jdbcType="INTEGER" property="platformId"/>
+        <result column="uid" jdbcType="VARCHAR" property="uid"/>
+        <result column="createTime" jdbcType="TIMESTAMP" property="createTime"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.qinglan.sdk.server.dao.Account">
+    insert into b_account (id, platformId, uid, 
+      createTime)
+    values (#{id,jdbcType=BIGINT}, #{platformId,jdbcType=INTEGER}, #{uid,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+
+    <select id="getAccount" parameterType="java.util.Map" resultType="com.qinglan.sdk.server.dao.Account">
+  	select * from b_account 
+  	where platformId = #{platformId,jdbcType=INTEGER} and uid = #{uid,jdbcType=VARCHAR}
+  </select>
+
+    <select id="getRoleCreateTime" parameterType="java.util.Map" resultType="com.qinglan.sdk.server.dao.Account">
+        SELECT createTime FROM b_role where appId=#{appId} and platformId=#{platformId} and zoneId=#{zoneId} and
+        roleId=#{roleId}
+        <if test="roleName != null">
+            and roleName=#{roleName}
+        </if>
+        limit 0,1
+    </select>
+
+    <insert id="insertbatch" parameterType="java.util.List">
+        insert into b_account (id, platformId, uid, createTime) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id,jdbcType=BIGINT}, #{item.platformId,jdbcType=INTEGER}
+            , #{item.uid,jdbcType=VARCHAR},#{item.createTime,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+</mapper>

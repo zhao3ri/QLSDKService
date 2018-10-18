@@ -12,10 +12,10 @@ public class Platform implements Serializable {
 
     private Date createTime;
     private Integer balance;
-    private Integer version ;
-    private Integer newversion ;
-    private String business ;
-    private String phone ;
+    private Integer version;
+    private Integer newversion;
+    private String business;
+    private String phone;
 
     private static final long serialVersionUID = 1L;
 

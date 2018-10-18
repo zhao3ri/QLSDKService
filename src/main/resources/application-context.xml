@@ -23,6 +23,7 @@
 	</bean>
 	<aop:aspectj-autoproxy></aop:aspectj-autoproxy>
 	<context:component-scan base-package="com.qinglan.sdk" />
+	<context:component-scan base-package="com.zhidian3g.ddd"/>
 	
 	<bean class="com.qinglan.sdk.server.release.application.basic.task.OrderNotifyTask" init-method="init" lazy-init="false" scope="singleton" />
 	

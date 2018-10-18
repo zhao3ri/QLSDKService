@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qinglan.sdk.server.release.domain.basic.BehaviorDevice" >
+  <resultMap id="BaseResultMap" type="com.qinglan.sdk.server.release.domain.basic.BehaviorDevice" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="device" property="device" jdbcType="VARCHAR" />
+    <result column="appId" property="appId" jdbcType="BIGINT" />
+    <result column="clientType" property="clientType" jdbcType="TINYINT" />
+    <result column="platforms" property="platforms" jdbcType="VARCHAR" />
+    <result column="loginPlatforms" property="loginPlatforms" jdbcType="VARCHAR" />
+    <result column="loginZones" property="loginZones" jdbcType="VARCHAR" />
+    <result column="roleZones" property="roleZones" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, device, appId, clientType, platforms, loginPlatforms, loginZones, roleZones
+  </sql>
+  <select id="findByUnique" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from b_behavior_device
+    where device = #{device,jdbcType=VARCHAR} and appId = #{appId,jdbcType=BIGINT} and clientType = #{clientType,jdbcType=TINYINT}
+  </select>
+  <insert id="insert" parameterType="com.qinglan.sdk.server.release.domain.basic.BehaviorDevice" >
+    insert into b_behavior_device (device, appId, 
+      clientType, platforms, loginPlatforms, loginZones, 
+      roleZones)
+    values (#{device,jdbcType=VARCHAR}, #{appId,jdbcType=BIGINT}, 
+      #{clientType,jdbcType=TINYINT}, #{platforms,jdbcType=VARCHAR},#{loginPlatforms,jdbcType=VARCHAR}, #{loginZones,jdbcType=VARCHAR}, 
+      #{roleZones,jdbcType=VARCHAR})
+  </insert>
+ 
+  <update id="update" parameterType="com.qinglan.sdk.server.release.domain.basic.BehaviorDevice" >
+    update b_behavior_device
+    <set >
+      <if test="platforms != null" >
+        platforms = #{platforms,jdbcType=VARCHAR},
+      </if>
+      <if test="loginPlatforms != null" >
+        loginPlatforms = #{loginPlatforms,jdbcType=VARCHAR},
+      </if>
+      <if test="loginZones != null" >
+        loginZones = #{loginZones,jdbcType=VARCHAR},
+      </if>
+      <if test="roleZones != null" >
+        roleZones = #{roleZones,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where device = #{device,jdbcType=VARCHAR} and appId = #{appId,jdbcType=BIGINT} and clientType = #{clientType,jdbcType=TINYINT}
+  </update>
+ 
+</mapper>

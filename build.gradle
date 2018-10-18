@@ -1,90 +1,62 @@
-plugins {
-    id 'java'
-    id 'maven'
-    id 'war'
-    //IntelliJ IDEA 插件
-    id 'idea'
-}
-apply plugin: 'groovy'
-apply from: 'https://raw.github.com/akhikhl/gretty/master/pluginScripts/gretty.plugin'
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'war'
 
-allprojects {
-    gradle.projectsEvaluated {
-        tasks.withType(JavaCompile) {
-            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
-        }
-    }
-}
+group = 'com.qinglan.sdk.server'
+version = '1.0.0'
 
-group 'com.qinglan.sdk.server'
-version '1.0.0'
+description = """release-sdk-service"""
 
 sourceCompatibility = JavaVersion.VERSION_1_7
 targetCompatibility = JavaVersion.VERSION_1_7
+//apply from: 'gretty.plugin'
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
 repositories {
-    jcenter()
-    mavenCentral()
+
     maven { url "http://repo.maven.apache.org/maven2" }
 }
-
 dependencies {
     compile fileTree(dir: 'libs', include: "*.jar")
+    compile group: 'com.aliyun', name: 'aliyun-java-sdk-core', version: '3.2.8'
+    compile group: 'com.aliyun', name: 'aliyun-java-sdk-dysmsapi', version: '1.1.0'
 
-    compile "org.slf4j:slf4j-api:${slf4jVersion}"
-    compile "org.slf4j:slf4j-nop:${slf4jVersion}"
-    //Spring框架相关 https://mvnrepository.com/artifact/org.springframework
-    compile group: 'org.springframework', name: 'spring-aop', version: "${springframeworkVersion}"
-    compile group: 'org.springframework', name: 'spring-beans', version: "${springframeworkVersion}"
-    compile group: 'org.springframework', name: 'spring-context', version: "${springframeworkVersion}"
-    compile group: 'org.springframework', name: 'spring-context-support', version: "${springframeworkVersion}"
-    compile group: 'org.springframework', name: 'spring-core', version: "${springframeworkVersion}"
-    compile group: 'org.springframework', name: 'spring-jdbc', version: "${springframeworkVersion}"
-    compile group: 'org.springframework', name: 'spring-web', version: "${springframeworkVersion}"
-    compile group: 'org.springframework', name: 'spring-webmvc', version: "${springframeworkVersion}"
-//    compile group: 'org.springframework.data', name: 'spring-data-redis', version: '2.0.3.RELEASE'
+    compile "org.springframework:spring-webmvc:${springframeworkVersion}"
+//    compile group: 'org.springframework', name: 'spring-webmvc', version: '3.2.3.RELEASE'
+    compile group: 'org.springframework', name: 'spring-jdbc', version: '3.2.3.RELEASE'
     compile group: 'org.springframework.data', name: 'spring-data-redis', version: '1.0.2.RELEASE'
-    compile group: 'mysql', name: 'mysql-connector-java', version: "${mysqlConnectorVersion}"
+    compile group: 'redis.clients', name: 'jedis', version: '2.1.0'
 
-    compile group: 'org.mybatis', name: 'mybatis-spring', version: "${mybatisSpringVersion}"
-    compile group: 'org.mybatis', name: 'mybatis', version: "${mybatisVersion}"
-    compile group: 'org.aspectj', name: 'aspectjrt', version: "${aspectJVersion}"
-    compile group: 'org.aspectj', name: 'aspectjweaver', version: "${aspectJVersion}"
+    compile group: 'org.mybatis', name: 'mybatis-spring', version: '1.2.0'
+    compile group: 'org.mybatis', name: 'mybatis', version: '3.2.2'
 
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: "${jacksonVersion}"
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: "${jacksonVersion}"
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "${jacksonVersion}"
+    compile group: 'com.lmax', name: 'disruptor', version: '3.2.1'
+    compile group: 'org.aspectj', name: 'aspectjrt', version: '1.7.3'
+    compile group: 'org.aspectj', name: 'aspectjweaver', version: '1.7.3'
 
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.2.1'
-    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: "${httpcomponentsVersion}"
-    compile group: 'javax.servlet', name: 'javax.servlet-api', version: "${servletVersion}"
-    compile group: 'javax.servlet.jsp.jstl', name: 'javax.servlet.jsp.jstl-api', version: '1.2.1'
-//    compile group: 'jstl', name: 'jstl', version:'1.2'
-    // https://mvnrepository.com/artifact/javax.xml.ws/jaxws-api
-//    compile group: 'javax.xml.ws', name: 'jaxws-api', version: '2.3.0'
+    compile group: 'com.cloudhopper.proxool', name: 'proxool', version: '0.9.1'
+    compile group: 'com.cloudhopper.proxool', name: 'proxool-cglib', version: '0.9.1'
 
-    compile group: 'redis.clients', name: 'jedis', version: "${redisVersion}"
+    compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.33'
+
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.3'
+    compile group: 'org.codehaus.jackson', name: 'jackson-mapper-asl', version: '1.9.11'
 
     compile group: 'commons-io', name: 'commons-io', version: '2.4'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.2.1'
     compile group: 'commons-httpclient', name: 'commons-httpclient', version: '3.0.1'
-
+    compile group: 'jstl', name: 'jstl', version: '1.2'
     compile(group: 'org.apache.kafka', name: 'kafka_2.9.2', version: '0.8.1.1') {
         exclude(module: 'zookeeper')
         exclude(module: 'log4j')
     }
     compile group: 'org.projectlombok', name: 'lombok', version: '1.16.8'
+    compile group: 'javax.servlet', name: 'servlet-api', version: '2.4'
 
-    compile group: 'com.cloudhopper.proxool', name: 'proxool', version: "${cloudhopperProxoolVersion}"
-    compile group: 'com.cloudhopper.proxool', name: 'proxool-cglib', version: "${cloudhopperProxoolVersion}"
-    compile group: 'com.lmax', name: 'disruptor', version: '3.2.1'
-    compile group: 'com.aliyun', name: 'aliyun-java-sdk-core', version: '3.2.8'
-    compile group: 'com.aliyun', name: 'aliyun-java-sdk-dysmsapi', version: '1.1.0'
-
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    testCompile group: 'org.springframework', name: 'spring-test', version: "${springframeworkVersion}"
+    testCompile group: 'org.springframework', name: 'spring-test', version: '3.2.3.RELEASE'
+    testCompile group: 'junit', name: 'junit', version: '4.8.1'
 }
 
 sourceSets {

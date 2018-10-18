@@ -436,7 +436,7 @@ public class Base64 {
 			String tempStr = new String(decode(cryptoStr.getBytes("UTF-8")));
 			String result = tempStr.substring(40, tempStr.length());
 			return new String(decode(result.getBytes("UTF-8")));
-		} catch (ArrayIndexOutOfBoundsException ex) {
+		} catch (java.lang.ArrayIndexOutOfBoundsException ex) {
 			return "";
 		}
 	}

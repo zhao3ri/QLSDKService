@@ -311,7 +311,7 @@ public abstract class ConvertUtils {
 			return value;
 		else {
 			Object objs[] = new String[] { value };
-			return Class.forName(type).getConstructor(new Class[] { String.class }).newInstance(objs);
+			return Class.forName(type).getConstructor(new Class[] { java.lang.String.class }).newInstance(objs);
 		}
 	}
 

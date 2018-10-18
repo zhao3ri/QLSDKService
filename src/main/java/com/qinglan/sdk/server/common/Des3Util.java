@@ -6,7 +6,6 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import com.sun.crypto.provider.SunJCE;
-import org.apache.commons.codec.binary.Base64;
 
 public class Des3Util extends SecurityUtil {
 
@@ -24,7 +23,7 @@ public class Des3Util extends SecurityUtil {
 			Cipher c1 = Cipher.getInstance(ALGORITHM);
 			c1.init(Cipher.ENCRYPT_MODE, deskey);
 			return c1.doFinal(src);
-		} catch (Exception ex) {
+		} catch (java.lang.Exception ex) {
 			ex.printStackTrace();
 		}
 		return null;
@@ -40,7 +39,7 @@ public class Des3Util extends SecurityUtil {
 			Cipher c1 = Cipher.getInstance(ALGORITHM);
 			c1.init(Cipher.DECRYPT_MODE, deskey);
 			return c1.doFinal(src);
-		} catch (Exception ex) {
+		} catch (java.lang.Exception ex) {
 			ex.printStackTrace();
 		}
 		return null;
@@ -52,7 +51,7 @@ public class Des3Util extends SecurityUtil {
 		try {
 			Des3Util d3u = new Des3Util();
 
-			Security.addProvider(new SunJCE());
+			Security.addProvider(new com.sun.crypto.provider.SunJCE());
 
 			return d3u.decryptFromBase64(key, args, "UTF-8");
 		} catch (Exception e) {
@@ -67,7 +66,7 @@ public class Des3Util extends SecurityUtil {
 		try {
 			Des3Util d3u = new Des3Util();
 
-			Security.addProvider(new SunJCE());
+			Security.addProvider(new com.sun.crypto.provider.SunJCE());
 
 			return d3u.encryptToBase64(key, body, "UTF-8");
 		} catch (Exception e) {
@@ -87,9 +86,7 @@ public class Des3Util extends SecurityUtil {
 		byte[] md5Hash = alga.digest();
 //		System.out.println("MD5:" + new String(md5Hash));
 		if (md5Hash != null) {
-			Base64 encoder = new Base64();
-			return encoder.encodeToString(md5Hash);
-//			return (new sun.misc.BASE64Encoder()).encode(md5Hash);
+			return (new sun.misc.BASE64Encoder()).encode(md5Hash);
 		}
 		} catch (Exception e) {
 			e.printStackTrace();

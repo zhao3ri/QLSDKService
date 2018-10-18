@@ -34,10 +34,10 @@ public class HttpUtils {
 
     private static final Logger logger = LoggerFactory
             .getLogger(HttpUtils.class);
-    private static final int DEFAULT_TIME_OUT = 10000;
+    private static final int DEFALUT_TIME_OUT = 10000;
 
     public static String get(String url) {
-        return get(url, DEFAULT_TIME_OUT);
+        return get(url, DEFALUT_TIME_OUT);
     }
 
     public static String get(String url, int timeout) {
@@ -70,7 +70,7 @@ public class HttpUtils {
             CloseableHttpClient httpClient = HttpClients.createDefault();
             HttpGet httpGet = new HttpGet(url);
             RequestConfig requestConfig = RequestConfig.custom()
-                    .setSocketTimeout(DEFAULT_TIME_OUT).setConnectTimeout(DEFAULT_TIME_OUT)
+                    .setSocketTimeout(DEFALUT_TIME_OUT).setConnectTimeout(DEFALUT_TIME_OUT)
                     .build();
             httpGet.setConfig(requestConfig);
             for (Entry<String, String> e : headerParams.entrySet()) {
@@ -132,7 +132,7 @@ public class HttpUtils {
     }
 
     public static String post(String url, Map<String, Object> params) {
-        return post(url, params, DEFAULT_TIME_OUT);
+        return post(url, params, DEFALUT_TIME_OUT);
     }
 
     public static String post(String url, Map<String, Object> params,
@@ -149,7 +149,7 @@ public class HttpUtils {
             httpPost.setConfig(requestConfig);
             if (params != null && params.size() > 0) {
                 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-                for (Entry<String, Object> entry : params.entrySet()) {
+                for (Map.Entry<String, Object> entry : params.entrySet()) {
                     nameValuePairs.add(new BasicNameValuePair(entry.getKey(),
                             entry.getValue() == null ? "" : entry.getValue()
                                     .toString().trim()));

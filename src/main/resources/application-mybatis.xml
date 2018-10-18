@@ -1,46 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:tx="http://www.springframework.org/schema/tx"
-       xsi:schemaLocation="
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+     http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+     http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
      http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
 
-    <bean id="dataSource" class="org.logicalcobwebs.proxool.ProxoolDataSource" lazy-init="false">
-        <property name="driver" value="${jdbc.driver}"/>
-        <property name="driverUrl" value="${jdbc.url}"/>
-        <property name="user" value="${jdbc.username}"/>
-        <property name="password" value="${jdbc.password}"/>
-        <property name="prototypeCount" value="${jdbc.maxIdle}"/>
-        <property name="maximumConnectionCount" value="${jdbc.maxActive}"/>
-        <property name="minimumConnectionCount" value="${jdbc.initialSize}"/>
-        <property name="maximumActiveTime" value="90000000"/>
-        <property name="simultaneousBuildThrottle" value="100"/>
-        <property name="houseKeepingTestSql" value="select CURRENT_DATE"/>
-        <property name="alias" value="proxoolDataSource"/>
-        <property name="trace" value="false"/>
-        <property name="verbose" value="true"/>
-    </bean>
-
-    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <property name="dataSource" ref="dataSource"/>
-        <property name="mapperLocations" value="classpath*:mapper/*Mapper.xml"></property>
-    </bean>
-
-    <!-- scope="prototype" -->
-    <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
-        <constructor-arg index="0" ref="sqlSessionFactory"/>
-    </bean>
-
-    <bean id="mybatisRepository" class="com.zhidian3g.ddd.infrastructure.persistence.impl.MybatisRepositoryImpl">
-        <property name="sqlSessionTemplate" ref="sqlSessionTemplate"></property>
-    </bean>
-
-    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-
-    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
-
+	<bean id="dataSource" class="org.logicalcobwebs.proxool.ProxoolDataSource" lazy-init="false">
+		<property name="driver" value="${jdbc.driver}" />
+		<property name="driverUrl" value="${jdbc.url}" />
+		<property name="user" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<property name="prototypeCount" value="${jdbc.maxIdle}" />
+		<property name="maximumConnectionCount" value="${jdbc.maxActive}" />
+		<property name="minimumConnectionCount" value="${jdbc.initialSize}" />
+		<property name="maximumActiveTime" value="90000000" />
+		<property name="simultaneousBuildThrottle" value="100" />
+		<property name="houseKeepingTestSql" value="select CURRENT_DATE" />
+		<property name="alias" value="proxoolDataSource" />
+		<property name="trace" value="false" />
+		<property name="verbose" value="true" /> 
+	</bean>
+	
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="mapperLocations" value="classpath*:mappings/**/*Mapper.xml"></property>
+	</bean>
+	
+	<!-- scope="prototype" -->
+	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate" >
+		<constructor-arg index="0" ref="sqlSessionFactory" />
+	</bean>
+	
+	<bean id="mybatisRepository" class="com.zhidian3g.ddd.infrastructure.persistence.impl.MybatisRepositoryImpl">
+		<property name="sqlSessionTemplate" ref="sqlSessionTemplate"></property>
+	</bean>
+	
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    	<property name="dataSource" ref="dataSource" />
+  	</bean>
+  	
+  	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" />
 
 </beans>

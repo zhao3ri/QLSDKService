@@ -1,10 +1,9 @@
 package com.qinglan.sdk.server.platform.utils;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class HMacMD5 {
 	private static final Logger LOGGER = LoggerFactory.getLogger(HMacMD5.class);

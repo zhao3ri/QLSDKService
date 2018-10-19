@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.qinglan.sdk.server.common.HttpUtils;
@@ -27,6 +28,7 @@ public class AccountController {
     private AccountService accountService;
 
     @RequestMapping("/account/initial")
+//    @RequestMapping(value="/account/initial",method= RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> initial(InitialPattern initial) {
         logger.debug("params: {}", initial);

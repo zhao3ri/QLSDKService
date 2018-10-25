@@ -23,13 +23,13 @@ dependencies {
     compile group: 'com.aliyun', name: 'aliyun-java-sdk-core', version: '3.2.8'
     compile group: 'com.aliyun', name: 'aliyun-java-sdk-dysmsapi', version: '1.1.0'
 
-    compile group: 'org.springframework', name: 'spring-webmvc', version: "${springframeworkVersion}"
-    compile group: 'org.springframework', name: 'spring-jdbc', version: '3.2.3.RELEASE'
-    compile group: 'org.springframework.data', name: 'spring-data-redis', version: '1.0.2.RELEASE'
-    compile group: 'redis.clients', name: 'jedis', version: '2.1.0'
+    compile group: 'org.springframework', name: 'spring-webmvc', version: "${springframework_version}"
+    compile group: 'org.springframework', name: 'spring-jdbc', version: "${springframework_version}"
+    compile group: 'org.springframework.data', name: 'spring-data-redis', version: "${spring_data_redis_version}"
+    compile group: 'redis.clients', name: 'jedis', version: "${jedis_version}"
 
-    compile group: 'org.mybatis', name: 'mybatis-spring', version: '1.2.0'
-    compile group: 'org.mybatis', name: 'mybatis', version: '3.2.2'
+    compile group: 'org.mybatis', name: 'mybatis-spring', version: "${mybatis_spring_version}"
+    compile group: 'org.mybatis', name: 'mybatis', version: "${mybatis_version}"
 
     compile group: 'com.lmax', name: 'disruptor', version: '3.2.1'
     compile group: 'org.aspectj', name: 'aspectjrt', version: '1.7.3'
@@ -52,7 +52,7 @@ dependencies {
         exclude(module: 'log4j')
     }
     compile group: 'org.projectlombok', name: 'lombok', version: '1.16.8'
-    compile group: 'javax.servlet', name: 'servlet-api', version: '2.4'
+    compileOnly group: 'javax.servlet', name: 'servlet-api', version: '2.4'
 
     testCompile group: 'org.springframework', name: 'spring-test', version: '3.2.3.RELEASE'
     testCompile group: 'junit', name: 'junit', version: '4.8.1'
@@ -75,13 +75,13 @@ configurations {
 
 dependencies {
     mybatisGenerator 'org.mybatis.generator:mybatis-generator-core:1.3.5'
-    mybatisGenerator("mysql:mysql-connector-java:${mysqlConnectorVersion}")
+    mybatisGenerator("mysql:mysql-connector-java:${mysql_connector_version}")
     mybatisGenerator 'tk.mybatis:mapper:3.3.9'
 }
 
 def getDbProperties = {
     def properties = new Properties()
-    file("src/main/resources/application.properties", "src/main/resources/generator/generator.properties").withInputStream { inputStream ->
+    file("${res_path}/application.properties", "${res_path}/generator/generator.properties").withInputStream { inputStream ->
         properties.load(inputStream)
     }
     properties

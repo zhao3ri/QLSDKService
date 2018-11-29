@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qinglan.sdk.server.domain.basic.Order">
+  <resultMap id="BaseResultMap" type="com.qinglan.sdk.server.domain.basic.Order">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="gameId" jdbcType="BIGINT" property="gameId" />
+    <result column="platformId" jdbcType="INTEGER" property="platformId" />
+    <result column="uid" jdbcType="VARCHAR" property="uid" />
+    <result column="zoneId" jdbcType="VARCHAR" property="zoneId" />
+    <result column="roleId" jdbcType="VARCHAR" property="roleId" />
+    <result column="roleName" jdbcType="VARCHAR" property="roleName" />
+    <result column="orderId" jdbcType="VARCHAR" property="orderId" />
+    <result column="cpOrderId" jdbcType="VARCHAR" property="cpOrderId" />
+    <result column="cpExtInfo" jdbcType="VARCHAR" property="cpExtInfo" />
+    <result column="amount" jdbcType="INTEGER" property="amount" />
+    <result column="notifyUrl" jdbcType="VARCHAR" property="notifyUrl" />
+    <result column="fixed" jdbcType="BIT" property="fixed" />
+    <result column="deviceId" jdbcType="VARCHAR" property="deviceId" />
+    <result column="clientType" jdbcType="BIT" property="clientType" />
+    <result column="errorMsg" jdbcType="VARCHAR" property="errorMsg" />
+    <result column="status" jdbcType="BIT" property="status" />
+    <result column="notifyStatus" jdbcType="BIT" property="notifyStatus" />
+    <result column="createTime" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="gold" jdbcType="INTEGER" property="gold" />
+    <result column="selfpay" jdbcType="INTEGER" property="gold" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, gameId, platformId, uid, zoneId, roleId, orderId, cpOrderId, cpExtInfo, amount,
+    notifyUrl, fixed, deviceId, clientType, errorMsg, status, notifyStatus, createTime, 
+    updateTime, gold,selfpay
+  </sql>
+  <select id="getOrderByOrderId" parameterType="java.lang.String" resultType="com.qinglan.sdk.server.domain.basic.Order">
+    select * from b_order
+    where orderId = #{orderId,jdbcType=VARCHAR}
+  </select>
+  
+  <insert id="insert" parameterType="com.qinglan.sdk.server.domain.basic.Order">
+    insert into b_order (id, gameId, platformId,
+      uid, zoneId, roleId, roleName,
+      orderId, cpOrderId, cpExtInfo, 
+      amount, notifyUrl, fixed, 
+      deviceId, clientType, errorMsg, 
+      status, notifyStatus, createTime, 
+      updateTime, gold,selfpay)
+    values (#{id,jdbcType=BIGINT}, #{gameId,jdbcType=BIGINT}, #{platformId,jdbcType=INTEGER},
+      #{uid,jdbcType=VARCHAR}, #{zoneId,jdbcType=VARCHAR}, #{roleId,jdbcType=VARCHAR}, #{roleName,jdbcType=VARCHAR}, 
+      #{orderId,jdbcType=VARCHAR}, #{cpOrderId,jdbcType=VARCHAR}, #{cpExtInfo,jdbcType=VARCHAR}, 
+      #{amount,jdbcType=INTEGER}, #{notifyUrl,jdbcType=VARCHAR}, #{fixed,jdbcType=BIT}, 
+      #{deviceId,jdbcType=VARCHAR}, #{clientType,jdbcType=BIT}, #{errorMsg,jdbcType=VARCHAR}, 
+      #{status,jdbcType=BIT}, #{notifyStatus,jdbcType=BIT}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{gold,jdbcType=INTEGER}, #{selfpay,jdbcType=INTEGER})
+  </insert>
+  
+  <update id="updateStatusPay" parameterType="java.util.Map" >
+  	update b_order 
+  	set status=#{status,jdbcType=BIT},notifyStatus=#{notifyStatus,jdbcType=BIT},updateTime=#{updateTime,jdbcType=TIMESTAMP},errorMsg=#{errorMsg,jdbcType=VARCHAR}
+  	where orderId = #{orderId,jdbcType=VARCHAR} and status = 0
+  </update>
+  
+   <update id="updateStatusNotify" parameterType="java.util.Map" >
+  	update b_order 
+  	set notifyStatus=#{notifyStatus,jdbcType=BIT},updateTime=#{updateTime,jdbcType=TIMESTAMP},errorMsg=#{errorMsg,jdbcType=VARCHAR} 
+  	where orderId = #{orderId,jdbcType=VARCHAR} and status = 2
+  </update>
+</mapper>

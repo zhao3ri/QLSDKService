@@ -30,7 +30,7 @@
 		<property name="hashValueSerializer"><bean class="org.springframework.data.redis.serializer.StringRedisSerializer" /></property>
 	</bean>
 	
-	<bean name="redisUtil" class="com.qinglan.sdk.server.release.application.basic.redis.RedisUtil">
+	<bean name="redisUtil" class="com.qinglan.sdk.server.application.basic.redis.RedisUtil">
 		<property name="redisTemplate" ref="redisTemplate" />
 		<property name="defaultKey" value="rs"></property>
 		<property name="defaultTime" value="86400"></property>

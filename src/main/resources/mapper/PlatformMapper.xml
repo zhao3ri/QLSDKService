@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qinglan.sdk.server.domain.basic.Platform">
+    <resultMap id="BaseResultMap" type="com.qinglan.sdk.server.domain.basic.Platform">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="platformName" property="platformName" jdbcType="VARCHAR"/>
+        <result column="platformCallbackUrl" property="platformCallbackUrl" jdbcType="VARCHAR"/>
+        <result column="createTime" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="balance" property="balance" jdbcType="INTEGER"/>
+        <result column="version" property="version" jdbcType="INTEGER"/>
+        <result column="verifyUrl" property="verifyUrl" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    id, platformName, platformCallbackUrl, createTime,balance,version,phone,verifyUrl
+  </sql>
+    <select id="getPlatform" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from b_platform
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <update id="updateStatusPay" parameterType="java.util.Map">
+    update b_order
+    set status=#{status,jdbcType=BIT},notifyStatus=#{notifyStatus,jdbcType=BIT},updateTime=#{updateTime,jdbcType=TIMESTAMP},errorMsg=#{errorMsg,jdbcType=VARCHAR}
+    where orderId = #{orderId,jdbcType=VARCHAR} and status = 0
+  </update>
+    <update id="updateBalance" parameterType="java.util.Map">
+      update b_platform
+      set balance=#{balance,jdbcType=INTEGER},version=#{newversion,jdbcType=INTEGER}
+      where id=#{id,jdbcType=INTEGER} and version=#{version,jdbcType=INTEGER}
+  </update>
+</mapper>

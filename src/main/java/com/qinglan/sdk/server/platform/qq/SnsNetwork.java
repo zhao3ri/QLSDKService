@@ -31,8 +31,7 @@ import egame.openapi.httpclient.MySecureProtocolSocketFactory;
  */
  
  
-public class SnsNetwork
-{
+public class SnsNetwork {
     /** 
      * 发送GET请求
      * 

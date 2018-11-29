@@ -30,7 +30,7 @@
 	
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="dataSource" />
-		<property name="mapperLocations" value="classpath*:mappings/**/*Mapper.xml"></property>
+		<property name="mapperLocations" value="classpath*:mapper/*Mapper.xml"></property>
 	</bean>
 	
 	<!-- scope="prototype" -->
@@ -38,7 +38,7 @@
 		<constructor-arg index="0" ref="sqlSessionFactory" />
 	</bean>
 	
-	<bean id="mybatisRepository" class="com.zhidian3g.ddd.infrastructure.persistence.impl.MybatisRepositoryImpl">
+	<bean id="mybatisRepository" class="com.qinglan.sdk.server.data.infrastructure.persistence.impl.MybatisRepositoryImpl">
 		<property name="sqlSessionTemplate" ref="sqlSessionTemplate"></property>
 	</bean>
 	

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qinglan.sdk.server.domain.basic.PlatformGame">
+    <resultMap id="BaseResultMap" type="com.qinglan.sdk.server.domain.basic.PlatformGame">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="platformId" property="platformId" jdbcType="INTEGER"/>
+        <result column="gameId" property="gameId" jdbcType="BIGINT"/>
+        <result column="configParams" property="configParams" jdbcType="VARCHAR"/>
+        <result column="createTime" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="discount" property="discount" jdbcType="INTEGER"/>
+        <result column="appKey" property="appKey" jdbcType="VARCHAR"/>
+        <result column="appID" property="appID" jdbcType="VARCHAR"/>
+        <result column="secretKey" property="secretKey" jdbcType="VARCHAR"/>
+        <result column="privateKey" property="privateKey" jdbcType="VARCHAR"/>
+        <result column="publicKey" property="publicKey" jdbcType="VARCHAR"/>
+        <result column="notifyUrl" property="notifyUrl" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, platformId, gameId, configParams, createTime,status,registStatus,discount,appKey,appID,secretKey,privateKey,publicKey,notifyUrl
+  </sql>
+
+    <select id="getByPlatformAndAppId" resultMap="BaseResultMap" parameterType="java.util.Map">
+        select
+        <include refid="Base_Column_List"/>
+        from b_platform_game
+        where platformId = #{platformId,jdbcType=INTEGER} AND gameId = #{gameId,jdbcType=BIGINT}
+    </select>
+</mapper>

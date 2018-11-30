@@ -13,22 +13,22 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-    id, device, appID, clientType, platforms, loginPlatforms, loginZones, roleZones
+    id, device, gameId, clientType, platforms, loginPlatforms, loginZones, roleZones
   </sql>
 
     <select id="findByUnique" resultMap="BaseResultMap" parameterType="java.util.Map">
         select
         <include refid="Base_Column_List"/>
         from b_behavior_device
-        where device = #{device,jdbcType=VARCHAR} and appID = #{appID,jdbcType=BIGINT} and clientType =
+        where device = #{device,jdbcType=VARCHAR} and gameId = #{gameId,jdbcType=BIGINT} and clientType =
         #{clientType,jdbcType=TINYINT}
     </select>
 
     <insert id="insert" parameterType="com.qinglan.sdk.server.domain.basic.BehaviorDevice">
-    insert into b_behavior_device (device, appID,
+    insert into b_behavior_device (device, gameId,
       clientType, platforms, loginPlatforms, loginZones, 
       roleZones)
-    values (#{device,jdbcType=VARCHAR}, #{appID,jdbcType=BIGINT},
+    values (#{device,jdbcType=VARCHAR}, #{gameId,jdbcType=BIGINT},
       #{clientType,jdbcType=TINYINT}, #{platforms,jdbcType=VARCHAR},#{loginPlatforms,jdbcType=VARCHAR}, #{loginZones,jdbcType=VARCHAR}, 
       #{roleZones,jdbcType=VARCHAR})
   </insert>
@@ -49,7 +49,7 @@
                 roleZones = #{roleZones,jdbcType=VARCHAR},
             </if>
         </set>
-        where device = #{device,jdbcType=VARCHAR} and appID = #{appID,jdbcType=BIGINT} and clientType =
+        where device = #{device,jdbcType=VARCHAR} and gameId = #{gameId,jdbcType=BIGINT} and clientType =
         #{clientType,jdbcType=TINYINT}
     </update>
 

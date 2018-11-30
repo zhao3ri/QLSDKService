@@ -117,7 +117,7 @@ public class InitialPattern extends BaseDto implements Serializable {
 	
 	@Override
 	public boolean isEmpty() {
-		if(null == getAppId()) return true;
+		if(null == getGameId()) return true;
 		if(null == getPlatformId()) return true;
 		if(null == getDeviceId() || getDeviceId().trim().isEmpty()) return true;
 		if(null == getClientType()) return true;

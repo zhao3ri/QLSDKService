@@ -12,7 +12,7 @@ public class BehaviorDeviceServiceTest  extends BaseTestCase{
 	@Test
 	public void initialBehaviorDeviceTest(){
 		InitialPattern initial=new InitialPattern();
-		initial.setAppId(1L);
+		initial.setGameId(1L);
 		initial.setPlatformId(1);
 		initial.setDeviceId("923456789");
 		initial.setClientType(1);

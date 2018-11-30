@@ -44,7 +44,7 @@ public class AccountServiceTest  extends BaseTestCase{
 	public void initial() {
 		String deviceId = UUID.randomUUID().toString().substring(0, 12);
 		InitialPattern initial = new InitialPattern();
-		initial.setAppId(23L);
+		initial.setGameId(23L);
 		initial.setPlatformId(15);
 		initial.setDeviceId(deviceId);
 		initial.setClientType(1);
@@ -73,7 +73,7 @@ public class AccountServiceTest  extends BaseTestCase{
 	public void login() {
 //SELECT * FROM b_role where appId='151110191986' and platformId='1001' and zoneId='1' and roleId='123456' and roleName='123456'
 		LoginPattern login = new LoginPattern();
-		login.setAppId(Long.parseLong("151110191986"));
+		login.setGameId(Long.parseLong("151110191986"));
 		login.setUid("c0e8ef9ed18edfc9553182f266bd6b0c");
 		login.setPlatformId(1001);
 		login.setDeviceId("370436628004248");
@@ -97,7 +97,7 @@ public class AccountServiceTest  extends BaseTestCase{
 	@Test
 	public void heartbeat() {
 		HeartbeatPattern heartbeat = new HeartbeatPattern();
-		heartbeat.setAppId(23L);
+		heartbeat.setGameId(23L);
 		heartbeat.setUid("12345678");
 		heartbeat.setPlatformId(15);
 		heartbeat.setDeviceId("66b9a79d-fbd");
@@ -111,7 +111,7 @@ public class AccountServiceTest  extends BaseTestCase{
 	@Test
 	public void logout() {
 		LogoutPattern logout = new LogoutPattern();
-		logout.setAppId(23L);
+		logout.setGameId(23L);
 		logout.setUid("12345678");
 		logout.setPlatformId(15);
 		logout.setDeviceId("66b9a79d-fbd");
@@ -124,7 +124,7 @@ public class AccountServiceTest  extends BaseTestCase{
 	@Test
 	public void quit() {
 		QuitPattern quit = new QuitPattern();
-		quit.setAppId(23L);
+		quit.setGameId(23L);
 		quit.setUid("12345678");
 		quit.setPlatformId(15);
 		quit.setDeviceId("66b9a79d-fbd");
@@ -137,7 +137,7 @@ public class AccountServiceTest  extends BaseTestCase{
 	@Test
 	public void roleEstablish() {
 		RoleEstablishPattern roleEstablish = new RoleEstablishPattern();
-		roleEstablish.setAppId(23L);
+		roleEstablish.setGameId(23L);
 		roleEstablish.setUid("12345678");
 		roleEstablish.setPlatformId(15);
 		roleEstablish.setDeviceId("66b9a79d-fbd");
@@ -153,7 +153,7 @@ public class AccountServiceTest  extends BaseTestCase{
 	@Test
 	public void orderGenerate() {
 		OrderGeneratePattern orderGenerate = new OrderGeneratePattern();
-		orderGenerate.setAppId(23L);
+		orderGenerate.setGameId(23L);
 		orderGenerate.setUid("12345678");
 		orderGenerate.setPlatformId(15);
 		orderGenerate.setDeviceId("66b9a79d-fbd");
@@ -172,7 +172,7 @@ public class AccountServiceTest  extends BaseTestCase{
 	@Test
 	public void testSelfGenerate(){
 		OrderGeneratePattern orderGenerate = new OrderGeneratePattern();
-		orderGenerate.setAppId(23L);
+		orderGenerate.setGameId(23L);
 		orderGenerate.setUid("12345678");
 		orderGenerate.setPlatformId(15);
 		orderGenerate.setDeviceId("66b9a79d-fbd");

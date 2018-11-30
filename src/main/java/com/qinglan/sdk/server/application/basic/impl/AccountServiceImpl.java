@@ -49,7 +49,7 @@ public class AccountServiceImpl implements AccountService {
             return result;
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(params.getPlatformId(), params.getAppId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(params.getPlatformId(), params.getGameId());
         if (platformGame.getRegistStatus().equals(1)) {
             result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_STOP_REGIST);
             return result;
@@ -72,7 +72,7 @@ public class AccountServiceImpl implements AccountService {
         result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SUCCESS);
         result.put(RESPONSE_KEY_LOGIN_TIME, System.currentTimeMillis());
 
-        Account account = basicRepository.getRoleCreateTime(params.getAppId(), params.getPlatformId(), params.getZoneId(), params.getRoleId(), params.getRoleName());
+        Account account = basicRepository.getRoleCreateTime(params.getGameId(), params.getPlatformId(), params.getZoneId(), params.getRoleId(), params.getRoleName());
         if (account != null && account.getCreateTime() != null) {
             result.put(RESPONSE_KEY_CREATE_TIME, account.getCreateTime().getTime());
         } else {
@@ -316,7 +316,7 @@ public class AccountServiceImpl implements AccountService {
             return result;
         }
         //联运渠道是否正常
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(params.getPlatformId(), params.getAppId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(params.getPlatformId(), params.getGameId());
         if (platformGame.getStatus().equals(1)) {
             result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_CHANEL_SELF_PAY);
             return result;
@@ -368,7 +368,7 @@ public class AccountServiceImpl implements AccountService {
             return result;
         }
         String token = UUID.randomUUID().toString();
-        String key = params.getPlatformId() + "_" + params.getAppId() + "_" + token;
+        String key = params.getPlatformId() + "_" + params.getGameId() + "_" + token;
         redisUtil.setKeyValue(key, params.getExtend(), 120);
         result.put("token", token);
         return result;
@@ -384,7 +384,7 @@ public class AccountServiceImpl implements AccountService {
             result.put("msg", "param errro");
             return result;
         }
-        String key = params.getPlatformId() + "_" + params.getAppId() + "_" + params.getSessionId();
+        String key = params.getPlatformId() + "_" + params.getGameId() + "_" + params.getSessionId();
         logger.info("key:{}", key);
         String userid = redisUtil.getValue(key);
         logger.info("userid:{}", userid);
@@ -394,7 +394,7 @@ public class AccountServiceImpl implements AccountService {
             return result;
         }
         result.put("userid", userid);
-        if (params.getPlatformId() == 38 && params.getAppId().longValue() == Long.parseLong("180830054479")) {
+        if (params.getPlatformId() == 38 && params.getGameId().longValue() == Long.parseLong("180830054479")) {
             result.put("userid", getUUWdqkUserid(userid));
         }
         return result;
@@ -409,7 +409,7 @@ public class AccountServiceImpl implements AccountService {
             return result;
         }
         String token = UUID.randomUUID().toString();
-        String key = params.getPlatformId() + "_" + params.getAppId() + "_" + token;
+        String key = params.getPlatformId() + "_" + params.getGameId() + "_" + token;
         String uid = redisUtil.getValue(key);
         result.put("uid", uid);
         if (uid != null) {
@@ -430,9 +430,9 @@ public class AccountServiceImpl implements AccountService {
             return false;
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(params.getPlatformId(), params.getAppId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(params.getPlatformId(), params.getGameId());
         if (null == platformGame) {
-            logger.debug("{}", "平台和游戏没有关联 appid" + params.getAppId() + " platfromId" + params.getPlatformId());
+            logger.debug("{}", "平台和游戏没有关联 appid" + params.getGameId() + " platfromId" + params.getPlatformId());
             return false;
         }
         logger.info("params success");

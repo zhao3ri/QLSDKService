@@ -26,7 +26,7 @@ public class LoginSuccessPattern extends BaseDto implements Serializable {
 		if (StringUtil.isNullOrEmpty(extend)){
 			return true ;
 		}
-		if (null == getAppId()){
+		if (null == getGameId()){
 			return true ;
 		}
 		if (null == getPlatformId()){

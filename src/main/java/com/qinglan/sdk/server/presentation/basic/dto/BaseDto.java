@@ -5,17 +5,17 @@ import lombok.ToString;
 @ToString
 public abstract class BaseDto {
 	
-	private Long appId;
+	private Long gameId;
 	private Integer platformId;
 
 	public abstract boolean isEmpty();
 
-	public Long getAppId() {
-		return appId;
+	public Long getGameId() {
+		return gameId;
 	}
 
-	public void setAppId(Long appId) {
-		this.appId = appId;
+	public void setGameId(Long gameId) {
+		this.gameId = gameId;
 	}
 
 	public Integer getPlatformId() {

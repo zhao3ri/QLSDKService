@@ -22,7 +22,7 @@ public class LoggerStatisServiceTest extends BaseTestCase{
 	@Test
 	public void initialLogger() throws InterruptedException{
 		InitialPattern initial=new InitialPattern();
-		initial.setAppId(150212661932L);
+		initial.setGameId(150212661932L);
 		initial.setPlatformId(1001);
 		initial.setDeviceId("865267028861887");
 		initial.setClientType(1);
@@ -47,7 +47,7 @@ public class LoggerStatisServiceTest extends BaseTestCase{
 	@Test
 	public void loginLogger() throws InterruptedException{
 		LoginPattern login =new LoginPattern();
-		login.setAppId(150212661932L);
+		login.setGameId(150212661932L);
 		login.setUid("U19238709741111111111111111111111111");
 		login.setPlatformId(1001);
 		login.setDeviceId("865267028861887");
@@ -64,7 +64,7 @@ public class LoggerStatisServiceTest extends BaseTestCase{
 	@Test
 	public void heartbeat() throws InterruptedException {
 		HeartbeatPattern heartbeat = new HeartbeatPattern();
-		heartbeat.setAppId(150212661932L);
+		heartbeat.setGameId(150212661932L);
 		heartbeat.setUid("zxbtest24");
 		heartbeat.setPlatformId(1019);
 		heartbeat.setDeviceId("82776301283093");
@@ -80,7 +80,7 @@ public class LoggerStatisServiceTest extends BaseTestCase{
 	@Test
 	public void quit() throws InterruptedException {
 		QuitPattern quit = new QuitPattern();
-		quit.setAppId(150212661932L);
+		quit.setGameId(150212661932L);
 		quit.setUid("zxbtest24");
 		quit.setPlatformId(1019);
 		quit.setDeviceId("82776301283093");
@@ -95,7 +95,7 @@ public class LoggerStatisServiceTest extends BaseTestCase{
 	@Test
 	public void roleEstablishLogger() throws InterruptedException{
 		RoleEstablishPattern roleEstablish = new RoleEstablishPattern();
-		roleEstablish.setAppId(150212661932L);
+		roleEstablish.setGameId(150212661932L);
 		roleEstablish.setUid("zxbtest24");
 		roleEstablish.setPlatformId(1019);
 		roleEstablish.setDeviceId("827763012830934");

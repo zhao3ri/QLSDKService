@@ -64,10 +64,10 @@ public class GameOperateListener {
 		try {
 			boolean isFirstInitGame = false;
 			boolean isFirstInitPlatform = false;
-			BehaviorDevice behaviorDevice = basicRepository.getByUniqueKey(params.getClientType(), params.getAppId(), params.getDeviceId());
+			BehaviorDevice behaviorDevice = basicRepository.getByUniqueKey(params.getClientType(), params.getGameId(), params.getDeviceId());
 			if(null == behaviorDevice) {
 				behaviorDevice = new BehaviorDevice();
-				behaviorDevice.setGameId(params.getAppId());
+				behaviorDevice.setGameId(params.getGameId());
 				behaviorDevice.setClientType(params.getClientType());
 				behaviorDevice.setDevice(params.getDeviceId());
 				behaviorDevice.addPlatformId(params.getPlatformId());
@@ -84,7 +84,7 @@ public class GameOperateListener {
 			}
 			StringBuffer buffer = new StringBuffer();
 			buffer.append(DateUtils.toStringDate(new Date())).append("|").append(params.getClientType()).append("|");
-			buffer.append(params.getAppId()).append("|").append(params.getPlatformId()).append("|");
+			buffer.append(params.getGameId()).append("|").append(params.getPlatformId()).append("|");
 			buffer.append(params.getDeviceId()).append("|").append(params.getManufacturer()).append("|");
 			buffer.append(params.getModel()).append("|").append(params.getSystemVersion()).append("|");
 			buffer.append(params.getPlatform()).append("|").append(params.getLatitude()).append("|");
@@ -113,14 +113,14 @@ public class GameOperateListener {
 			basicRepository.saveAccount(account);
 		}
 		
-		BehaviorDevice behaviorDevice = basicRepository.getByUniqueKey(params.getClientType(), params.getAppId(), params.getDeviceId());
+		BehaviorDevice behaviorDevice = basicRepository.getByUniqueKey(params.getClientType(), params.getGameId(), params.getDeviceId());
 		boolean isGameActiveDevice = false;
 		boolean isPlatformActiveDevice = false;
 		boolean isZoneActiveDevice = false;
 		
 		if(null == behaviorDevice) {
 			behaviorDevice = new BehaviorDevice();
-			behaviorDevice.setGameId(params.getAppId());
+			behaviorDevice.setGameId(params.getGameId());
 			behaviorDevice.setClientType(params.getClientType());
 			behaviorDevice.setDevice(params.getDeviceId());
 			
@@ -145,16 +145,16 @@ public class GameOperateListener {
 				isGameActiveDevice = true;
 			}
 		}
-		GameTrace gameTrace = basicRepository.getGameTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getAppId());
-		ZoneTrace zoneTrace = basicRepository.getZoneTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getAppId(), params.getZoneId());
-		RoleTrace roleTrace = basicRepository.getRoleTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getAppId(), params.getZoneId(), params.getRoleId(),params.getRoleName());
+		GameTrace gameTrace = basicRepository.getGameTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getGameId());
+		ZoneTrace zoneTrace = basicRepository.getZoneTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getGameId(), params.getZoneId());
+		RoleTrace roleTrace = basicRepository.getRoleTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getGameId(), params.getZoneId(), params.getRoleId(),params.getRoleName());
 		
 		Map<Integer, Integer> gameUserKeep = gameTrace.userKeep();
 		Map<Integer, Integer> zoneUserKeep = zoneTrace.userKeep();
 		
 		BehaviorUser behaviorUser = new BehaviorUser();
 		BeanUtils.copyProperties(zoneTrace, behaviorUser);
-		behaviorUser.setGameId(params.getAppId());
+		behaviorUser.setGameId(params.getGameId());
 		behaviorUser.setClientType(params.getClientType());
 		behaviorUser.setPlatformId(params.getPlatformId());
 		behaviorUser.setUid(params.getUid());
@@ -182,7 +182,7 @@ public class GameOperateListener {
 		
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(DateUtils.toStringDate(new Date())).append("|").append(params.getClientType()).append("|");
-		buffer.append(params.getAppId()).append("|").append(params.getPlatformId()).append("|");
+		buffer.append(params.getGameId()).append("|").append(params.getPlatformId()).append("|");
 		buffer.append(params.getZoneId()).append("|").append(params.getRoleId()).append("|");
 		buffer.append(params.getUid()).append("|").append(params.getDeviceId()).append("|");
 		buffer.append(bol2Int(isNewUser)).append("|").append(bol2Int(isGameActiveDevice)).append("|");
@@ -219,24 +219,24 @@ public class GameOperateListener {
 		refreshCache(behaviorUser, gameTrace);
 		basicRepository.updateUserBehavior(behaviorUser);
 		
-		HLastLogin hLastLogin = basicRepository.getLastLogin(params.getUid(), params.getPlatformId(), params.getClientType(), params.getAppId(), params.getZoneId());
+		HLastLogin hLastLogin = basicRepository.getLastLogin(params.getUid(), params.getPlatformId(), params.getClientType(), params.getGameId(), params.getZoneId());
 		if (hLastLogin == null) {
 			hLastLogin = new HLastLogin();
 			hLastLogin.setUid(params.getUid());
 			hLastLogin.setPid(params.getPlatformId());
 			hLastLogin.setClientType(params.getClientType());
-			hLastLogin.setGameId(params.getAppId());
+			hLastLogin.setGameId(params.getGameId());
 			hLastLogin.setZoneId(params.getZoneId());
 			hLastLogin.setIsPaidUser(0);
 			basicRepository.insertHLastLogin(hLastLogin);
 		}else {
-			basicRepository.updateLastLoginDate(params.getUid(), params.getPlatformId(), params.getClientType(), params.getAppId(), params.getZoneId());
+			basicRepository.updateLastLoginDate(params.getUid(), params.getPlatformId(), params.getClientType(), params.getGameId(), params.getZoneId());
 		}
 		
 		
 		//榴莲平台发送post用户信息
 		if (params.getPlatformId() == 1068) {
-			PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(params.getPlatformId()), Long.valueOf(params.getAppId()));
+			PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(params.getPlatformId()), Long.valueOf(params.getGameId()));
 			if (null != platformGame) {
 				String appKey = platformGame.getConfigParamsList().get(1);
 				String appsecret = platformGame.getConfigParamsList().get(2);
@@ -269,18 +269,18 @@ public class GameOperateListener {
 	@EventListener(asynchronous = true)
 	public void handleOraderCountEvent(OraderCountEvent event) {
 		OrderGeneratePattern params = event.getHelper();
-		GameTrace gameTrace = basicRepository.getGameTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getAppId());
+		GameTrace gameTrace = basicRepository.getGameTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getGameId());
 		int distanceDate = DateUtils.getIntervalDays(DateUtils.parse(gameTrace.loginFirstDay(),"yyyy-MM-dd"),new Date());
 		
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(DateUtils.toStringDate(new Date())).append("|").append(params.getClientType()).append("|");
-		buffer.append(params.getAppId()).append("|").append(params.getPlatformId()).append("|");
+		buffer.append(params.getGameId()).append("|").append(params.getPlatformId()).append("|");
 		buffer.append(params.getZoneId()).append("|").append(params.getRoleId()).append("|");
 		buffer.append(params.getUid()).append("|").append(params.getDeviceId()).append("|");
 		buffer.append(params.getAmount()).append("|").append(distanceDate).append("|").append(gameTrace.loginFirstDay());
 		
 		String log = StatsLogger.pay(buffer.toString());
-		String key = totalPayHead+DateUtils.format(new Date(),"yyyy-MM-dd")+"_"+params.getAppId()+"_"+params.getPlatformId();
+		String key = totalPayHead+DateUtils.format(new Date(),"yyyy-MM-dd")+"_"+params.getGameId()+"_"+params.getPlatformId();
 		redisUtil.increment(key,params.getAmount());
 		kafkaProducerClient.send(log);
 	}
@@ -289,8 +289,8 @@ public class GameOperateListener {
 	@EventListener(asynchronous = true)
 	public void handleHeartbeatEvent(HeartbeatEvent event) {
 		HeartbeatPattern params = event.getHelper();
-		ZoneTrace zoneTrace = basicRepository.getZoneTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getAppId(), params.getZoneId());
-		RoleTrace roleTrace = basicRepository.getRoleTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getAppId(), params.getZoneId(), params.getRoleId(),"");
+		ZoneTrace zoneTrace = basicRepository.getZoneTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getGameId(), params.getZoneId());
+		RoleTrace roleTrace = basicRepository.getRoleTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getGameId(), params.getZoneId(), params.getRoleId(),"");
 		if(null == zoneTrace.getLastLoginTime() || null == roleTrace.getLltime()) {
 			logger.warn("platformId: {}, uid: {} request hearbeat, but don't login", params.getPlatformId(), params.getUid());
 			return;
@@ -298,7 +298,7 @@ public class GameOperateListener {
 		
 		BehaviorUser behaviorUser = new BehaviorUser();
 		BeanUtils.copyProperties(zoneTrace, behaviorUser);
-		behaviorUser.setGameId(params.getAppId());
+		behaviorUser.setGameId(params.getGameId());
 		behaviorUser.setClientType(params.getClientType());
 		behaviorUser.setPlatformId(params.getPlatformId());
 		behaviorUser.setUid(params.getUid());
@@ -313,7 +313,7 @@ public class GameOperateListener {
 		
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(DateUtils.toStringDate(new Date())).append("|").append(params.getClientType()).append("|");
-		buffer.append(params.getAppId()).append("|").append(params.getPlatformId()).append("|");
+		buffer.append(params.getGameId()).append("|").append(params.getPlatformId()).append("|");
 		buffer.append(params.getZoneId()).append("|").append(params.getRoleId()).append("|");
 		buffer.append(params.getUid()).append("|").append(params.getDeviceId()).append("|");
 		buffer.append(DateUtils.toStringDate(new Date(zoneTrace.getLastLoginTime()))).append("|");
@@ -330,8 +330,8 @@ public class GameOperateListener {
 			logger.warn("platformId: {}, uid: {} zoneId:{} request logout, but don't login", params.getPlatformId(), params.getUid() + "zoneId:" + params.getZoneId());
 			return;
 		}
-		ZoneTrace zoneTrace = basicRepository.getZoneTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getAppId(), params.getZoneId());
-		RoleTrace roleTrace = basicRepository.getRoleTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getAppId(), params.getZoneId(), params.getRoleId(),"");
+		ZoneTrace zoneTrace = basicRepository.getZoneTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getGameId(), params.getZoneId());
+		RoleTrace roleTrace = basicRepository.getRoleTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getGameId(), params.getZoneId(), params.getRoleId(),"");
 		
 		if(null == zoneTrace.getLastLoginTime() || null == roleTrace.getLltime()) {
 			logger.warn("platformId: {}, uid: {} request logout, but don't login", params.getPlatformId(), params.getUid());
@@ -344,7 +344,7 @@ public class GameOperateListener {
 		
 		BehaviorUser behaviorUser = new BehaviorUser();
 		BeanUtils.copyProperties(zoneTrace, behaviorUser);
-		behaviorUser.setGameId(params.getAppId());
+		behaviorUser.setGameId(params.getGameId());
 		behaviorUser.setClientType(params.getClientType());
 		behaviorUser.setPlatformId(params.getPlatformId());
 		behaviorUser.setUid(params.getUid());
@@ -358,7 +358,7 @@ public class GameOperateListener {
 		
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(DateUtils.toStringDate(new Date())).append("|").append(params.getClientType()).append("|");
-		buffer.append(params.getAppId()).append("|").append(params.getPlatformId()).append("|");
+		buffer.append(params.getGameId()).append("|").append(params.getPlatformId()).append("|");
 		buffer.append(params.getZoneId()).append("|").append(params.getRoleId()).append("|");
 		buffer.append(params.getUid()).append("|").append(params.getDeviceId()).append("|");
 		buffer.append(DateUtils.toStringDate(new Date(zoneTrace.getLastLoginTime()))).append("|");
@@ -376,8 +376,8 @@ public class GameOperateListener {
 			logger.warn("platformId: {}, uid: {} zoneId:{} request logout, but don't login", params.getPlatformId(), params.getUid() + "zoneId:" + params.getZoneId());
 			return;
 		}
-		ZoneTrace zoneTrace = basicRepository.getZoneTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getAppId(), params.getZoneId());
-		RoleTrace roleTrace = basicRepository.getRoleTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getAppId(), params.getZoneId(), params.getRoleId(),"");
+		ZoneTrace zoneTrace = basicRepository.getZoneTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getGameId(), params.getZoneId());
+		RoleTrace roleTrace = basicRepository.getRoleTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getGameId(), params.getZoneId(), params.getRoleId(),"");
 		
 		if(null == zoneTrace.getLastLoginTime() || null == roleTrace.getLltime()) {
 			logger.warn("platformId: {}, uid: {} request quit, but don't login", params.getPlatformId(), params.getUid());
@@ -390,7 +390,7 @@ public class GameOperateListener {
 		
 		BehaviorUser behaviorUser = new BehaviorUser();
 		BeanUtils.copyProperties(zoneTrace, behaviorUser);
-		behaviorUser.setGameId(params.getAppId());
+		behaviorUser.setGameId(params.getGameId());
 		behaviorUser.setClientType(params.getClientType());
 		behaviorUser.setPlatformId(params.getPlatformId());
 		behaviorUser.setUid(params.getUid());
@@ -404,7 +404,7 @@ public class GameOperateListener {
 		
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(DateUtils.toStringDate(new Date())).append("|").append(params.getClientType()).append("|");
-		buffer.append(params.getAppId()).append("|").append(params.getPlatformId()).append("|");
+		buffer.append(params.getGameId()).append("|").append(params.getPlatformId()).append("|");
 		buffer.append(params.getZoneId()).append("|").append(params.getRoleId()).append("|");
 		buffer.append(params.getUid()).append("|").append(params.getDeviceId()).append("|");
 		buffer.append(DateUtils.toStringDate(new Date(zoneTrace.getLastLoginTime()))).append("|");
@@ -419,16 +419,16 @@ public class GameOperateListener {
 	public void handleRoleEstablishEvent(RoleEstablishEvent event) {
 		RoleEstablishPattern params = event.getHelper();
 		
-		Role role = new Role(params.getClientType(), params.getAppId(), params.getPlatformId(), params.getZoneId(), params.getRoleId(), params.getRoleName());
+		Role role = new Role(params.getClientType(), params.getGameId(), params.getPlatformId(), params.getZoneId(), params.getRoleId(), params.getRoleName());
 		role.setCreateTime(params.getCreatTime());
 		basicRepository.insertRole(role);
 		
 		boolean isDeviceGameFirstEstaRole = false;
 		boolean isDeviceZoneFirstEstaRole = false;
-		BehaviorDevice behaviorDevice = basicRepository.getByUniqueKey(params.getClientType(), params.getAppId(), params.getDeviceId());
+		BehaviorDevice behaviorDevice = basicRepository.getByUniqueKey(params.getClientType(), params.getGameId(), params.getDeviceId());
 		if(null == behaviorDevice) {
 			behaviorDevice = new BehaviorDevice();
-			behaviorDevice.setGameId(params.getAppId());
+			behaviorDevice.setGameId(params.getGameId());
 			behaviorDevice.setClientType(params.getClientType());
 			behaviorDevice.setDevice(params.getDeviceId());
 			behaviorDevice.addRoleZoneId(params.getZoneId());
@@ -447,13 +447,13 @@ public class GameOperateListener {
 				basicRepository.updateDeviceRoleZone(behaviorDevice);
 			}
 		}
-		GameTrace gameTrace = basicRepository.getGameTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getAppId());
-		ZoneTrace zoneTrace = basicRepository.getZoneTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getAppId(), params.getZoneId());
-		RoleTrace roleTrace = basicRepository.getRoleTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getAppId(), params.getZoneId(), params.getRoleId(),params.getRoleName());
+		GameTrace gameTrace = basicRepository.getGameTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getGameId());
+		ZoneTrace zoneTrace = basicRepository.getZoneTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getGameId(), params.getZoneId());
+		RoleTrace roleTrace = basicRepository.getRoleTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getGameId(), params.getZoneId(), params.getRoleId(),params.getRoleName());
 		
 		BehaviorUser behaviorUser = new BehaviorUser();
 		BeanUtils.copyProperties(zoneTrace, behaviorUser);
-		behaviorUser.setGameId(params.getAppId());
+		behaviorUser.setGameId(params.getGameId());
 		behaviorUser.setClientType(params.getClientType());
 		behaviorUser.setPlatformId(params.getPlatformId());
 		behaviorUser.setUid(params.getUid());
@@ -466,7 +466,7 @@ public class GameOperateListener {
 		
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(DateUtils.toStringDate(params.getCreatTime())).append("|").append(params.getClientType()).append("|");
-		buffer.append(params.getAppId()).append("|").append(params.getPlatformId()).append("|");
+		buffer.append(params.getGameId()).append("|").append(params.getPlatformId()).append("|");
 		buffer.append(params.getZoneId()).append("|").append(params.getRoleId()).append("|");
 		buffer.append(params.getUid()).append("|").append(params.getDeviceId()).append("|");
 		buffer.append(params.getZoneName()).append("|").append(params.getRoleName()).append("|");
@@ -493,13 +493,13 @@ public class GameOperateListener {
 	public void handleOrderGenerateEvent(OrderGenerateEvent event) {
 		
 		OrderGeneratePattern params = event.getHelper();
-		GameTrace gameTrace = basicRepository.getGameTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getAppId());
-		ZoneTrace zoneTrace = basicRepository.getZoneTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getAppId(), params.getZoneId());
-		RoleTrace roleTrace = basicRepository.getRoleTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getAppId(), params.getZoneId(), params.getRoleId(),params.getRoleName());
+		GameTrace gameTrace = basicRepository.getGameTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getGameId());
+		ZoneTrace zoneTrace = basicRepository.getZoneTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getGameId(), params.getZoneId());
+		RoleTrace roleTrace = basicRepository.getRoleTrace(params.getClientType(), params.getUid(), params.getPlatformId(), params.getGameId(), params.getZoneId(), params.getRoleId(),params.getRoleName());
 		
 		BehaviorUser behaviorUser = new BehaviorUser();
 		BeanUtils.copyProperties(zoneTrace, behaviorUser);
-		behaviorUser.setGameId(params.getAppId());
+		behaviorUser.setGameId(params.getGameId());
 		behaviorUser.setClientType(params.getClientType());
 		behaviorUser.setPlatformId(params.getPlatformId());
 		behaviorUser.setUid(params.getUid());
@@ -523,7 +523,7 @@ public class GameOperateListener {
 		
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(DateUtils.toStringDate(new Date())).append("|").append(params.getClientType()).append("|");
-		buffer.append(params.getAppId()).append("|").append(params.getPlatformId()).append("|");
+		buffer.append(params.getGameId()).append("|").append(params.getPlatformId()).append("|");
 		buffer.append(params.getZoneId()).append("|").append(params.getRoleId()).append("|");
 		buffer.append(params.getUid()).append("|").append(params.getDeviceId()).append("|");
 		buffer.append(params.getAmount()).append("|").append(gameTrace.isNewUser()).append("|");
@@ -550,18 +550,18 @@ public class GameOperateListener {
 		basicRepository.updateUserBehavior(behaviorUser);
 		
 		if (1 == zoneTrace.isFirstPayUser()) {
-			HLastLogin hLastLogin = basicRepository.getLastLogin(params.getUid(), params.getPlatformId(), params.getClientType(), params.getAppId(), params.getZoneId());
+			HLastLogin hLastLogin = basicRepository.getLastLogin(params.getUid(), params.getPlatformId(), params.getClientType(), params.getGameId(), params.getZoneId());
 			if (hLastLogin == null) {
 				hLastLogin = new HLastLogin();
 				hLastLogin.setUid(params.getUid());
 				hLastLogin.setPid(params.getPlatformId());
 				hLastLogin.setClientType(params.getClientType());
-				hLastLogin.setGameId(params.getAppId());
+				hLastLogin.setGameId(params.getGameId());
 				hLastLogin.setZoneId(params.getZoneId());
 				hLastLogin.setIsPaidUser(1);
 				basicRepository.insertHLastLogin(hLastLogin);
 			}else {
-				basicRepository.updateIsPaidUser(params.getUid(), params.getPlatformId(), params.getClientType(), params.getAppId(), params.getZoneId());
+				basicRepository.updateIsPaidUser(params.getUid(), params.getPlatformId(), params.getClientType(), params.getGameId(), params.getZoneId());
 			}
 		}
 	}

@@ -48,7 +48,7 @@ public class OrderServiceImpl implements OrderService {
 
     private Order assembledOrder(OrderGeneratePattern params) {
         Order order = new Order();
-        order.setGameId(params.getAppId());
+        order.setGameId(params.getGameId());
         order.setPlatformId(params.getPlatformId());
         order.setUid(params.getUid());
         order.setZoneId(params.getZoneId());
@@ -176,7 +176,7 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderGeneratePattern changeOrder(Order order) {
         OrderGeneratePattern params = new OrderGeneratePattern();
-        params.setAppId(order.getGameId());
+        params.setGameId(order.getGameId());
         params.setPlatformId(order.getPlatformId());
         params.setUid(order.getUid());
         params.setZoneId(order.getZoneId());

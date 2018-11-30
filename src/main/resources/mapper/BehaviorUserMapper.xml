@@ -5,12 +5,12 @@
     <select id="getUserBehavior" resultType="com.qinglan.sdk.server.domain.basic.BehaviorUser"
             parameterType="java.util.Map">
         select
-        `clientType`, `uid`, `appID`, `platformId`, `zoneId`, `data` , `roleData`
+        `clientType`, `uid`, `gameId`, `platformId`, `zoneId`, `data` , `roleData`
         from b_behavior_user
         where
         clientType = #{clientType}
         AND uid = #{uid}
-        AND appID = #{appID}
+        AND gameId = #{gameId}
         AND platformId = #{platformId}
         <if test="zoneId != null">
             AND zoneId = #{zoneId}
@@ -20,9 +20,9 @@
     <insert id="insert" parameterType="java.util.Map">
     insert into 
     b_behavior_user 
-    	(`clientType`, `uid`, `platformId`, `appID`, `zoneId`, `data`, `roleData`)
+    	(`clientType`, `uid`, `platformId`, `gameId`, `zoneId`, `data`, `roleData`)
     values 
-    	(#{clientType,jdbcType=INTEGER}, #{uid,jdbcType=VARCHAR}, #{platformId,jdbcType=INTEGER}, #{appID,jdbcType=BIGINT}, #{zoneId,jdbcType=VARCHAR}, #{data,jdbcType=LONGVARCHAR}, #{roleData,jdbcType=LONGVARCHAR})
+    	(#{clientType,jdbcType=INTEGER}, #{uid,jdbcType=VARCHAR}, #{platformId,jdbcType=INTEGER}, #{gameId,jdbcType=BIGINT}, #{zoneId,jdbcType=VARCHAR}, #{data,jdbcType=LONGVARCHAR}, #{roleData,jdbcType=LONGVARCHAR})
   </insert>
 
     <update id="update" parameterType="java.util.Map">
@@ -33,7 +33,7 @@
     where 
     	clientType = #{clientType}
 	    AND uid = #{uid} 
-	    AND appID = #{appID}
+	    AND gameId = #{gameId}
 	    AND platformId = #{platformId}
 	    AND zoneId = #{zoneId} 
   </update>

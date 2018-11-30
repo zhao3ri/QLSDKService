@@ -25,7 +25,7 @@ public class GetUserInfoPattern extends BaseDto implements Serializable {
 		if (StringUtil.isNullOrEmpty(sessionId)){
 			return true ;
 		}
-		if (null == getAppId()){
+		if (null == getGameId()){
 			return true ;
 		}
 		if (null == getPlatformId()){

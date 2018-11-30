@@ -23,7 +23,7 @@
 
     <select id="getRoleCreateTime" parameterType="java.util.Map"
             resultType="com.qinglan.sdk.server.domain.basic.Account">
-        SELECT createTime FROM b_role where gameId=#{gameId} and platformId=#{platformId} and zoneId=#{zoneId} and
+        SELECT createTime FROM b_role where appID=#{appID} and platformId=#{platformId} and zoneId=#{zoneId} and
         roleId=#{roleId}
         <if test="roleName != null">
             and roleName=#{roleName}

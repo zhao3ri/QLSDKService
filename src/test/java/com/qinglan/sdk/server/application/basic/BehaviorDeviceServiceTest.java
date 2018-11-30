@@ -26,7 +26,7 @@ public class BehaviorDeviceServiceTest  extends BaseTestCase{
 	@Test
 	public void loginBehaviorDeviceTest(){
 //		LoginPattern login =new LoginPattern();
-//		login.setGameId("1");
+//		login.setAppID("1");
 //		login.setPlatformId("2");
 //		login.setDeviceId("923456789");
 //		login.setClientType("1");

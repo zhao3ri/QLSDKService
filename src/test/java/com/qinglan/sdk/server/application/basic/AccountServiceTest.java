@@ -186,7 +186,7 @@ public class AccountServiceTest  extends BaseTestCase{
 		orderGenerate.setFixed(1);
 		orderGenerate.setLoginTime("123456789");
 		orderGenerate.setIp("127.0.0.1");
-		orderGenerate.setAppName("至尊战绩");
+		orderGenerate.setGameName("至尊战绩");
 		orderGenerate.setPackageName("com.yaoyue.zzzj");
 		orderGenerate.setSelfpay(1);
 		Map<String,Object> map = accountService.selforderGenerate(orderGenerate);

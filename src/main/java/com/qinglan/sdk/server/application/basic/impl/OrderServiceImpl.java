@@ -62,7 +62,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         order.setCpOrderId(params.getCpOrderId());
-        order.setCpExtInfo(params.getExtInfo());
+        order.setExtInfo(params.getExtInfo());
         order.setAmount(params.getAmount());
         order.setNotifyUrl(params.getNotifyUrl());
         order.setFixed(params.getFixed());
@@ -120,7 +120,7 @@ public class OrderServiceImpl implements OrderService {
         /**
          * 扣减渠道对应金额
          */
-        PlatformGame platformGame = basicRepository.getByPlatformAndAppId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
         logger.info("appId:" + platformGame.getGameId() + " platformid:" + platformGame.getPlatformId());
         int updateBalance = -1;
         int i = 0;
@@ -182,7 +182,7 @@ public class OrderServiceImpl implements OrderService {
         params.setZoneId(order.getZoneId());
         params.setRoleId(order.getRoleId());
         params.setCpOrderId(order.getCpOrderId());
-        params.setExtInfo(order.getCpExtInfo());
+        params.setExtInfo(order.getExtInfo());
         params.setAmount(order.getAmount());
         params.setNotifyUrl(order.getNotifyUrl());
         params.setFixed(order.getFixed());

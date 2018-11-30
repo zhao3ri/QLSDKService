@@ -236,7 +236,7 @@ public class GameOperateListener {
 		
 		//榴莲平台发送post用户信息
 		if (params.getPlatformId() == 1068) {
-			PlatformGame platformGame = basicRepository.getByPlatformAndAppId(Integer.valueOf(params.getPlatformId()), Long.valueOf(params.getAppId()));
+			PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(params.getPlatformId()), Long.valueOf(params.getAppId()));
 			if (null != platformGame) {
 				String appKey = platformGame.getConfigParamsList().get(1);
 				String appsecret = platformGame.getConfigParamsList().get(2);

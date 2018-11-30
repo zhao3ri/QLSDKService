@@ -1,9 +1,12 @@
 package com.qinglan.sdk.server.domain.basic;
 
+import com.qinglan.sdk.server.presentation.basic.dto.OrderBasicInfo;
+
 import java.io.Serializable;
 import java.util.Date;
 
-public class Order implements Serializable {
+public class Order extends OrderBasicInfo implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     //订单状态
     public final static Integer STATUS_SUBMITSUCCESS = 0;        //提交成功
@@ -23,36 +26,11 @@ public class Order implements Serializable {
     public final static int INVALID = 3;    //无效参数
     public final static int BALANCE_ERROR = 4;    //余额不够
 
-
     private Long id;
 
     private Long gameId;
 
     private Integer platformId;
-
-    private String uid;
-
-    private String zoneId;
-
-    private String roleId;
-
-    private String roleName;
-
-    private String orderId;
-
-    private String cpOrderId;
-
-    private String cpExtInfo;
-
-    private Integer amount;
-
-    private String notifyUrl;
-
-    private Integer fixed;
-
-    private String deviceId;
-
-    private Integer clientType;
 
     private String errorMsg;
 
@@ -63,11 +41,6 @@ public class Order implements Serializable {
     private Date createTime;
 
     private Date updateTime;
-
-    private Integer gold;
-    private Integer selfpay;
-
-    private static final long serialVersionUID = 1L;
 
     public Long getId() {
         return id;
@@ -141,12 +114,12 @@ public class Order implements Serializable {
         this.cpOrderId = cpOrderId == null ? null : cpOrderId.trim();
     }
 
-    public String getCpExtInfo() {
-        return cpExtInfo;
+    public String getExtInfo() {
+        return extInfo;
     }
 
-    public void setCpExtInfo(String cpExtInfo) {
-        this.cpExtInfo = cpExtInfo == null ? null : cpExtInfo.trim();
+    public void setExtInfo(String extInfo) {
+        this.extInfo = extInfo == null ? null : extInfo.trim();
     }
 
     public Integer getAmount() {

@@ -112,7 +112,7 @@ public class LoggerStatisServiceTest extends BaseTestCase{
 	@Test
 	public void orderGenerateLogger() throws InterruptedException{
 //		OrderGeneratePattern orderGenerate=new OrderGeneratePattern();
-//		orderGenerate.setGameId(1L);
+//		orderGenerate.setAppID(1L);
 //		orderGenerate.setUid("10000");
 //		orderGenerate.setPlatformId(1);
 //		orderGenerate.setDeviceId("82776301283093");

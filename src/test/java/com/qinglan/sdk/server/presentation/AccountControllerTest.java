@@ -73,7 +73,7 @@ public class AccountControllerTest  extends BaseTestCase{
 		logger.debug("result: {}", result);
 		
 		Map<String, Object> response = JsonMapper.toObject(result, Map.class);
-		assertEquals(Constants.RESPONSE_SUCCESS, response.get(Constants.RESPONSE_CODE));
+		assertEquals(Constants.RESPONSE_CODE_SUCCESS, response.get(Constants.RESPONSE_KEY_CODE));
 	}
 
 	@Test
@@ -111,7 +111,7 @@ public class AccountControllerTest  extends BaseTestCase{
 		logger.debug("result: {}", result);
 		
 		Map<String, Object> response = JsonMapper.toObject(result, Map.class);
-		assertEquals(Constants.RESPONSE_SUCCESS, response.get(Constants.RESPONSE_CODE));
+		assertEquals(Constants.RESPONSE_CODE_SUCCESS, response.get(Constants.RESPONSE_KEY_CODE));
 		
 		// parameter illegal case
 		params.put("platformId", "9001");
@@ -119,7 +119,7 @@ public class AccountControllerTest  extends BaseTestCase{
 		logger.debug("result: {}", result);
 		
 		response = JsonMapper.toObject(result, Map.class);
-		assertEquals(Constants.RESPONSE_PARAMETER_ILLEGAL, response.get(Constants.RESPONSE_CODE));
+		assertEquals(Constants.RESPONSE_CODE_PARAMETER_ILLEGAL, response.get(Constants.RESPONSE_KEY_CODE));
 	}
 	
 	@Test @SuppressWarnings("unchecked")
@@ -140,19 +140,19 @@ public class AccountControllerTest  extends BaseTestCase{
 		String result = HttpUtils.post(url, params);
 		logger.debug("result: {}", result);
 		Map<String, Object> response = JsonMapper.toObject(result, Map.class);
-		assertEquals(Constants.RESPONSE_SUCCESS, response.get(Constants.RESPONSE_CODE));
+		assertEquals(Constants.RESPONSE_CODE_SUCCESS, response.get(Constants.RESPONSE_KEY_CODE));
 		
 /*		params.remove("platformId");
 		result = HttpUtils.post(url, params);
 		logger.debug("result: {}", result);
 		response = JsonMapper.toObject(result, Map.class);
-		assertEquals(Constants.RESPONSE_PARAMETER_ILLEGAL, response.get(Constants.RESPONSE_CODE));
+		assertEquals(Constants.RESPONSE_CODE_PARAMETER_ILLEGAL, response.get(Constants.RESPONSE_KEY_CODE));
 		
 		params.put("platformId", "9001");
 		result = HttpUtils.post(url, params);
 		logger.debug("result: {}", result);
 		response = JsonMapper.toObject(result, Map.class);
-		assertEquals(Constants.RESPONSE_PARAMETER_ILLEGAL, response.get(Constants.RESPONSE_CODE));*/
+		assertEquals(Constants.RESPONSE_CODE_PARAMETER_ILLEGAL, response.get(Constants.RESPONSE_KEY_CODE));*/
 	}
 	@Test @SuppressWarnings("unchecked")
 	public void orderGenerate() throws Exception{
@@ -178,7 +178,7 @@ public class AccountControllerTest  extends BaseTestCase{
 		String result = HttpUtils.post(url, params);
 		logger.debug("result: {}", result);
 		Map<String, Object> response = JsonMapper.toObject(result, Map.class);
-		assertEquals(Constants.RESPONSE_SUCCESS, response.get(Constants.RESPONSE_CODE));
+		assertEquals(Constants.RESPONSE_CODE_SUCCESS, response.get(Constants.RESPONSE_KEY_CODE));
 		
 		
 		orderService.paySuccess((String)response.get("orderId"));
@@ -186,13 +186,13 @@ public class AccountControllerTest  extends BaseTestCase{
 		result = HttpUtils.post(url, params);
 		logger.debug("result: {}", result);
 		response = JsonMapper.toObject(result, Map.class);
-		assertEquals(Constants.RESPONSE_PARAMETER_ILLEGAL, response.get(Constants.RESPONSE_CODE));
+		assertEquals(Constants.RESPONSE_CODE_PARAMETER_ILLEGAL, response.get(Constants.RESPONSE_KEY_CODE));
 		
 		params.put("platformId", "9001");
 		result = HttpUtils.post(url, params);
 		logger.debug("result: {}", result);
 		response = JsonMapper.toObject(result, Map.class);
-		assertEquals(Constants.RESPONSE_PARAMETER_ILLEGAL, response.get(Constants.RESPONSE_CODE));*/
+		assertEquals(Constants.RESPONSE_CODE_PARAMETER_ILLEGAL, response.get(Constants.RESPONSE_KEY_CODE));*/
 	}
 	
 	@Test @SuppressWarnings("unchecked")
@@ -212,19 +212,19 @@ public class AccountControllerTest  extends BaseTestCase{
 		String result = HttpUtils.post(url, params);
 		logger.debug("result: {}", result);
 		Map<String, Object> response = JsonMapper.toObject(result, Map.class);
-		assertEquals(Constants.RESPONSE_SUCCESS, response.get(Constants.RESPONSE_CODE));
+		assertEquals(Constants.RESPONSE_CODE_SUCCESS, response.get(Constants.RESPONSE_KEY_CODE));
 		
 /*		params.remove("platformId");
 		result = HttpUtils.post(url, params);
 		logger.debug("result: {}", result);
 		response = JsonMapper.toObject(result, Map.class);
-		assertEquals(Constants.RESPONSE_PARAMETER_ILLEGAL, response.get(Constants.RESPONSE_CODE));
+		assertEquals(Constants.RESPONSE_CODE_PARAMETER_ILLEGAL, response.get(Constants.RESPONSE_KEY_CODE));
 		
 		params.put("platformId", "9001");
 		result = HttpUtils.post(url, params);
 		logger.debug("result: {}", result);
 		response = JsonMapper.toObject(result, Map.class);
-		assertEquals(Constants.RESPONSE_PARAMETER_ILLEGAL, response.get(Constants.RESPONSE_CODE));*/
+		assertEquals(Constants.RESPONSE_CODE_PARAMETER_ILLEGAL, response.get(Constants.RESPONSE_KEY_CODE));*/
 	}
 	
 	@Test @SuppressWarnings("unchecked")
@@ -243,19 +243,19 @@ public class AccountControllerTest  extends BaseTestCase{
 		String result = HttpUtils.post(url, params);
 		logger.debug("result: {}", result);
 		Map<String, Object> response = JsonMapper.toObject(result, Map.class);
-		assertEquals(Constants.RESPONSE_SUCCESS, response.get(Constants.RESPONSE_CODE));
+		assertEquals(Constants.RESPONSE_CODE_SUCCESS, response.get(Constants.RESPONSE_KEY_CODE));
 		
 /*		params.remove("platformId");
 		result = HttpUtils.post(url, params);
 		logger.debug("result: {}", result);
 		response = JsonMapper.toObject(result, Map.class);
-		assertEquals(Constants.RESPONSE_PARAMETER_ILLEGAL, response.get(Constants.RESPONSE_CODE));
+		assertEquals(Constants.RESPONSE_CODE_PARAMETER_ILLEGAL, response.get(Constants.RESPONSE_KEY_CODE));
 		
 		params.put("platformId", "9001");
 		result = HttpUtils.post(url, params);
 		logger.debug("result: {}", result);
 		response = JsonMapper.toObject(result, Map.class);
-		assertEquals(Constants.RESPONSE_PARAMETER_ILLEGAL, response.get(Constants.RESPONSE_CODE));*/
+		assertEquals(Constants.RESPONSE_CODE_PARAMETER_ILLEGAL, response.get(Constants.RESPONSE_KEY_CODE));*/
 	}
 	
 	@Test @SuppressWarnings("unchecked")
@@ -275,19 +275,19 @@ public class AccountControllerTest  extends BaseTestCase{
 		String result = HttpUtils.post(url, params);
 		logger.debug("result: {}", result);
 		Map<String, Object> response = JsonMapper.toObject(result, Map.class);
-		assertEquals(Constants.RESPONSE_SUCCESS, response.get(Constants.RESPONSE_CODE));
+		assertEquals(Constants.RESPONSE_CODE_SUCCESS, response.get(Constants.RESPONSE_KEY_CODE));
 		
 /*		params.remove("platformId");
 		result = HttpUtils.post(url, params);
 		logger.debug("result: {}", result);
 		response = JsonMapper.toObject(result, Map.class);
-		assertEquals(Constants.RESPONSE_PARAMETER_ILLEGAL, response.get(Constants.RESPONSE_CODE));
+		assertEquals(Constants.RESPONSE_CODE_PARAMETER_ILLEGAL, response.get(Constants.RESPONSE_KEY_CODE));
 		
 		params.put("platformId", "9001");
 		result = HttpUtils.post(url, params);
 		logger.debug("result: {}", result);
 		response = JsonMapper.toObject(result, Map.class);
-		assertEquals(Constants.RESPONSE_PARAMETER_ILLEGAL, response.get(Constants.RESPONSE_CODE));*/
+		assertEquals(Constants.RESPONSE_CODE_PARAMETER_ILLEGAL, response.get(Constants.RESPONSE_KEY_CODE));*/
 	}
 	
 	@Test

@@ -23,7 +23,7 @@ import com.qinglan.sdk.server.application.basic.redis.RedisUtil;
 public class BasicRepositoryImpl implements BasicRepository {
     private static final String PARAM_PLATFORM_ID = "platformId";
     private static final String PARAM_UID = "uid";
-    private static final String PARAM_APP_ID = "gameId";
+    private static final String PARAM_GAME_ID = "gameId";
     private static final String PARAM_ZONE_ID = "zoneId";
     private static final String PARAM_ROLE_ID = "roleId";
     private static final String PARAM_ROLE_NAME = "roleName";
@@ -64,21 +64,21 @@ public class BasicRepositoryImpl implements BasicRepository {
 
 
     @Override
-    public PlatformGame getByPlatformAndAppId(int platformId, long appId) {
+    public PlatformGame getByPlatformAndGameId(int channelId, long gameId) {
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put(PARAM_PLATFORM_ID, platformId);
-        params.put(PARAM_APP_ID, appId);
-        PlatformGame platformGame = mybatisRepository.findOne(PlatformGame.class, "getByPlatformAndAppId", params);
+        params.put(PARAM_PLATFORM_ID, channelId);
+        params.put(PARAM_GAME_ID, gameId);
+        PlatformGame platformGame = mybatisRepository.findOne(PlatformGame.class, "getByPlatformAndGameId", params);
         if (platformGame == null) return null;
 
-        //redisUtil.setKeyValue("pg_"+platformId+"_"+appId, JsonMapper.toJson(platformGame));
+        //redisUtil.setKeyValue("pg_"+platformId+"_"+gameId, JsonMapper.toJson(platformGame));
         return platformGame;
     }
 
 
     @Override
-    public Platform getPlatform(int platformId) {
-        return mybatisRepository.findOne(Platform.class, "getPlatform", platformId);
+    public Platform getPlatform(int channelId) {
+        return mybatisRepository.findOne(Platform.class, "getPlatform", channelId);
     }
 
     @Override
@@ -135,13 +135,13 @@ public class BasicRepositoryImpl implements BasicRepository {
     }
 
     @Override
-    public List<BehaviorUser> getUserBehavior(Integer clientType, String uid, Integer platformId, Long appId) {
+    public List<BehaviorUser> getUserBehavior(Integer clientType, String uid, Integer platformId, Long gameId) {
         List<BehaviorUser> result = new ArrayList<BehaviorUser>();
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(PARAM_OS, clientType);
         params.put(PARAM_UID, uid);
         params.put(PARAM_PLATFORM_ID, platformId);
-        params.put(PARAM_APP_ID, appId);
+        params.put(PARAM_GAME_ID, gameId);
         List<BehaviorUser> behaviorUsers = mybatisRepository.findList(BehaviorUser.class, "getUserBehavior", params);
         if (!CollectionUtils.isEmpty(behaviorUsers)) {
             for (BehaviorUser behaviorUser : behaviorUsers) {
@@ -165,7 +165,7 @@ public class BasicRepositoryImpl implements BasicRepository {
         params.put(PARAM_OS, clientType);
         params.put(PARAM_UID, uid);
         params.put(PARAM_PLATFORM_ID, platformId);
-        params.put(PARAM_APP_ID, appId);
+        params.put(PARAM_GAME_ID, appId);
         params.put(PARAM_ZONE_ID, zoneId);
         String key = "userBehavior_" + clientType + SEPARATOR + uid + SEPARATOR + platformId + SEPARATOR + appId + SEPARATOR + zoneId;
         String userBehaviorJson = redisUtil.getValue(key);
@@ -257,7 +257,7 @@ public class BasicRepositoryImpl implements BasicRepository {
         params.put(PARAM_UID, behaviorUser.getUid());
         params.put(PARAM_PLATFORM_ID, behaviorUser.getPlatformId());
         params.put(PARAM_ZONE_ID, behaviorUser.getZoneId());
-        params.put(PARAM_APP_ID, behaviorUser.getGameId());
+        params.put(PARAM_GAME_ID, behaviorUser.getGameId());
         params.put(PARAM_DATA, data);
         params.put(PARAM_ROLE_DATA, behaviorUser.getRoleData());
         BehaviorUserRedis redis = toRedis(behaviorUser);
@@ -273,7 +273,7 @@ public class BasicRepositoryImpl implements BasicRepository {
         params.put(PARAM_UID, behaviorUser.getUid());
         params.put(PARAM_PLATFORM_ID, behaviorUser.getPlatformId());
         params.put(PARAM_ZONE_ID, behaviorUser.getZoneId());
-        params.put(PARAM_APP_ID, behaviorUser.getGameId());
+        params.put(PARAM_GAME_ID, behaviorUser.getGameId());
         params.put(PARAM_DATA, data);
         params.put(PARAM_ROLE_DATA, behaviorUser.getRoleData());
         BehaviorUserRedis redis = toRedis(behaviorUser);
@@ -291,7 +291,7 @@ public class BasicRepositoryImpl implements BasicRepository {
     public BehaviorDevice getByUniqueKey(Integer clientType, Long appId, String deviceId) {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(PARAM_OS, clientType);
-        params.put(PARAM_APP_ID, appId);
+        params.put(PARAM_GAME_ID, appId);
         params.put(PARAM_DEVICE, deviceId);
         BehaviorDevice result = mybatisRepository.findOne(BehaviorDevice.class, "findByUnique", params);
         if (null != result) {
@@ -341,8 +341,8 @@ public class BasicRepositoryImpl implements BasicRepository {
     }
 
     @Override
-    public GameTrace getGameTrace(Integer clientType, String uid, Integer platformId, Long appId) {
-        String json = redisUtil.getValue("gameTrace" + clientType + "_" + uid + "_" + platformId + "_" + appId);
+    public GameTrace getGameTrace(Integer clientType, String uid, Integer platformId, Long gameId) {
+        String json = redisUtil.getValue("gameTrace" + clientType + "_" + uid + "_" + platformId + "_" + gameId);
         if (StringUtils.isNotBlank(json)) {
             GameTrace gameTrace = JsonMapper.toObject(json, GameTrace.class);
             Integer loginDel = DateUtils.getIntervalDays(gameTrace.getLastLoginTime(), System.currentTimeMillis());
@@ -356,7 +356,7 @@ public class BasicRepositoryImpl implements BasicRepository {
             return gameTrace;
         } else {
             GameTrace gameTrace = new GameTrace();
-            List<BehaviorUser> behaviorUsers = getUserBehavior(clientType, uid, platformId, appId);
+            List<BehaviorUser> behaviorUsers = getUserBehavior(clientType, uid, platformId, gameId);
             if (!CollectionUtils.isEmpty(behaviorUsers)) {
                 Long firstInTime = 0L;
                 Long lastLoginTime = 0L;
@@ -426,14 +426,14 @@ public class BasicRepositoryImpl implements BasicRepository {
 
     @Override
     public RoleTrace getRoleTrace(Integer clientType, String uid,
-                                  Integer platformId, Long appId, String zoneId, String roleId, String roleName) {
+                                  Integer platformId, Long gameId, String zoneId, String roleId, String roleName) {
         RoleTrace roleTrace = null;
-        String json = redisUtil.getValue("roleTrace" + clientType + SEPARATOR + uid + SEPARATOR + platformId + SEPARATOR + appId + SEPARATOR + zoneId);
+        String json = redisUtil.getValue("roleTrace" + clientType + SEPARATOR + uid + SEPARATOR + platformId + SEPARATOR + gameId + SEPARATOR + zoneId);
         if (StringUtils.isNoneBlank(json)) {
             roleTrace = getRoleTraceByJson(json, roleId);
             if (roleTrace != null) return roleTrace;
         }
-        BehaviorUser behaviorUser = getUserBehavior(clientType, uid, platformId, appId, zoneId);
+        BehaviorUser behaviorUser = getUserBehavior(clientType, uid, platformId, gameId, zoneId);
         if (StringUtils.isNotEmpty(behaviorUser.getRoleData())) {
             roleTrace = getRoleTraceByJson(behaviorUser.getRoleData(), roleId);
         }
@@ -480,18 +480,18 @@ public class BasicRepositoryImpl implements BasicRepository {
 
 
     @Override
-    public ZoneTrace getZoneTrace(Integer clientType, String uid, Integer platformId, Long appId, String zoneId) {
-        String json = redisUtil.getValue("zoneTrace" + clientType + "_" + uid + "_" + platformId + "_" + appId + "_" + zoneId);
+    public ZoneTrace getZoneTrace(Integer clientType, String uid, Integer platformId, Long gameId, String zoneId) {
+        String json = redisUtil.getValue("zoneTrace" + clientType + "_" + uid + "_" + platformId + "_" + gameId + "_" + zoneId);
         if (StringUtils.isNotBlank(json)) {
             return JsonMapper.toObject(json, ZoneTrace.class);
         } else {
             ZoneTrace zoneTrace = new ZoneTrace();
-            BehaviorUser behaviorUser = getUserBehavior(clientType, uid, platformId, appId, zoneId);
+            BehaviorUser behaviorUser = getUserBehavior(clientType, uid, platformId, gameId, zoneId);
             if (null != behaviorUser) {
                 BeanUtils.copyProperties(behaviorUser, zoneTrace);
             } else {
                 behaviorUser = new BehaviorUser();
-                behaviorUser.setGameId(appId);
+                behaviorUser.setGameId(gameId);
                 behaviorUser.setClientType(clientType);
                 behaviorUser.setUid(uid);
                 behaviorUser.setZoneId(zoneId);
@@ -554,7 +554,7 @@ public class BasicRepositoryImpl implements BasicRepository {
                                      String zoneId, String roleId, String roleName) {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(PARAM_PLATFORM_ID, platformId);
-        params.put(PARAM_APP_ID, appId);
+        params.put(PARAM_GAME_ID, appId);
         params.put(PARAM_ZONE_ID, zoneId);
         params.put(PARAM_ROLE_ID, roleId);
         params.put(PARAM_ROLE_NAME, roleName);

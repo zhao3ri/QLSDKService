@@ -111,7 +111,7 @@ public class PlatformControllerTest extends BaseTestCase {
         Order order = basicRepository.getOrderByOrderId(mmYPayResult.getProductDesc());
         if (null == order) {
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndAppId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
         if (null == platformGame) {
         }
         if (platformUtilsService.verifyMmy(mmYPayResult.getTradeSign(), platformGame.getConfigParamsList().get(0), mmYPayResult.getOrderID())) {
@@ -147,7 +147,7 @@ public class PlatformControllerTest extends BaseTestCase {
         if (null == order) {
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndAppId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
         if (null == platformGame) {
         }
 
@@ -204,7 +204,7 @@ public class PlatformControllerTest extends BaseTestCase {
 
         if (StringUtils.isBlank(session.getZdappId()) || StringUtils.isBlank(session.getPlatformId()) || StringUtils.isBlank(session.getCode())) {
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndAppId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getZdappId()));
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getZdappId()));
         if (platformGame == null) {
         }
         String client_id = platformGame.getConfigParamsList().get(0);

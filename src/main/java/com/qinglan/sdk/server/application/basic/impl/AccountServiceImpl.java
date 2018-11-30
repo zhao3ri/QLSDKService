@@ -1,9 +1,9 @@
 package com.qinglan.sdk.server.application.basic.impl;
 
 import com.qinglan.sdk.server.BasicRepository;
+import com.qinglan.sdk.server.ChannelConstants;
 import com.qinglan.sdk.server.common.*;
 import com.qinglan.sdk.server.data.infrastructure.event.EventPublisher;
-import com.qinglan.sdk.server.ChannelConstants;
 import com.qinglan.sdk.server.Constants;
 import com.qinglan.sdk.server.application.basic.AccountService;
 import com.qinglan.sdk.server.application.basic.OrderService;
@@ -11,6 +11,7 @@ import com.qinglan.sdk.server.domain.basic.*;
 import com.qinglan.sdk.server.domain.basic.event.*;
 import com.qinglan.sdk.server.presentation.basic.dto.*;
 import com.qinglan.sdk.server.application.basic.redis.RedisUtil;
+import com.qinglan.sdk.server.presentation.channel.impl.UCChannel;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.util.*;
+
+import static com.qinglan.sdk.server.Constants.RESPONSE_KEY_CREATE_TIME;
+import static com.qinglan.sdk.server.Constants.RESPONSE_KEY_LOGIN_TIME;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -41,17 +45,17 @@ public class AccountServiceImpl implements AccountService {
     public Map<String, Object> initial(InitialPattern params) {
         Map<String, Object> result = new HashMap<String, Object>();
         if (!isParameterValid(params)) {
-            result.put(Constants.RESPONSE_CODE, Constants.RESPONSE_PARAMETER_ILLEGAL);
+            result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_PARAMETER_ILLEGAL);
             return result;
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndAppId(params.getPlatformId(), params.getAppId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(params.getPlatformId(), params.getAppId());
         if (platformGame.getRegistStatus().equals(1)) {
-            result.put(Constants.RESPONSE_CODE, Constants.RESPONSE_STOP_REGIST);
+            result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_STOP_REGIST);
             return result;
         }
         publisher.publish(new InitialEvent(params));
-        result.put(Constants.RESPONSE_CODE, Constants.RESPONSE_SUCCESS);
+        result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SUCCESS);
         return result;
     }
 
@@ -60,19 +64,19 @@ public class AccountServiceImpl implements AccountService {
         Map<String, Object> result = new HashMap<String, Object>();
 
         if (!isParameterValid(params)) {
-            result.put(Constants.RESPONSE_CODE, Constants.RESPONSE_PARAMETER_ILLEGAL);
+            result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_PARAMETER_ILLEGAL);
             return result;
         }
 
         publisher.publish(new LoginEvent(params));
-        result.put(Constants.RESPONSE_CODE, Constants.RESPONSE_SUCCESS);
-        result.put("loginTime", System.currentTimeMillis());
+        result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SUCCESS);
+        result.put(RESPONSE_KEY_LOGIN_TIME, System.currentTimeMillis());
 
         Account account = basicRepository.getRoleCreateTime(params.getAppId(), params.getPlatformId(), params.getZoneId(), params.getRoleId(), params.getRoleName());
         if (account != null && account.getCreateTime() != null) {
-            result.put("createTime", account.getCreateTime().getTime());
+            result.put(RESPONSE_KEY_CREATE_TIME, account.getCreateTime().getTime());
         } else {
-            result.put("createTime", 0);
+            result.put(RESPONSE_KEY_CREATE_TIME, 0);
         }
         return result;
     }
@@ -82,12 +86,12 @@ public class AccountServiceImpl implements AccountService {
         Map<String, Object> result = new HashMap<String, Object>();
 
         if (!isParameterValid(params)) {
-            result.put(Constants.RESPONSE_CODE, Constants.RESPONSE_PARAMETER_ILLEGAL);
+            result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_PARAMETER_ILLEGAL);
             return result;
         }
 
         publisher.publish(new HeartbeatEvent(params));
-        result.put(Constants.RESPONSE_CODE, Constants.RESPONSE_SUCCESS);
+        result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SUCCESS);
         return result;
     }
 
@@ -96,13 +100,13 @@ public class AccountServiceImpl implements AccountService {
         Map<String, Object> result = new HashMap<String, Object>();
 
         if (!isParameterValid(params)) {
-            result.put(Constants.RESPONSE_CODE, Constants.RESPONSE_PARAMETER_ILLEGAL);
+            result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_PARAMETER_ILLEGAL);
             return result;
         }
 
         publisher.publish(new LogoutEvent(params));
         //listener.handleLogoutEvent(new LogoutEvent(params));
-        result.put(Constants.RESPONSE_CODE, Constants.RESPONSE_SUCCESS);
+        result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SUCCESS);
         return result;
     }
 
@@ -111,12 +115,12 @@ public class AccountServiceImpl implements AccountService {
         Map<String, Object> result = new HashMap<String, Object>();
 
         if (!isParameterValid(params)) {
-            result.put(Constants.RESPONSE_CODE, Constants.RESPONSE_PARAMETER_ILLEGAL);
+            result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_PARAMETER_ILLEGAL);
             return result;
         }
         publisher.publish(new QuitEvent(params));
         //listener.handleQuitEvent(new QuitEvent(params));
-        result.put(Constants.RESPONSE_CODE, Constants.RESPONSE_SUCCESS);
+        result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SUCCESS);
         return result;
     }
 
@@ -125,7 +129,7 @@ public class AccountServiceImpl implements AccountService {
         Map<String, Object> result = new HashMap<String, Object>();
 
         if (!isParameterValid(params)) {
-            result.put(Constants.RESPONSE_CODE, Constants.RESPONSE_PARAMETER_ILLEGAL);
+            result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_PARAMETER_ILLEGAL);
             return result;
         }
         Date creatTime = new Date();
@@ -133,8 +137,8 @@ public class AccountServiceImpl implements AccountService {
 
         publisher.publish(new RoleEstablishEvent(params));
         //listener.handleRoleEstablishEvent(new RoleEstablishEvent(params));
-        result.put(Constants.RESPONSE_CODE, Constants.RESPONSE_SUCCESS);
-        result.put("createTime", creatTime.getTime());
+        result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SUCCESS);
+        result.put(RESPONSE_KEY_CREATE_TIME, creatTime.getTime());
         return result;
     }
 
@@ -199,7 +203,7 @@ public class AccountServiceImpl implements AccountService {
         postparams.put("goods_num", goods_num);
         postparams.put("remark", remark);
         postparams.put("goods_note", goods_note);
-        postparams.put("meta_option", buildMetaOption(params.getAppName(), params.getPackageName()));
+        postparams.put("meta_option", buildMetaOption(params.getGameName(), params.getPackageName()));
         logger.debug("postparams: " + postparams);
         String retStr = "";
         try {
@@ -308,55 +312,58 @@ public class AccountServiceImpl implements AccountService {
         Map<String, Object> result = new HashMap<String, Object>();
 
         if (!isParameterValid(params)) {
-            result.put(Constants.RESPONSE_CODE, Constants.RESPONSE_PARAMETER_ILLEGAL);
+            result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_PARAMETER_ILLEGAL);
             return result;
         }
         //联运渠道是否正常
-        PlatformGame platformGame = basicRepository.getByPlatformAndAppId(params.getPlatformId(), params.getAppId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(params.getPlatformId(), params.getAppId());
         if (platformGame.getStatus().equals(1)) {
-            result.put(Constants.RESPONSE_CODE, Constants.CHANEL_SELF_PAY);
+            result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_CHANEL_SELF_PAY);
             return result;
         }
 
 
         if (!this.checkPlatformBalance(params.getAmount(), platformGame)) {
-            result.put(Constants.RESPONSE_CODE, Constants.RESPONSE_BLANCEERROR);
+            result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_BLANCEERROR);
             return result;
         }
 
         String orderId = orderService.saveOrder(params);
         if (StringUtils.isEmpty(orderId)) {
             logger.warn("create order failed.");
-            result.put(Constants.RESPONSE_CODE, Constants.RESPONSE_SERVER_EXCEPTION);
+            result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SERVER_EXCEPTION);
             return result;
         }
 
         Platform platform = basicRepository.getPlatform(params.getPlatformId());
-        result.put(Constants.RESPONSE_CODE, Constants.RESPONSE_SUCCESS);
+        result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SUCCESS);
         result.put(Constants.RESPONSE_KEY_ORDER_ID, orderId);
-        result.put(Constants.RESPONSE_KEY_RETURN_URL, platform.getPlatformCallbackUrl());
+        String notifyUrl = params.getNotifyUrl();//支付回调地址
+        if (StringUtil.isNullOrEmpty(notifyUrl)) {
+            notifyUrl = platform.getPlatformCallbackUrl();
+            params.setNotifyUrl(notifyUrl);
+        }
+        result.put(Constants.REQUEST_PARAM_NOTIFY_URL, notifyUrl);
 
         //如果是07073、乐嗨嗨平台则返回加密后的订单号
         if (params.getPlatformId() == Constants.LESHAN_PLATFORM_ID || params.getPlatformId() == Constants.LEHIHI_PLATFORM_ID) {
             result.put(Constants.RESPONSE_KEY_ORDER_ID, DES.encryptAndBase64(orderId, Constants.BASE64_ORDERID_KEY));
+        } else if (params.getPlatformId() == ChannelConstants.CHANNEL_ID_UC) {
+            //UC需要返回参数签名
+            UCChannel channel = new UCChannel();
+            channel.init(platform, platformGame);
+            result.put(UCChannel.REQUEST_KEY_SIGN, channel.signOrder(params));
         }
-        if (params.getPlatformId() == ChannelConstants.CHANNEL_ID_UC) {
-            Map<String, String> signParam = new TreeMap<>();
-            signParam.put(ChannelConstants.UC_PARAM_NOTIFY_URL, params.getNotifyUrl());
-            signParam.put(ChannelConstants.UC_PARAM_ACCOUNT_ID, params.getUid());
-            signParam.put(ChannelConstants.UC_PARAM_AMOUNT, params.getAmount().toString());
-            signParam.put(ChannelConstants.UC_PARAM_CP_ORDER_ID, params.getCpOrderId());
-            String sign=Sign.aliSign(signParam,"");
-        }
+
         return result;
     }
 
     @Override
     public Map<String, Object> loginSuccess(LoginSuccessPattern params) {
         Map<String, Object> result = new HashMap<String, Object>();
-        result.put(Constants.RESPONSE_CODE, Constants.RESPONSE_SUCCESS);
+        result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SUCCESS);
         if (params.isEmpty()) {
-            result.put(Constants.RESPONSE_CODE, Constants.RESPONSE_SERVER_EXCEPTION);
+            result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SERVER_EXCEPTION);
             result.put("msg", "param errro");
             return result;
         }
@@ -371,9 +378,9 @@ public class AccountServiceImpl implements AccountService {
     public Map<String, Object> getUserIdByToken(GetUserInfoPattern params) {
         logger.info("-getUserIdByToken--");
         Map<String, Object> result = new HashMap<String, Object>();
-        result.put(Constants.RESPONSE_CODE, Constants.RESPONSE_SUCCESS);
+        result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SUCCESS);
         if (params.isEmpty()) {
-            result.put(Constants.RESPONSE_CODE, Constants.RESPONSE_SERVER_EXCEPTION);
+            result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SERVER_EXCEPTION);
             result.put("msg", "param errro");
             return result;
         }
@@ -382,7 +389,7 @@ public class AccountServiceImpl implements AccountService {
         String userid = redisUtil.getValue(key);
         logger.info("userid:{}", userid);
         if (null == userid || StringUtil.isNullOrEmpty(userid)) {
-            result.put(Constants.RESPONSE_CODE, Constants.RESPONSE_PARAMETER_ILLEGAL);
+            result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_PARAMETER_ILLEGAL);
             result.put("msg", "token errro");
             return result;
         }
@@ -396,9 +403,9 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Map<String, Object> validateSession(ValidateSessionPattern params) {
         Map<String, Object> result = new HashMap<String, Object>();
-        result.put(Constants.RESPONSE_CODE, Constants.RESPONSE_SUCCESS);
+        result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SUCCESS);
         if (params.isEmpty()) {
-            result.put(Constants.RESPONSE_CODE, Constants.RESPONSE_SERVER_EXCEPTION);
+            result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SERVER_EXCEPTION);
             return result;
         }
         String token = UUID.randomUUID().toString();
@@ -406,12 +413,12 @@ public class AccountServiceImpl implements AccountService {
         String uid = redisUtil.getValue(key);
         result.put("uid", uid);
         if (uid != null) {
-            result.put(Constants.RESPONSE_CODE, Constants.RESPONSE_SUCCESS);
+            result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SUCCESS);
             result.put("msg", "");
         } else {
 
             result.put("msg", "token 无效");
-            result.put(Constants.RESPONSE_CODE, Constants.RESPONSE_SERVER_EXCEPTION);
+            result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SERVER_EXCEPTION);
         }
         return result;
 
@@ -423,7 +430,7 @@ public class AccountServiceImpl implements AccountService {
             return false;
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndAppId(params.getPlatformId(), params.getAppId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(params.getPlatformId(), params.getAppId());
         if (null == platformGame) {
             logger.debug("{}", "平台和游戏没有关联 appid" + params.getAppId() + " platfromId" + params.getPlatformId());
             return false;

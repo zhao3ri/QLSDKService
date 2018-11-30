@@ -76,7 +76,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
         if (order == null) {
             return "error order not Fund param:" + HttpUtils.getRequestParams(request).toString();
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndAppId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
         if (platformGame == null) {
             return "Not Fund Game";
         }
@@ -106,7 +106,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             return JsonMapper.toJson(session.verifySession());
         }
         try {
-            PlatformGame platformGame = basicRepository.getByPlatformAndAppId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
             if (platformGame == null) {
                 return "";
             }
@@ -161,7 +161,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
         if (order == null) {
             return "error order not Fund param:" + HttpUtils.getRequestParams(request).toString();
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndAppId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
         if (platformGame == null) {
             return "Not Fund Game";
         }
@@ -193,7 +193,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             return JsonMapper.toJson(session.verifySession());
         }
         try {
-            PlatformGame platformGame = basicRepository.getByPlatformAndAppId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
             if (platformGame == null) {
                 return "";
             }
@@ -239,7 +239,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
         if (order == null) {
             return "error order not Fund param:" + HttpUtils.getRequestParams(request).toString();
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndAppId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
         if (platformGame == null) {
             return "Not Fund Game";
         }
@@ -269,7 +269,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             return JsonMapper.toJson(session.verifySession());
         }
         try {
-            PlatformGame platformGame = basicRepository.getByPlatformAndAppId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
             if (platformGame == null) {
                 return "";
             }
@@ -315,7 +315,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             if (order == null) {
                 return "error order not Fund param:" + HttpUtils.getRequestParams(request).toString();
             }
-            PlatformGame platformGame = basicRepository.getByPlatformAndAppId(order.getPlatformId(), order.getGameId());
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
             if (platformGame == null) {
                 return "Not Fund Game";
             }
@@ -361,7 +361,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             return JsonMapper.toJson(session.verifySession());
         }
         try {
-            PlatformGame platformGame = basicRepository.getByPlatformAndAppId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
             if (platformGame == null) {
                 return "";
             }
@@ -414,7 +414,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             logger.info(JsonMapper.toJson(returnMap));
             return JsonMapper.toJson(returnMap);
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndAppId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
         if (platformGame == null) {
             returnMap.put("ret", 0);
             returnMap.put("msg", "Can find Game");
@@ -490,7 +490,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
         if (order == null) {
             return "Order not fund";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndAppId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
 
         String platp_key = platformGame.getConfigParamsList().get(2);
         if (platformGame == null) {
@@ -525,7 +525,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             return JsonMapper.toJson(session.verifySession());
         }
         try {
-            PlatformGame platformGame = basicRepository.getByPlatformAndAppId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
             if (platformGame == null) {
                 result.put("code", "1");
                 result.put("msg", "platorm not unition");
@@ -572,7 +572,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             logger.info(JsonMapper.toJson(returnMap));
             return "0";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndAppId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
         if (platformGame == null) {
             returnMap.put("ret", 0);
             returnMap.put("msg", "Can find Game");
@@ -633,7 +633,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             long ygAppId = Long.valueOf(session.getYgAppId());
             //logger.info(session.toString());
             logger.info("platformId:" + platformId + ";ygAppId:" + ygAppId);
-            PlatformGame platformGame = basicRepository.getByPlatformAndAppId(platformId, ygAppId);
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(platformId, ygAppId);
             logger.info(JsonMapper.toJson(platformGame));
             if (platformGame == null) {
                 result.put("code", "0");
@@ -685,7 +685,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             logger.info(JsonMapper.toJson(returnMap));
             return "1";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndAppId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
         if (platformGame == null) {
             returnMap.put("ret", 1);
             returnMap.put("msg", "Can find Game");
@@ -743,7 +743,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             int platformId = Integer.valueOf(session.getPlatformId());
             long ygAppId = Long.valueOf(session.getYgAppId());
             logger.info("platformId:" + platformId + ";ygAppId:" + ygAppId);
-            PlatformGame platformGame = basicRepository.getByPlatformAndAppId(platformId, ygAppId);
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(platformId, ygAppId);
             logger.info(JsonMapper.toJson(platformGame));
             if (platformGame == null) {
                 result.put("code", "0");
@@ -839,7 +839,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
                 logger.info(JsonMapper.toJson(returnMap));
                 return "1";
             }
-            PlatformGame platformGame = basicRepository.getByPlatformAndAppId(order.getPlatformId(), order.getGameId());
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
             if (platformGame == null) {
                 returnMap.put("ret", 1);
                 returnMap.put("msg", "Can find Game");
@@ -906,7 +906,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
         try {
             int platformId = Integer.valueOf(session.getPlatformId());
             long ygAppId = Long.valueOf(session.getYgAppId());
-            PlatformGame platformGame = basicRepository.getByPlatformAndAppId(platformId, ygAppId);
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(platformId, ygAppId);
             if (platformGame == null) {
                 result.put("code", "0");
                 result.put("msg", "platorm not unition");
@@ -997,7 +997,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             PlatformStatsLogger.info(PlatformStatsLogger.ZHIZHUYOU, JsonMapper.toJson(returnMap));
             return "1";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndAppId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
         if (platformGame == null) {
             returnMap.put("ret", 1);
             returnMap.put("msg", "Can find Game");
@@ -1057,7 +1057,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
         try {
             int platformId = Integer.valueOf(session.getPlatformId());
             long ygAppId = Long.valueOf(session.getYgAppId());
-            PlatformGame platformGame = basicRepository.getByPlatformAndAppId(platformId, ygAppId);
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(platformId, ygAppId);
             if (platformGame == null) {
                 result.put("code", "0");
                 result.put("msg", "platorm not unition");
@@ -1128,7 +1128,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
         try {
             int platformId = Integer.valueOf(session.getPlatformId());
             long ygAppId = Long.valueOf(session.getYgAppId());
-            PlatformGame platformGame = basicRepository.getByPlatformAndAppId(platformId, ygAppId);
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(platformId, ygAppId);
             if (platformGame == null) {
                 result.put("code", "0");
                 result.put("msg", "platorm not unition");
@@ -1221,7 +1221,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             PlatformStatsLogger.info(PlatformStatsLogger.XINGKONGSHIJIE, JsonMapper.toJson(returnMap));
             return "Order not fund";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndAppId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
 
         String platp_key = platformGame.getConfigParamsList().get(2);
         if (platformGame == null) {
@@ -1283,7 +1283,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
         try {
             int platformId = Integer.valueOf(ucSession.getPlatformId());
             long ygAppId = Long.valueOf(ucSession.getYgAppId());
-            PlatformGame platformGame = basicRepository.getByPlatformAndAppId(platformId, ygAppId);
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(platformId, ygAppId);
             if (platformGame == null) {
                 result.put("code", "0");
                 result.put("msg", "platorm not unition");
@@ -1319,7 +1319,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             return JsonMapper.toJson(session.verifySession());
         }
         try {
-            PlatformGame platformGame = basicRepository.getByPlatformAndAppId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
             if (platformGame == null) {
                 result.put("code", "1");
                 result.put("msg", "platorm not unition");
@@ -1378,7 +1378,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             logger.info(JsonMapper.toJson(returnMap));
             return "0";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndAppId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
         if (platformGame == null) {
             returnMap.put("ret", 0);
             returnMap.put("msg", "Can find Game");
@@ -1447,7 +1447,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             logger.info(JsonMapper.toJson(returnMap));
             return "0";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndAppId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
         if (platformGame == null) {
             returnMap.put("ret", 0);
             returnMap.put("msg", "Can find Game");
@@ -1503,7 +1503,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
     public String verifySix7Session(Six7Session session) {
         Map<String, String> result = new HashMap<String, String>();
         try {
-            PlatformGame platformGame = basicRepository.getByPlatformAndAppId(Integer.valueOf(session.getPlatform()), Long.valueOf(session.getYgAppId()));
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatform()), Long.valueOf(session.getYgAppId()));
             if (platformGame == null) {
                 result.put("code", "1");
                 result.put("msg", "platorm not unition");
@@ -1570,7 +1570,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             PlatformStatsLogger.info(PlatformStatsLogger.SIX7, JsonMapper.toJson(returnMap));
             return "fail";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndAppId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
         if (platformGame == null) {
             returnMap.put("ret", 1);
             returnMap.put("msg", "Can find Game");
@@ -1614,7 +1614,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
         logger.error(JsonMapper.toJson(xmwSession));
 
         try {
-            PlatformGame platformGame = basicRepository.getByPlatformAndAppId(Integer.valueOf(xmwSession.getPlatformId()), Long.valueOf(xmwSession.getYgAppId()));
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(xmwSession.getPlatformId()), Long.valueOf(xmwSession.getYgAppId()));
             if (platformGame == null) {
                 result.put("code", "1");
                 result.put("msg", "platorm not unition");
@@ -1669,7 +1669,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             PlatformStatsLogger.info(PlatformStatsLogger.XMW, JsonMapper.toJson(returnMap));
             return "fail";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndAppId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
         if (platformGame == null) {
             returnMap.put("ret", 1);
             returnMap.put("msg", "Can find Game");
@@ -1741,7 +1741,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
         logger.info("createXmwOrder req={}",JsonMapper.toJson(xmwOrderSession));
 
         try {
-            PlatformGame platformGame = basicRepository.getByPlatformAndAppId(Integer.valueOf(xmwOrderSession.getPlatformId()), Long.valueOf(xmwOrderSession.getYgAppId()));
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(xmwOrderSession.getPlatformId()), Long.valueOf(xmwOrderSession.getYgAppId()));
             if (platformGame == null) {
                 result.put("code", "1");
                 result.put("msg", "platorm not unition");
@@ -1847,7 +1847,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             return "error";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndAppId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
         if (platformGame == null) {
             map.put("code", 1);
             map.put("msg", "notfind platformGame");
@@ -1911,7 +1911,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
         String umid = dlSession.getUmid();
         String token = dlSession.getToken();
         PlatformGame platformGame = basicRepository.
-                getByPlatformAndAppId(Integer.valueOf(dlSession.getPlatformId()), Long.valueOf(dlSession.getYgAppId()));
+                getByPlatformAndGameId(Integer.valueOf(dlSession.getPlatformId()), Long.valueOf(dlSession.getYgAppId()));
         if (platformGame == null) {
             logger.debug("error not find platformGame");
             map.put("valid","2");
@@ -1975,7 +1975,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             return JsonUtil.toJson(map);
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndAppId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
 
         if (platformGame == null) {
             map.put("code",1);
@@ -2020,7 +2020,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             return "error order not find";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndAppId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
 
         if (platformGame == null) {
             return "error platformGame not find";
@@ -2068,7 +2068,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
         logger.info("坚果session req = {}",JsonMapper.toJson(session));
 
         try {
-            PlatformGame platformGame = basicRepository.getByPlatformAndAppId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
             if (platformGame == null) {
                 result.put("status", "0");
                 result.put("msg", "platorm not unition");
@@ -2141,7 +2141,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             PlatformStatsLogger.info(PlatformStatsLogger.JG, JsonMapper.toJson(returnMap));
             return "fail";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndAppId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
         if (platformGame == null) {
             logger.error("坚果支付回调platformGame不存在");
             returnMap.put("ret", 1);
@@ -2200,7 +2200,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
         logger.info(JsonMapper.toJson(session));
 
         try {
-            PlatformGame platformGame = basicRepository.getByPlatformAndAppId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
             if (platformGame == null) {
                 result.put("status", "0");
                 result.put("msg", "platorm not unition");
@@ -2270,7 +2270,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             PlatformStatsLogger.info(PlatformStatsLogger.BH, JsonMapper.toJson(returnMap));
             return "fail";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndAppId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
         if (platformGame == null) {
             returnMap.put("ret", 1);
             returnMap.put("msg", "Can find Game");
@@ -2330,7 +2330,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
         if (StringUtils.isBlank(session.getYgAppId()) || StringUtils.isBlank(session.getPlatformId()) || StringUtils.isBlank(session.getCode())) {
             return "param delivery error";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndAppId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
         if (platformGame == null) {
             return "platformGame not find";
         }
@@ -2364,7 +2364,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
         if (StringUtils.isBlank(session.getYgAppId()) || StringUtils.isBlank(session.getPlatformId())) {
             return "param delivery error";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndAppId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
         if (platformGame == null) {
             return "platformGame not find";
         }
@@ -2394,7 +2394,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
     public String verifyUuSyzhuSession(UuSyzhuSession session){
         PlatformStatsLogger.info(PlatformStatsLogger.UUSYZ, session.toString());
         try {
-            PlatformGame platformGame = basicRepository.getByPlatformAndAppId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
             if (platformGame == null) {
                 return "platformGame not find";
             }
@@ -2431,7 +2431,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             return "failure";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndAppId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
         if (platformGame == null) {
             logger.info("PlatformGame not find");
             return "failure";
@@ -2471,7 +2471,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
         PlatformStatsLogger.info(PlatformStatsLogger.GF, session.toString());
         try {
 
-            PlatformGame platformGame = basicRepository.getByPlatformAndAppId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
             if (platformGame == null) {
                 return "platformGame not find";
             }
@@ -2499,7 +2499,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
     public String createGuangFanOrderId(GuangFanSession session){
         PlatformStatsLogger.info(PlatformStatsLogger.GF, session.toString());
         try {
-            PlatformGame platformGame = basicRepository.getByPlatformAndAppId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
             if (platformGame == null) {
                 return "platformGame not find";
             }
@@ -2585,7 +2585,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
                 logger.info("Order not find");
                 return "FAIL";
             }
-            PlatformGame platformGame = basicRepository.getByPlatformAndAppId(order.getPlatformId(), order.getGameId());
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
             if (platformGame == null) {
                 logger.info("PlatformGame not find");
                 return "FAIL";

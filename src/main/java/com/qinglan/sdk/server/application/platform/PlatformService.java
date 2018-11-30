@@ -2,6 +2,7 @@ package com.qinglan.sdk.server.application.platform;
 
 import com.qinglan.sdk.server.domain.platform.YaoyueCallback;
 import com.qinglan.sdk.server.domain.platform.YouleCallback;
+import com.qinglan.sdk.server.presentation.channel.entity.UCSessionRequest;
 import com.qinglan.sdk.server.presentation.platform.dto.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,9 +11,9 @@ public interface PlatformService {
 	
 	String verifyYaoyue(YaoyueCallback zhidian);
 	
-	String verifyUcGame(HttpServletRequest request);
+	String getUcPayResult(HttpServletRequest request);
 	
-	String verifyUcSession(UcGameSession ucSession);
+	String verifyUcSession(UCSessionRequest ucSession);
 	
 	String verifyXiaomi(HttpServletRequest request);
 	

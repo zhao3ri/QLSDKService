@@ -3,7 +3,7 @@
 <mapper namespace="com.qinglan.sdk.server.domain.basic.Order">
   <resultMap id="BaseResultMap" type="com.qinglan.sdk.server.domain.basic.Order">
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="gameId" jdbcType="BIGINT" property="gameId" />
+    <result column="appID" jdbcType="BIGINT" property="appID" />
     <result column="platformId" jdbcType="INTEGER" property="platformId" />
     <result column="uid" jdbcType="VARCHAR" property="uid" />
     <result column="zoneId" jdbcType="VARCHAR" property="zoneId" />
@@ -11,7 +11,7 @@
     <result column="roleName" jdbcType="VARCHAR" property="roleName" />
     <result column="orderId" jdbcType="VARCHAR" property="orderId" />
     <result column="cpOrderId" jdbcType="VARCHAR" property="cpOrderId" />
-    <result column="cpExtInfo" jdbcType="VARCHAR" property="cpExtInfo" />
+    <result column="extInfo" jdbcType="VARCHAR" property="extInfo" />
     <result column="amount" jdbcType="INTEGER" property="amount" />
     <result column="notifyUrl" jdbcType="VARCHAR" property="notifyUrl" />
     <result column="fixed" jdbcType="BIT" property="fixed" />
@@ -26,7 +26,7 @@
     <result column="selfpay" jdbcType="INTEGER" property="gold" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, gameId, platformId, uid, zoneId, roleId, orderId, cpOrderId, cpExtInfo, amount,
+    id, appID, platformId, uid, zoneId, roleId, orderId, cpOrderId, extInfo, amount,
     notifyUrl, fixed, deviceId, clientType, errorMsg, status, notifyStatus, createTime, 
     updateTime, gold,selfpay
   </sql>
@@ -36,16 +36,16 @@
   </select>
   
   <insert id="insert" parameterType="com.qinglan.sdk.server.domain.basic.Order">
-    insert into b_order (id, gameId, platformId,
+    insert into b_order (id, appID, platformId,
       uid, zoneId, roleId, roleName,
-      orderId, cpOrderId, cpExtInfo, 
+      orderId, cpOrderId, extInfo,
       amount, notifyUrl, fixed, 
       deviceId, clientType, errorMsg, 
       status, notifyStatus, createTime, 
       updateTime, gold,selfpay)
-    values (#{id,jdbcType=BIGINT}, #{gameId,jdbcType=BIGINT}, #{platformId,jdbcType=INTEGER},
+    values (#{id,jdbcType=BIGINT}, #{appID,jdbcType=BIGINT}, #{platformId,jdbcType=INTEGER},
       #{uid,jdbcType=VARCHAR}, #{zoneId,jdbcType=VARCHAR}, #{roleId,jdbcType=VARCHAR}, #{roleName,jdbcType=VARCHAR}, 
-      #{orderId,jdbcType=VARCHAR}, #{cpOrderId,jdbcType=VARCHAR}, #{cpExtInfo,jdbcType=VARCHAR}, 
+      #{orderId,jdbcType=VARCHAR}, #{cpOrderId,jdbcType=VARCHAR}, #{extInfo,jdbcType=VARCHAR},
       #{amount,jdbcType=INTEGER}, #{notifyUrl,jdbcType=VARCHAR}, #{fixed,jdbcType=BIT}, 
       #{deviceId,jdbcType=VARCHAR}, #{clientType,jdbcType=BIT}, #{errorMsg,jdbcType=VARCHAR}, 
       #{status,jdbcType=BIT}, #{notifyStatus,jdbcType=BIT}, #{createTime,jdbcType=TIMESTAMP}, 

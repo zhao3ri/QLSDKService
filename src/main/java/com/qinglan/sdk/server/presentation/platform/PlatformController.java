@@ -4,6 +4,7 @@ import com.qinglan.sdk.server.application.platform.PlatformService;
 import com.qinglan.sdk.server.application.platform.PlatformServicePartTwo;
 import com.qinglan.sdk.server.domain.platform.YaoyueCallback;
 import com.qinglan.sdk.server.domain.platform.YouleCallback;
+import com.qinglan.sdk.server.presentation.channel.entity.UCSessionRequest;
 import com.qinglan.sdk.server.presentation.platform.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,7 @@ public class PlatformController {
 	 * @param zhidian
 	 * @return
 	 */
-	@RequestMapping(value = "/yaoyue", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/yaoyue/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String zhidian(YaoyueCallback zhidian) {
 		return platformService.verifyYaoyue(zhidian);
@@ -44,7 +45,7 @@ public class PlatformController {
 	 */
 	@RequestMapping(value = "/ucgame/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
-	public String ucGameSession(UcGameSession ucGameSession) {
+	public String ucGameSession(UCSessionRequest ucGameSession) {
 		logger.debug(ucGameSession.toString());
 		return platformService.verifyUcSession(ucGameSession);
 	}
@@ -55,10 +56,10 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/ucgame")
+	@RequestMapping("/ucgame/pay")
 	@ResponseBody
-	public String ucgame(HttpServletRequest request) {
-		return platformService.verifyUcGame(request);
+	public String ucPayResult(HttpServletRequest request) {
+		return platformService.getUcPayResult(request);
 	}
 
 	/**
@@ -78,7 +79,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/xiaomi")
+	@RequestMapping("/xiaomi/pay")
 	@ResponseBody
 	public String xiaomi(HttpServletRequest request) {
 		return platformService.verifyXiaomi(request);
@@ -104,7 +105,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/qihoo")
+	@RequestMapping("/qihoo/pay")
 	@ResponseBody
 	public String qihoo(HttpServletRequest request) {
 		return platformService.verifyQihoo(request);
@@ -130,7 +131,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/baidu", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/baidu/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String baidu(HttpServletRequest request) {
 		return platformService.verifyBaidu(request);
@@ -155,7 +156,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/anzhi", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/anzhi/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String anzhi(HttpServletRequest request) {
 		return platformService.verifyAnzhi(request);
@@ -180,7 +181,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/wdj", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/wdj/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackWdj(HttpServletRequest request) {
 		return platformService.verifyWdj(request);
@@ -192,7 +193,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/downjoy", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/downjoy/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackDownjoy(HttpServletRequest request) {
 		return platformService.verifyDownjoy(request);
@@ -217,7 +218,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/sougou", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/sougou/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String sougou(HttpServletRequest request) {
 		return platformService.verifySougou(request);
@@ -242,7 +243,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/kupai", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/kupai/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackKupai(HttpServletRequest request) {
 		return platformService.verifyKupai(request);
@@ -267,7 +268,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/oppo", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/oppo/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackOppo(HttpServletRequest request) {
 		logger.debug(request.getParameterMap().toString());
@@ -304,7 +305,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/gionee", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/gionee/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackGionee(HttpServletRequest request) {
 		return platformService.verifyGionee(request);
@@ -330,7 +331,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/91", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/91/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBack91(HttpServletRequest request) {
 		logger.debug(request.getParameterMap().toString());
@@ -368,7 +369,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/vivo", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/vivo/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackVivo(HttpServletRequest request) {
 		return platformService.verifyVivo(request);
@@ -393,7 +394,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/appchina", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/appchina/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackAppchina(HttpServletRequest request) {
 		return platformService.verifyAppchina(request);
@@ -418,7 +419,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/ouwan", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/ouwan/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackOuwan(HttpServletRequest request) {
 		return platformService.verifyOuwan(request);
@@ -466,7 +467,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/jifeng", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/jifeng/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackJifeng(HttpServletRequest request) {
 		return platformService.verifyJifeng(request);
@@ -500,7 +501,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/htc", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/htc/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackHTC(HttpServletRequest request) {
 		return platformService.verifyHTC(request);
@@ -534,7 +535,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/meizu", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/meizu/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackMeizu(HttpServletRequest request) {
 		return platformService.verifyMeizu(request);
@@ -546,7 +547,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/nduo", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/nduo/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackNduo(HttpServletRequest request) {
 		return platformService.verifyNduo(request);
@@ -569,7 +570,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/yl", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/yl/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackYoulong(HttpServletRequest request) {
 		return platformService.verifyYoulong(request);
@@ -592,7 +593,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/lenovo", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/lenovo/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackLenovo(HttpServletRequest request) {
 		return platformService.verifyLenovo(request);
@@ -604,7 +605,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/kudong", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/kudong/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackKudong(HttpServletRequest request) {
 		return platformService.verifyKudong(request);
@@ -616,7 +617,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/letv", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/letv/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackLetv(HttpServletRequest request) {
 		return platformService.verifyLetv(request);
@@ -628,7 +629,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/19meng", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/19meng/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBack19meng(HttpServletRequest request) {
 		return platformService.verify19meng(request);
@@ -640,7 +641,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/kuwo", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/kuwo/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackKuwo(HttpServletRequest request) {
 		return platformService.verifyKuwo(request);
@@ -652,7 +653,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/mumayi", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/mumayi/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackMumayi(HttpServletRequest request) {
 		return platformService.verifyMumayi(request);
@@ -675,7 +676,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/playSms", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/playSms/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargePalySms(HttpServletRequest request) {
 		return platformService.verifyPlaySms(request);
@@ -687,7 +688,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/play", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/play/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackPaly(HttpServletRequest request) {
 		return platformService.verifyPlay(request);
@@ -710,7 +711,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/jiudu", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/jiudu/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackJiudu(HttpServletRequest request) {
 		return platformService.verifyJiudu(request);
@@ -733,7 +734,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/paojiao", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/paojiao/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackPaojiao(HttpServletRequest request) {
 		return platformService.verifyPaojiao(request);
@@ -745,7 +746,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/qixiazi", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/qixiazi/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackQixiazi(HttpServletRequest request) {
 		return platformService.verifyQixiazi(request);
@@ -768,7 +769,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/kuaiyong", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/kuaiyong/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackKuaiyong(HttpServletRequest request) {
 		return platformService.verifyKuaiyong(request);
@@ -804,7 +805,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/huawei", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/huawei/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackHuawei(HttpServletRequest request) {
 		return platformService.verifyHuawei(request);
@@ -827,7 +828,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/4399", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/4399/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackFtnn(HttpServletRequest request) {
 		return platformService.verifyFtnn(request);
@@ -850,7 +851,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/37", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/37/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackTs(HttpServletRequest request) {
 		return platformService.verifyTs(request);
@@ -873,7 +874,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/muzhi", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/muzhi/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackMuzhi(HttpServletRequest request) {
 		return platformService.verifyMuzhi(request);
@@ -919,7 +920,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/kaopu", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/kaopu/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackKaopu(HttpServletRequest request) {
 		return platformService.verifyKaopu(request);
@@ -941,7 +942,7 @@ public class PlatformController {
 	 *
 	 * @return
 	 */
-	@RequestMapping(value = "/gametanzi", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/gametanzi/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackGametanzi(HttpServletRequest request) {
 		return platformService.verifyGametanzi(request);
@@ -964,7 +965,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/weidong", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/weidong/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackWeidong(HttpServletRequest request) {
 		return platformService.verifyWeidong(request);
@@ -987,7 +988,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/edg", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/edg/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackEdg(HttpServletRequest request) {
 		return platformService.verifyEdg(request);
@@ -999,7 +1000,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/tencent", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/tencent/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackTencent(HttpServletRequest request) {
 
@@ -1012,7 +1013,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/tencent2", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/tencent2/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackTencent2(HttpServletRequest request) {
 
@@ -1036,7 +1037,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/uucun", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/uucun/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackUucun(HttpServletRequest request) {
 		return platformService.verifyUucun(request);
@@ -1048,7 +1049,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/kaiuc", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/kaiuc/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackKaiuc(HttpServletRequest request) {
 		return platformService.verifyKaiuc(request);
@@ -1071,7 +1072,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/liebao", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/liebao/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackLiebao(HttpServletRequest request) {
 		return platformService.verifyLiebao(request);
@@ -1094,7 +1095,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/07073", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/07073/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackLeshan(HttpServletRequest request) {
 		return platformService.verifyLeshan(request);
@@ -1118,7 +1119,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/atet", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/atet/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackAtet(HttpServletRequest request) {
 		return platformService.verifyAtet(request);
@@ -1130,7 +1131,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/2yl", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/2yl/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackShenqi(HttpServletRequest request) {
 		return platformService.verifyShenqi(request);
@@ -1154,7 +1155,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/haima", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/haima/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackHaima(HttpServletRequest request) {
 		return platformService.verifyHaima(request);
@@ -1203,7 +1204,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/3899", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/3899/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBack3899(HttpServletRequest request) {
 		return platformService.verify3899(request);
@@ -1228,7 +1229,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/liulian", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/liulian/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackLiulian(HttpServletRequest request) {
 		return platformService.verifyLiulian(request);
@@ -1240,7 +1241,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/xunlei", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/xunlei/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackXunlei(HttpServletRequest request) {
 		return platformService.verifyXunlei(request);
@@ -1264,7 +1265,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/guopan", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/guopan/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackGuopan(HttpServletRequest request) {
 		return platformService.verifyGuopan(request);
@@ -1288,7 +1289,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/qxfy", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/qxfy/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackQxfy(HttpServletRequest request) {
 		return platformService.verifyQxfy(request);
@@ -1300,7 +1301,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/19game", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/19game/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBack19game(HttpServletRequest request) {
 		return platformService.verify19game(request);
@@ -1324,7 +1325,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/longxiang", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/longxiang/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackLongxiang(HttpServletRequest request) {
 		return platformService.verifyLongxiang(request);
@@ -1348,7 +1349,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/lehihi", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/lehihi/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackLehihi(HttpServletRequest request) {
 		return platformService.verifyLehihi(request);
@@ -1384,7 +1385,7 @@ public class PlatformController {
 	 *
 	 * @return
 	 */
-	@RequestMapping(value = "/youle", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/youle/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackYoule(YouleCallback callback) {
 		return platformService.verifyYoule(callback);
@@ -1408,7 +1409,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/qiutu", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/qiutu/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackQiutu(HttpServletRequest request) {
 		return platformService.verifyQiutu(request);
@@ -1432,7 +1433,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/yuewan", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/yuewan/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackYuewan(HttpServletRequest request) {
 		return platformService.verifyYuewan(request);
@@ -1444,7 +1445,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/wsx", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/wsx/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackWsx(HttpServletRequest request) {
 		logger.info("rechargeCallBackWsx----------------");
@@ -1468,7 +1469,7 @@ public class PlatformController {
      * @param request
      * @return
      */
-    @RequestMapping(value = "/iveryone", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/iveryone/pay", produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String rechargeCallBackIveryone(HttpServletRequest request) {
         return platformService.verifyIveryone(request);
@@ -1493,7 +1494,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/dyhd", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/dyhd/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackDyhd(HttpServletRequest request) {
 		return platformService.verifyDyhd(request);
@@ -1517,7 +1518,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/qiqile", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/qiqile/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackQiqile(HttpServletRequest request) {
 		return platformService.verifyQiqile(request);
@@ -1541,7 +1542,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/7723", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/7723/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBack7723(HttpServletRequest request) {
 		return platformService.verify7723(request);
@@ -1565,7 +1566,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/moge", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/moge/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackMoge(HttpServletRequest request) {
 		return platformService.verifyMoge(request);
@@ -1589,7 +1590,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/migu", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/migu/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackMigu(HttpServletRequest request) {
 		return platformService.verifyMigu(request);
@@ -1613,7 +1614,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/tuu", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/tuu/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackTuu(HttpServletRequest request) {
 		return platformService.verifyTuu(request);
@@ -1625,7 +1626,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/moyoyo", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/moyoyo/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackMoyoyo(HttpServletRequest request) {
 		return platformService.verifyMoyoyo(request);
@@ -1637,7 +1638,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/damai", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/damai/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackDamai(HttpServletRequest request) {
 		return platformService.verifyDamai(request);
@@ -1661,7 +1662,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/shuowan", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/shuowan/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackShuowan(HttpServletRequest request) {
 		return platformService.verifyShuowan(request);
@@ -1685,7 +1686,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/firstapp", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/firstapp/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackFirstapp(HttpServletRequest request) {
 		return platformService.verifyFirstapp(request);
@@ -1721,7 +1722,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/qbao", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/qbao/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackQbao(HttpServletRequest request) {
 		return platformService.rechargeCallBackQbao(request);
@@ -1757,7 +1758,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/bingqu", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/bingqu/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackBingqu(HttpServletRequest request) {
 		return platformService.rechargeCallBackbingquBaowan(request);
@@ -1793,7 +1794,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/baowan", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/baowan/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackBaowan(HttpServletRequest request) {
 		return platformService.rechargeCallBackbingquBaowan(request);
@@ -1805,7 +1806,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/qipa", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/qipa/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackQipa(HttpServletRequest request) {
 		return platformService.rechargeCallBackQipa(request);
@@ -1829,7 +1830,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/aipu", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/aipu/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackAipu(HttpServletRequest request) {
 		return platformService.verifyAipu(request);
@@ -1853,7 +1854,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/shunwang", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/shunwang/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackShunwang(HttpServletRequest request) {
 		return platformService.verifyShunwang(request);
@@ -1866,7 +1867,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/zhuoyi", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/zhuoyi/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackZhouyi(HttpServletRequest request) {
 		return platformService.verifyZhuoyi(request);
@@ -1890,7 +1891,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/yxt", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/yxt/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyYunxiaoTan(HttpServletRequest request) {
 		return platformService.verifyYunxiaotan(request);
@@ -1902,7 +1903,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/gzpd", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/gzpd/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyGuangzhoupeidui(HttpServletRequest request) {
 		return platformService.verifyGuangzhoupeidui(request);
@@ -1914,7 +1915,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/dyoo", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/dyoo/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyDianyoo(HttpServletRequest request) {
 		return platformService.verifyDianyoo(request);
@@ -1932,19 +1933,19 @@ public class PlatformController {
 		return platformService.verifyhongchongSession(request);
 	}
 
-	@RequestMapping(value = "/chongchong", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/chongchong/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyChongChong(HttpServletRequest request) {
 		return platformService.verifyChongchong(request);
 	}
 
-	@RequestMapping(value = "/qishi", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/qishi/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyQishi(HttpServletRequest request) {
 		return platformService.verifyQishi(request);
 	}
 
-	@RequestMapping(value = "/tt", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/tt/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyTt(HttpServletRequest request) {
 		return platformService.verifyTt(request);
@@ -1972,7 +1973,7 @@ public class PlatformController {
 		return platformService.rechargeTt(request);
 	}
 
-	@RequestMapping(value = "/yeshen", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/yeshen/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyYeshen(HttpServletRequest request) {
 		platformService.verifyYeshen(request);
@@ -1997,7 +1998,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/lewan", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/lewan/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyLewan(HttpServletRequest request) {
 		return platformService.verifyLewan(request);
@@ -2009,7 +2010,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/wanke", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/wanke/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyWanke(HttpServletRequest request) {
 		return platformService.verifyWanke(request);
@@ -2021,7 +2022,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/daomeng", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/daomeng/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyDaomen(HttpServletRequest request) {
 		return platformService.verifyDaomen(request);
@@ -2033,7 +2034,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/wxdl", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/wxdl/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyWuxiandongli(HttpServletRequest request) {
 		return platformService.verifyWuxiandongli(request);
@@ -2070,7 +2071,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/xiao7", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/xiao7/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyXiao7(HttpServletRequest request) {
 		return platformService.verifyXiao7(request);
@@ -2094,7 +2095,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/quicksdk", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/quicksdk/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyQuicksdk(HttpServletRequest request) {
 		return platformService.verifyQuick(request);
@@ -2118,7 +2119,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/yijiesdk", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/yijiesdk/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyYijiesdk(HttpServletRequest request) {
 		return platformService.verifyYijie(request);
@@ -2142,7 +2143,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/kuaifa", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/kuaifa/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyKuaifa(HttpServletRequest request) {
 		return platformService.verifyKuaifa(request);
@@ -2166,7 +2167,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/ftx", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/ftx/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyFtx(HttpServletRequest request) {
 		return platformService.verifyFtx(request);
@@ -2196,7 +2197,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/yihuan", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/yihuan/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyYihuan(HttpServletRequest request) {
 		return  platformService.verifyYihuan(request);
@@ -2220,7 +2221,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/hongshouzhi", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/hongshouzhi/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyHongshouzhi(HttpServletRequest request) {
 		return  platformService.verifyHongshouzhi(request);
@@ -2256,7 +2257,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/fansdk", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/fansdk/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyFansdk(HttpServletRequest request) {
 		return  platformService.verifyFansdk(request);
@@ -2281,7 +2282,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/niguang", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/niguang/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyNiguangsdk(HttpServletRequest request) {
 		return  platformService.verifyNiguangsdk(request);
@@ -2305,7 +2306,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/aochuang", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/aochuang/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyAoChuangsdk(HttpServletRequest request) {
 		return  platformServicePartTwo.verifyAoChuangsdk(request);
@@ -2317,7 +2318,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/papayou", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/papayou/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyPaPaYou(HttpServletRequest request) {
 		return  platformServicePartTwo.verifyPaPaYou(request);
@@ -2342,7 +2343,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/taoshouyou", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/taoshouyou/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyTaoShouYousdk(HttpServletRequest request) {
 		return  platformServicePartTwo.verifyTaoShouYousdk(request);
@@ -2366,7 +2367,7 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/mangguowan", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/mangguowan/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyMangGuoWansdk(HttpServletRequest request) {
 		return  platformServicePartTwo.verifyMangGuoWansdk(request);

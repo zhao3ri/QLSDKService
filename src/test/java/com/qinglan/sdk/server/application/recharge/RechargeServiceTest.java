@@ -77,7 +77,7 @@ public class RechargeServiceTest  extends BaseTestCase{
 		String playerId = "869ECD4607314E34A2CC0F2DCE1BFB68";
 		
 		Order order = orderService.getOrderByOrderId(orderId);
-		PlatformGame platform = basicRepository.getByPlatformAndAppId(order.getPlatformId(), order.getGameId());
+		PlatformGame platform = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
 		
 		String notifyUrl = platform.getConfigParamsList().get(0);
 		String apiKey = platform.getConfigParamsList().get(1);

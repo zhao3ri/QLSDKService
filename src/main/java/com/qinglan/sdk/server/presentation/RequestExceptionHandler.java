@@ -23,7 +23,7 @@ public class RequestExceptionHandler {
 	public String handleException(Exception ex) {
 		logger.error("Exception Catching", ex);
 		Map<String,Object> result = new HashMap<String,Object>();
-		result.put(Constants.RESPONSE_CODE, Constants.RESPONSE_SERVER_EXCEPTION);
+		result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SERVER_EXCEPTION);
 		return JsonMapper.toJson(result);// "{\"code\":\"2\"}";
 	}
 }

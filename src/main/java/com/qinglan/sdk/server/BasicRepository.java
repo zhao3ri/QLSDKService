@@ -19,9 +19,9 @@ public interface BasicRepository {
     /*******游戏表*******/
     Game getGameById(long id);
 
-    PlatformGame getByPlatformAndAppId(int platformId, long appId);
+    PlatformGame getByPlatformAndGameId(int channelId, long gameId);
 
-    Platform getPlatform(int platformId);
+    Platform getPlatform(int channelId);
 
     int updatePlatformBalance(Platform platform);
 
@@ -37,7 +37,7 @@ public interface BasicRepository {
     List<String> getNotifyOrder();
 
     /*******行为表*******/
-    List<BehaviorUser> getUserBehavior(Integer clientType, String uid, Integer platformId, Long appId);
+    List<BehaviorUser> getUserBehavior(Integer clientType, String uid, Integer platformId, Long gameId);
 
     void insertUserBehavior(BehaviorUser behaviorUserZone);
 
@@ -55,11 +55,11 @@ public interface BasicRepository {
 
     void updateDeviceRoleZone(BehaviorDevice behaviorDevice);
 
-    GameTrace getGameTrace(Integer clientType, String uid, Integer platformId, Long appId);
+    GameTrace getGameTrace(Integer clientType, String uid, Integer platformId, Long gameId);
 
-    ZoneTrace getZoneTrace(Integer clientType, String uid, Integer platformId, Long appId, String zoneId);
+    ZoneTrace getZoneTrace(Integer clientType, String uid, Integer platformId, Long gameId, String zoneId);
 
-    RoleTrace getRoleTrace(Integer clientType, String uid, Integer platformId, Long appId, String zoneId, String roleId, String roleName);
+    RoleTrace getRoleTrace(Integer clientType, String uid, Integer platformId, Long gameId, String zoneId, String roleId, String roleName);
 
     String updateBehaviorUserRole(BehaviorUser behaviorUser, RoleTrace roleTrace);
 

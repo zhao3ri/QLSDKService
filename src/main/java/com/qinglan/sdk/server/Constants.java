@@ -5,16 +5,19 @@ import java.util.Map;
 
 public class Constants {
 	
-	public static final String RESPONSE_CODE = "code";
-	public static final String RESPONSE_SUCCESS = "0";
-	public static final String RESPONSE_PARAMETER_ILLEGAL = "1";
-	public static final String RESPONSE_STOP_REGIST = "3";
-	public static final String RESPONSE_SERVER_EXCEPTION = "2";
-	public static final String CHANEL_SELF_PAY= "3";
-	public static final String RESPONSE_BLANCEERROR= "4";
-
+	public static final String RESPONSE_KEY_CODE = "code";
+	public static final String RESPONSE_KEY_CREATE_TIME = "createTime";
+	public static final String RESPONSE_KEY_LOGIN_TIME = "loginTime";
 	public static final String RESPONSE_KEY_ORDER_ID = "orderId";
-	public static final String RESPONSE_KEY_RETURN_URL = "returnUrl";
+
+	public static final String RESPONSE_CODE_SUCCESS = "0";
+	public static final String RESPONSE_CODE_PARAMETER_ILLEGAL = "1";
+	public static final String RESPONSE_CODE_STOP_REGIST = "3";
+	public static final String RESPONSE_CODE_SERVER_EXCEPTION = "2";
+	public static final String RESPONSE_CODE_CHANEL_SELF_PAY = "3";
+	public static final String RESPONSE_CODE_BLANCEERROR = "4";
+
+	public static final String REQUEST_PARAM_NOTIFY_URL = "notifyUrl";
 
 	public static final String JIFENG_DEVELOPER_UID = "8208195";
 	

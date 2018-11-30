@@ -1,18 +1,18 @@
-package com.qinglan.sdk.server.domain.platform;
+package com.qinglan.sdk.server.presentation.channel.entity;
 
 import java.io.Serializable;
 
 import lombok.ToString;
 
 @ToString
-public class UcGameCallback implements Serializable{
+public class UCPayResult implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	private String ver;
 	
 	private String sign;
 	
-	private UcGameResponse data;
+	private UCPayData data;
 
 	public String getVer() {
 		return ver;
@@ -30,11 +30,11 @@ public class UcGameCallback implements Serializable{
 		this.sign = sign;
 	}
 
-	public UcGameResponse getData() {
+	public UCPayData getData() {
 		return data;
 	}
 
-	public void setData(UcGameResponse data) {
+	public void setData(UCPayData data) {
 		this.data = data;
 	}
 	

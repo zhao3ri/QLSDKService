@@ -3,21 +3,21 @@
 <mapper namespace="com.qinglan.sdk.server.domain.basic.HLastLogin">
   <select id="findOne" parameterType="java.util.Map" resultType="com.qinglan.sdk.server.domain.basic.HLastLogin">
   	select 
-  		uid, pid, clientType, gameId, zoneId  
+  		uid, pid, clientType, appID, zoneId
   	from h_last_login 
   	where 
   		uid = #{uid,jdbcType=VARCHAR} 
   		AND pid = #{pid,jdbcType=INTEGER}
   		AND clientType = #{clientType,jdbcType=INTEGER}
-  		AND gameId = #{gameId,jdbcType=BIGINT}
+  		AND appID = #{appID,jdbcType=BIGINT}
   		AND zoneId = #{zoneId,jdbcType=VARCHAR}
   </select>
   
   <insert id="insert" parameterType="com.qinglan.sdk.server.domain.basic.HLastLogin">
     insert into h_last_login 
-    	(uid, pid, clientType, gameId, zoneId, lastLoginDate, isPaidUser)
+    	(uid, pid, clientType, appID, zoneId, lastLoginDate, isPaidUser)
     values 
-    	(#{uid}, #{pid}, #{clientType}, #{gameId}, #{zoneId}, NOW(), #{isPaidUser})
+    	(#{uid}, #{pid}, #{clientType}, #{appID}, #{zoneId}, NOW(), #{isPaidUser})
   </insert>
   
   <update id="updateIsPaidUser" parameterType="java.util.Map" >
@@ -27,7 +27,7 @@
   		uid = #{uid,jdbcType=VARCHAR} 
   		AND pid = #{pid,jdbcType=INTEGER}
   		AND clientType = #{clientType,jdbcType=INTEGER}
-  		AND gameId = #{gameId,jdbcType=BIGINT}
+  		AND appID = #{appID,jdbcType=BIGINT}
   		AND zoneId = #{zoneId,jdbcType=VARCHAR}
   </update>
   
@@ -38,7 +38,7 @@
   		uid = #{uid,jdbcType=VARCHAR} 
   		AND pid = #{pid,jdbcType=INTEGER}
   		AND clientType = #{clientType,jdbcType=INTEGER}
-  		AND gameId = #{gameId,jdbcType=BIGINT}
+  		AND appID = #{appID,jdbcType=BIGINT}
   		AND zoneId = #{zoneId,jdbcType=VARCHAR}
   </update>
 </mapper>

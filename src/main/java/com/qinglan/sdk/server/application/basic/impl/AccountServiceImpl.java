@@ -23,6 +23,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.util.*;
 
+import static com.qinglan.sdk.server.Constants.CHANNEL_STATUS_NORMAL;
 import static com.qinglan.sdk.server.Constants.RESPONSE_KEY_CREATE_TIME;
 import static com.qinglan.sdk.server.Constants.RESPONSE_KEY_LOGIN_TIME;
 
@@ -307,6 +308,7 @@ public class AccountServiceImpl implements AccountService {
         return "";
     }
 
+
     @Override
     public Map<String, Object> orderGenerate(OrderGeneratePattern params) {
         Map<String, Object> result = new HashMap<String, Object>();
@@ -317,7 +319,7 @@ public class AccountServiceImpl implements AccountService {
         }
         //联运渠道是否正常
         PlatformGame platformGame = basicRepository.getByPlatformAndGameId(params.getPlatformId(), params.getGameId());
-        if (platformGame.getStatus().equals(1)) {
+        if (platformGame.getStatus().equals(CHANNEL_STATUS_NORMAL)) {
             result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_CHANEL_SELF_PAY);
             return result;
         }
@@ -328,6 +330,13 @@ public class AccountServiceImpl implements AccountService {
             return result;
         }
 
+        Platform platform = basicRepository.getPlatform(params.getPlatformId());
+        String notifyUrl = params.getNotifyUrl();//支付回调地址
+        if (StringUtil.isNullOrEmpty(notifyUrl)) {
+            notifyUrl = platform.getPlatformCallbackUrl();
+            params.setNotifyUrl(notifyUrl);
+        }
+
         String orderId = orderService.saveOrder(params);
         if (StringUtils.isEmpty(orderId)) {
             logger.warn("create order failed.");
@@ -335,14 +344,9 @@ public class AccountServiceImpl implements AccountService {
             return result;
         }
 
-        Platform platform = basicRepository.getPlatform(params.getPlatformId());
         result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SUCCESS);
         result.put(Constants.RESPONSE_KEY_ORDER_ID, orderId);
-        String notifyUrl = params.getNotifyUrl();//支付回调地址
-        if (StringUtil.isNullOrEmpty(notifyUrl)) {
-            notifyUrl = platform.getPlatformCallbackUrl();
-            params.setNotifyUrl(notifyUrl);
-        }
+
         result.put(Constants.REQUEST_PARAM_NOTIFY_URL, notifyUrl);
 
         //如果是07073、乐嗨嗨平台则返回加密后的订单号

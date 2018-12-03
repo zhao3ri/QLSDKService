@@ -19,6 +19,8 @@ public class Constants {
 
 	public static final String REQUEST_PARAM_NOTIFY_URL = "notifyUrl";
 
+	public static final int CHANNEL_STATUS_NORMAL = 1;
+
 	public static final String JIFENG_DEVELOPER_UID = "8208195";
 	
 	public static final String IOS_PAY_KEY = "KkJF820YGjhIfdCjjsXP";

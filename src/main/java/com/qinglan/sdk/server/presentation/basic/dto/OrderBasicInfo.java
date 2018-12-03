@@ -8,7 +8,7 @@ public class OrderBasicInfo extends BaseDto implements Serializable {
     protected String roleId;
     protected String roleName;
     protected String cpOrderId;
-    protected String extInfo;
+    protected String cpExtInfo;
     protected Integer amount;
     protected String notifyUrl;
     protected Integer fixed;
@@ -58,12 +58,12 @@ public class OrderBasicInfo extends BaseDto implements Serializable {
         this.cpOrderId = cpOrderId;
     }
 
-    public String getExtInfo() {
-        return extInfo;
+    public String getCpExtInfo() {
+        return cpExtInfo;
     }
 
-    public void setExtInfo(String extInfo) {
-        this.extInfo = extInfo;
+    public void setCpExtInfo(String cpExtInfo) {
+        this.cpExtInfo = cpExtInfo;
     }
 
     public Integer getAmount() {

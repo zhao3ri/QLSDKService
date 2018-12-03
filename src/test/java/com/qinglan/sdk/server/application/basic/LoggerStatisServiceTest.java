@@ -120,7 +120,7 @@ public class LoggerStatisServiceTest extends BaseTestCase{
 //		orderGenerate.setRoleId("1");
 //		orderGenerate.setZoneId("1");
 //		orderGenerate.setCpOrderId(RandomTool.getOrderId());
-//		orderGenerate.setExtInfo("test");
+//		orderGenerate.setCpExtInfo("test");
 //		orderGenerate.setAmount(10);
 //		orderGenerate.setNotifyUrl("http://sdk.com.cn");
 //		orderGenerate.setFixed(1);

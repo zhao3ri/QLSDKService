@@ -62,7 +62,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         order.setCpOrderId(params.getCpOrderId());
-        order.setExtInfo(params.getExtInfo());
+        order.setCpExtInfo(params.getCpExtInfo());
         order.setAmount(params.getAmount());
         order.setNotifyUrl(params.getNotifyUrl());
         order.setFixed(params.getFixed());
@@ -182,7 +182,7 @@ public class OrderServiceImpl implements OrderService {
         params.setZoneId(order.getZoneId());
         params.setRoleId(order.getRoleId());
         params.setCpOrderId(order.getCpOrderId());
-        params.setExtInfo(order.getExtInfo());
+        params.setCpExtInfo(order.getCpExtInfo());
         params.setAmount(order.getAmount());
         params.setNotifyUrl(order.getNotifyUrl());
         params.setFixed(order.getFixed());

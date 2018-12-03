@@ -4494,7 +4494,7 @@ public class PlatformServiceImpl implements PlatformService {
         String roleId = request.getParameter("roleId");
         String roleName = request.getParameter("roleName");
         String money = request.getParameter("money");
-        String extInfo = request.getParameter("extInfo");
+        String extInfo = request.getParameter("cpExtInfo");
         String status = request.getParameter("status");
         String sign = request.getParameter("sign");
 

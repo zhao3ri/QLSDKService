@@ -114,12 +114,12 @@ public class Order extends OrderBasicInfo implements Serializable {
         this.cpOrderId = cpOrderId == null ? null : cpOrderId.trim();
     }
 
-    public String getExtInfo() {
-        return extInfo;
+    public String getCpExtInfo() {
+        return cpExtInfo;
     }
 
-    public void setExtInfo(String extInfo) {
-        this.extInfo = extInfo == null ? null : extInfo.trim();
+    public void setCpExtInfo(String cpExtInfo) {
+        this.cpExtInfo = cpExtInfo == null ? null : cpExtInfo.trim();
     }
 
     public Integer getAmount() {

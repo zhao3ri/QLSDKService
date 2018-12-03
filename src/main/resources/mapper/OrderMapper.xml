@@ -11,7 +11,7 @@
     <result column="roleName" jdbcType="VARCHAR" property="roleName" />
     <result column="orderId" jdbcType="VARCHAR" property="orderId" />
     <result column="cpOrderId" jdbcType="VARCHAR" property="cpOrderId" />
-    <result column="extInfo" jdbcType="VARCHAR" property="extInfo" />
+    <result column="cpExtInfo" jdbcType="VARCHAR" property="cpExtInfo" />
     <result column="amount" jdbcType="INTEGER" property="amount" />
     <result column="notifyUrl" jdbcType="VARCHAR" property="notifyUrl" />
     <result column="fixed" jdbcType="BIT" property="fixed" />
@@ -26,7 +26,7 @@
     <result column="selfpay" jdbcType="INTEGER" property="gold" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, gameId, platformId, uid, zoneId, roleId, orderId, cpOrderId, extInfo, amount,
+    id, gameId, platformId, uid, zoneId, roleId, orderId, cpOrderId, cpExtInfo, amount,
     notifyUrl, fixed, deviceId, clientType, errorMsg, status, notifyStatus, createTime, 
     updateTime, gold,selfpay
   </sql>
@@ -38,14 +38,14 @@
   <insert id="insert" parameterType="com.qinglan.sdk.server.domain.basic.Order">
     insert into b_order (id, gameId, platformId,
       uid, zoneId, roleId, roleName,
-      orderId, cpOrderId, extInfo,
+      orderId, cpOrderId, cpExtInfo,
       amount, notifyUrl, fixed, 
       deviceId, clientType, errorMsg, 
       status, notifyStatus, createTime, 
       updateTime, gold,selfpay)
     values (#{id,jdbcType=BIGINT}, #{gameId,jdbcType=BIGINT}, #{platformId,jdbcType=INTEGER},
       #{uid,jdbcType=VARCHAR}, #{zoneId,jdbcType=VARCHAR}, #{roleId,jdbcType=VARCHAR}, #{roleName,jdbcType=VARCHAR}, 
-      #{orderId,jdbcType=VARCHAR}, #{cpOrderId,jdbcType=VARCHAR}, #{extInfo,jdbcType=VARCHAR},
+      #{orderId,jdbcType=VARCHAR}, #{cpOrderId,jdbcType=VARCHAR}, #{cpExtInfo,jdbcType=VARCHAR},
       #{amount,jdbcType=INTEGER}, #{notifyUrl,jdbcType=VARCHAR}, #{fixed,jdbcType=BIT}, 
       #{deviceId,jdbcType=VARCHAR}, #{clientType,jdbcType=BIT}, #{errorMsg,jdbcType=VARCHAR}, 
       #{status,jdbcType=BIT}, #{notifyStatus,jdbcType=BIT}, #{createTime,jdbcType=TIMESTAMP}, 

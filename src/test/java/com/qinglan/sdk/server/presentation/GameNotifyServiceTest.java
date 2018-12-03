@@ -25,7 +25,7 @@ public class GameNotifyServiceTest extends BaseTestCase {
 //        params.put("orderId", "20160704165210020008623567416623");
 //        params.put("orderStatus", 1);
 //        params.put("amount", "100");
-//        params.put("extInfo", "");
+//        params.put("cpExtInfo", "");
 //        params.put("payTime", "20160704165210");
 //        params.put("paySucTime", "20160704165324");
 //        params.put("notifyUrl", "http://apitest.19you.com/apinotify/96/yl");

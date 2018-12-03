@@ -375,7 +375,7 @@ public class PlatformControllerTest extends BaseTestCase {
 
     @Test
     public void testVivoPaySign() {
-        String data = "{\"zdappId\":\"151110191986\",\"platformId\":\"1018\",\"cpOrderNumber\":\"20151118094814642913686750422000\",\"cpId\":\"20150403171244382610\",\"appId\":\"285f886432c87f3698b3779cdff7faa7\",\"orderTitle\":\"20钻石\",\"orderDesc\":\"货币\",\"extInfo\":\"normal notes\"}";
+        String data = "{\"zdappId\":\"151110191986\",\"platformId\":\"1018\",\"cpOrderNumber\":\"20151118094814642913686750422000\",\"cpId\":\"20150403171244382610\",\"appId\":\"285f886432c87f3698b3779cdff7faa7\",\"orderTitle\":\"20钻石\",\"orderDesc\":\"货币\",\"cpExtInfo\":\"normal notes\"}";
         VivoPaySign vivoPaySign = JsonMapper.toObject(data, VivoPaySign.class);
         String result = platformService.vivoPaySign(vivoPaySign);
         System.out.println("============================");

@@ -161,7 +161,7 @@ public class AccountServiceTest  extends BaseTestCase{
 		orderGenerate.setRoleId("1");
 		orderGenerate.setZoneId("1");
 		orderGenerate.setCpOrderId(1000*2*Math.random()+"");
-		orderGenerate.setExtInfo("test");
+		orderGenerate.setCpExtInfo("test");
 		orderGenerate.setAmount(10);
 		orderGenerate.setNotifyUrl("http://sdk.com.cn");
 		orderGenerate.setFixed(1);
@@ -180,7 +180,7 @@ public class AccountServiceTest  extends BaseTestCase{
 		orderGenerate.setRoleId("1");
 		orderGenerate.setZoneId("1");
 		orderGenerate.setCpOrderId(1000*2*Math.random()+"");
-		orderGenerate.setExtInfo("test");
+		orderGenerate.setCpExtInfo("test");
 		orderGenerate.setAmount(10);
 		orderGenerate.setNotifyUrl("http://sdk.com.cn");
 		orderGenerate.setFixed(1);

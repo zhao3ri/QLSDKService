@@ -203,7 +203,7 @@ public class AccountData2Test {
 		orderGenerate.setRoleId(roleId);
 		orderGenerate.setRoleName("角色_"+roleId);
 		orderGenerate.setClientType(1);
-		orderGenerate.setExtInfo("123456789");
+		orderGenerate.setCpExtInfo("123456789");
 		orderGenerate.setCpOrderId(UUID.randomUUID().toString());
 		orderGenerate.setAmount(100);
 		orderGenerate.setNotifyUrl("http://localhost:8092/platform/testcallback");

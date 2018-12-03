@@ -7,10 +7,8 @@ import com.qinglan.sdk.server.common.MD5;
 import com.qinglan.sdk.server.common.Sign;
 import com.qinglan.sdk.server.domain.basic.Platform;
 import com.qinglan.sdk.server.domain.basic.PlatformGame;
-import com.qinglan.sdk.server.presentation.channel.entity.UCPayResult;
 import com.qinglan.sdk.server.presentation.basic.dto.OrderBasicInfo;
 import com.qinglan.sdk.server.presentation.channel.IChannel;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -99,7 +97,7 @@ public class UCChannel implements IChannel {
         checkInit();
         String appKey = mPlatformGame.getAppKey();
         Map<String, String> signMap = new TreeMap<>();
-        signMap.put(PARAM_CALLBACK_INFO, order.getExtInfo());
+        signMap.put(PARAM_CALLBACK_INFO, order.getCpExtInfo());
         signMap.put(PARAM_NOTIFY_URL, order.getNotifyUrl());
         signMap.put(PARAM_AMOUNT, order.getAmount().toString());
         signMap.put(PARAM_CP_ORDER_ID, order.getCpOrderId());

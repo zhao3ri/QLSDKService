@@ -1,20 +1,27 @@
 package com.qinglan.sdk.server.presentation.channel.impl;
 
-import com.qinglan.sdk.server.BasicRepository;
-import com.qinglan.sdk.server.common.HttpUtils;
-import com.qinglan.sdk.server.common.JsonMapper;
-import com.qinglan.sdk.server.common.MD5;
-import com.qinglan.sdk.server.common.Sign;
-import com.qinglan.sdk.server.domain.basic.Platform;
-import com.qinglan.sdk.server.domain.basic.PlatformGame;
-import com.qinglan.sdk.server.presentation.basic.dto.OrderBasicInfo;
-import com.qinglan.sdk.server.presentation.channel.IChannel;
+import com.qinglan.sdk.server.application.basic.OrderService;
+import com.qinglan.sdk.server.application.platform.log.PlatformStatsLogger;
+import com.qinglan.sdk.server.common.*;
+import com.qinglan.sdk.server.domain.basic.Order;
+import com.qinglan.sdk.server.presentation.channel.entity.BaseRequest;
+import com.qinglan.sdk.server.presentation.channel.entity.OrderRequest;
+import com.qinglan.sdk.server.presentation.channel.entity.UCPayResult;
+import org.apache.commons.lang3.StringUtils;
+import org.codehaus.jackson.type.TypeReference;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class UCChannel implements IChannel {
+import static com.qinglan.sdk.server.ChannelConstants.UC_PAY_RESULT_FAILED;
+import static com.qinglan.sdk.server.ChannelConstants.UC_PAY_RESULT_SUCCESS;
+
+public class UCChannel extends BaseChannel {
     public static final String REQUEST_KEY_SID = "sid";
     public static final String REQUEST_KEY_GAME_ID = "gameId";
     public static final String REQUEST_KEY_ID = "id";
@@ -29,51 +36,31 @@ public class UCChannel implements IChannel {
     public static final String PARAM_CP_ORDER_ID = "cpOrderId";
     public static final String PARAM_ACCOUNT_ID = "accountId";
 
-    private Platform mPlatform;
-    private PlatformGame mPlatformGame;
-    private boolean isInit = false;
-
-    @Override
-    public void init(BasicRepository basicRepository, long gameId, int channelId) {
-        init(basicRepository.getPlatform(channelId), basicRepository.getByPlatformAndGameId(channelId, gameId));
-    }
-
-    @Override
-    public void init(Platform platform, PlatformGame platformGame) {
-        mPlatform = platform;
-        mPlatformGame = platformGame;
-        isInit = true;
-    }
-
-    @Override
-    public Platform getChannelInfo() {
-        return mPlatform;
-    }
-
+    /**
+     * 第三方平台认证
+     * 请求参数json示例如下：
+     * {
+     * "id":1332406591685,
+     * "game":{"gameId":5},
+     * "data":{
+     * "sid":"110adf4c-f2d3-4be5-8a9c-3741a83e5853"
+     * },
+     * "sign":"bb926c2a9944e9b4f2f6639d928dc95c"
+     * }
+     */
     @Override
     public String verifySession(String... args) {
         checkInit();
-        /*
-         * 第三方平台认证
-         * 请求参数json示例如下：
-         * {
-         *      "id":1332406591685,
-         *      "game":{"gameId":5},
-         *      "data":{
-         *          "sid":"110adf4c-f2d3-4be5-8a9c-3741a83e5853"
-         *      },
-         *      "sign":"bb926c2a9944e9b4f2f6639d928dc95c"
-         * }
-         */
-        if (null == mPlatformGame || null == args || args.length == 0)
-            return "";
+
+        if (null == platformGame || null == args || args.length == 0)
+            return null;
         String sid = args[0];
         String appID = null;
         if (args.length > 1)
             appID = args[1];
         if (null == appID || appID.isEmpty())
-            appID = mPlatformGame.getAppID();
-        String appKey = mPlatformGame.getAppKey();
+            appID = platformGame.getAppID();
+        String appKey = platformGame.getAppKey();
 
         Map<String, Object> params = new HashMap<>();
         Map<String, Object> data = new HashMap<>();
@@ -85,65 +72,117 @@ public class UCChannel implements IChannel {
         params.put(REQUEST_KEY_GAME, game);
         params.put(REQUEST_KEY_SIGN, MD5.encode(SIGN_PREFIX + sid + appKey));
         try {
-            return HttpUtils.doPostToJson(mPlatform.getVerifyUrl(), JsonMapper.toJson(params), 10000);
+            return HttpUtils.doPostToJson(platform.getVerifyUrl(), JsonMapper.toJson(params), 10000);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public String signOrder(BaseRequest request) {
+        checkInit();
+        if (request instanceof OrderRequest) {
+            String appKey = platformGame.getAppKey();
+            Map<String, String> signMap = new TreeMap<>();
+            signMap.put(PARAM_CALLBACK_INFO, ((OrderRequest) request).getCpExtInfo());
+            signMap.put(PARAM_NOTIFY_URL, ((OrderRequest) request).getNotifyUrl());
+            signMap.put(PARAM_AMOUNT, ((OrderRequest) request).getAmount().toString());
+            signMap.put(PARAM_CP_ORDER_ID, ((OrderRequest) request).getOrderId());
+            signMap.put(PARAM_ACCOUNT_ID, ((OrderRequest) request).getUid());
+            String sign = Sign.aliSign(signMap, appKey);
+            return sign;
+        }
+        return null;
+    }
+
+    /**
+     * 获取支付结果
+     * 参数json示例如下：
+     * {
+     * "ver": "2.0",
+     * "data":{
+     * "orderId":"abcf1330",
+     * "gameId":123,
+     * "accountId":"12221222211123",
+     * "creator":"JY",
+     * "payWay":1,
+     * "amount":"100.00",
+     * "callbackInfo":"custominfo=xxxxx#user=xxxx",
+     * "orderStatus":"S",
+     * "failedDesc":"",
+     * "cpOrderId":"1234567"
+     * },
+     * "sign":"6362e564f832d2e8bbcbd50e75409d47"
+     * }
+     */
+    @Override
+    public String returnPayResult(HttpServletRequest request, OrderService service) {
+        checkInit();
+        try {
+            String result = getResultString(request);
+            if (StringUtils.isEmpty(result))
+                return UC_PAY_RESULT_FAILED;
+            //记录日志
+            PlatformStatsLogger.info(PlatformStatsLogger.UC, result);
+
+            Map<String, Object> payResult = JsonMapper.getMapper().readValue(result, new TypeReference<Map<String, Object>>() {
+            });
+            if (payResult.get(REQUEST_KEY_DATA) == null || StringUtils.isEmpty(payResult.get(REQUEST_KEY_SIGN).toString()))
+                return UC_PAY_RESULT_FAILED;
+
+            Map<String, Object> data = (Map<String, Object>) payResult.get(REQUEST_KEY_DATA);
+            if (data == null || data.isEmpty()) {
+                return UC_PAY_RESULT_FAILED;
+            }
+            //note穿透 OrderId
+            Order order = service.getOrderByOrderId(data.get(PARAM_CP_ORDER_ID).toString());
+            if (order == null) {
+                return UC_PAY_RESULT_FAILED;
+            }
+            if (basicRepository == null) {
+                return UC_PAY_RESULT_FAILED;
+            }
+            platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+            String apiKey = platformGame.getAppKey();
+            String sign = Sign.signParamsByMD5(data, apiKey);
+            if (sign.equals(payResult.get(REQUEST_KEY_SIGN).toString())) {
+                handleOrder(payResult, order, service);
+                return UC_PAY_RESULT_SUCCESS;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "";
+        return UC_PAY_RESULT_FAILED;
+
     }
 
-    @Override
-    public String signOrder(OrderBasicInfo order) {
-        checkInit();
-        String appKey = mPlatformGame.getAppKey();
-        Map<String, String> signMap = new TreeMap<>();
-        signMap.put(PARAM_CALLBACK_INFO, order.getCpExtInfo());
-        signMap.put(PARAM_NOTIFY_URL, order.getNotifyUrl());
-        signMap.put(PARAM_AMOUNT, order.getAmount().toString());
-        signMap.put(PARAM_CP_ORDER_ID, order.getCpOrderId());
-        signMap.put(PARAM_ACCOUNT_ID, order.getUid());
-        String sign = Sign.aliSign(signMap, appKey);
-        return sign;
-    }
-
-    @Override
-    public boolean getPayResult(String json, Map<String, Object> payResult) {
-        checkInit();
-        /*
-         * 参数json示例如下：
-         * {
-         *           "ver": "2.0",
-         *           "data":{
-         *               "orderId":"abcf1330",
-         *               "gameId":123,
-         *               "accountId":"12221222211123",
-         *               "creator":"JY",
-         *               "payWay":1,
-         *               "amount":"100.00",
-         *               "callbackInfo":"custominfo=xxxxx#user=xxxx",
-         *               "orderStatus":"S",
-         *               "failedDesc":"",
-         *               "cpOrderId":"1234567"
-         *                },
-         *             "sign":"6362e564f832d2e8bbcbd50e75409d47"
-         * }
-         */
-        Map<String, Object> data = (Map<String, Object>) payResult.get(REQUEST_KEY_DATA);
-        if (data == null || data.isEmpty()) {
-            return false;
+    private String getResultString(HttpServletRequest request) throws IOException {
+        BufferedReader in = new BufferedReader(new InputStreamReader(request.getInputStream(), "utf-8"));
+        String ln;
+        StringBuffer stringBuffer = new StringBuffer();
+        while ((ln = in.readLine()) != null) {
+            stringBuffer.append(ln);
+            stringBuffer.append("\r\n");
         }
+        return stringBuffer.toString();
+    }
 
-        String apiKey = mPlatformGame.getAppKey();
-
-        String sign = Sign.signParamsByMD5(data, apiKey);
-        if (sign.equals(payResult.get(REQUEST_KEY_SIGN).toString())) {
-            return true;
+    private void handleOrder(Map<String, Object> payResult, Order order, OrderService service) throws Exception {
+        UCPayResult ucPay = Tools.mapToObject(payResult, UCPayResult.class);
+        //游戏需根据orderStatus参数的值判断是否给玩家过账虚拟货币。（S为充值成功、F为充值失败，避免假卡、无效卡充值成功）
+        if ("S".equals(ucPay.getData().getOrderStatus())) {
+            if (Double.valueOf(ucPay.getData().getAmount()) * 100 >= order.getAmount()) {
+                service.paySuccess(order.getOrderId());
+            } else {
+                service.payFail(order.getOrderId(), "order amount error");
+                PlatformStatsLogger.error(PlatformStatsLogger.UC, order.getOrderId(), "order amount error");
+            }
+        } else {
+            service.payFail(order.getOrderId(), ucPay.getData().getFailedDesc());
         }
-        return false;
     }
 
-    private void checkInit() {
-        if (!isInit)
-            throw new RuntimeException("Please must be init before using");
-    }
 }

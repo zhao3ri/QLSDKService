@@ -40,7 +40,7 @@ public class GameServiceImpl implements GameService{
 		params.put("orderId", order.getOrderId());
 		params.put("orderStatus", 1);
 		params.put("amount", order.getAmount());
-		params.put("extInfo", order.getCpExtInfo());
+		params.put("extInfo", order.getExtInfo());
 		params.put("payTime", DateUtils.format(order.getCreateTime(), DateUtils.yyyyMMddHHmmss));
 		params.put("paySucTime", DateUtils.format(order.getUpdateTime(), DateUtils.yyyyMMddHHmmss));
 		params.put("notifyUrl", order.getNotifyUrl());
@@ -64,7 +64,7 @@ public class GameServiceImpl implements GameService{
 		params.put("uid", "6113843");
 		params.put("zoneId", "4");
 		params.put("roleId", "12222");
-		params.put("cpOrderId", "1607041649533883");
+		params.put("goodsId", "1607041649533883");
 		params.put("orderId", "20160704165210020008623567416623");
 		params.put("orderStatus", "1");
 		params.put("amount", "100");

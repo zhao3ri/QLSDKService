@@ -30,6 +30,8 @@ public interface BasicRepository {
 
     Order getOrderByOrderId(String orderId);
 
+    Order getOrderStatus(String orderId, long gameId, int platform);
+
     int updateStatusPay(Order order);
 
     int updateStatusNotify(Order order);

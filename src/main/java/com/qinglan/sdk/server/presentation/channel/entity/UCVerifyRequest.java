@@ -3,9 +3,8 @@ package com.qinglan.sdk.server.presentation.channel.entity;
 import lombok.ToString;
 
 @ToString
-public class UCSessionRequest {
-    private long gameId;
-    private int platformId;
+public class UCVerifyRequest extends BaseRequest {
+
     private String sid;
     private String appID;
 
@@ -25,19 +24,4 @@ public class UCSessionRequest {
         this.appID = appID;
     }
 
-    public long getGameId() {
-        return gameId;
-    }
-
-    public void setGameId(long gameId) {
-        this.gameId = gameId;
-    }
-
-    public int getPlatformId() {
-        return platformId;
-    }
-
-    public void setPlatformId(int platformId) {
-        this.platformId = platformId;
-    }
 }

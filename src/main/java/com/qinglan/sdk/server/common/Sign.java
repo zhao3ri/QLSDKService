@@ -8,15 +8,29 @@ import sun.misc.BASE64Encoder;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.security.KeyFactory;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.*;
 
+import static com.qinglan.sdk.server.Constants.RESPONSE_KEY_SIGN;
+import static com.qinglan.sdk.server.Constants.RESPONSE_KEY_SIGN_TYPE;
 import static com.qinglan.sdk.server.platform.fansdk.EncryptUtils.md5;
 
 
 public class Sign {
     private static final Logger logger = Logger.getLogger(Sign.class);
+    /**
+     * 使用加密算法规则
+     */
+    private static final String SIGN_ALGORITHMS = "SHA256WithRSA";
+
+    /**
+     * 字符串编码
+     */
+    private static final String CHARSET = "UTF-8";
 
     public static String signByMD5(Map<String, Object> params, String secretKey) {
         if (null == params || params.isEmpty()) throw new RuntimeException("params can't be empty");
@@ -331,7 +345,7 @@ public class Sign {
         StringBuilder stringBuilder = new StringBuilder(1024);
         for (Map.Entry<String, String> entry : signMap.entrySet()) {
             // sign和signType不参与签名
-            if ("sign".equals(entry.getKey()) || "signType".equals(entry.getKey())) {
+            if (RESPONSE_KEY_SIGN.equals(entry.getKey()) || RESPONSE_KEY_SIGN_TYPE.equals(entry.getKey())) {
                 continue;
             }
             //值为null的参数不参与签名

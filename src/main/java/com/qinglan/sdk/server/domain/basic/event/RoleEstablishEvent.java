@@ -1,7 +1,7 @@
 package com.qinglan.sdk.server.domain.basic.event;
 
 import com.qinglan.sdk.server.data.annotation.event.Event;
-import com.qinglan.sdk.server.presentation.basic.dto.RoleEstablishPattern;
+import com.qinglan.sdk.server.presentation.basic.dto.RoleCreatePattern;
 
 @Event
 public class RoleEstablishEvent implements java.io.Serializable {
@@ -9,13 +9,13 @@ public class RoleEstablishEvent implements java.io.Serializable {
      *
      */
     private static final long serialVersionUID = 1L;
-    private RoleEstablishPattern roleEstablishPattern;
+    private RoleCreatePattern roleCreatePattern;
 
-    public RoleEstablishEvent(RoleEstablishPattern roleEstablishPattern) {
-        this.roleEstablishPattern = roleEstablishPattern;
+    public RoleEstablishEvent(RoleCreatePattern roleCreatePattern) {
+        this.roleCreatePattern = roleCreatePattern;
     }
 
-    public RoleEstablishPattern getHelper() {
-        return roleEstablishPattern;
+    public RoleCreatePattern getHelper() {
+        return roleCreatePattern;
     }
 }

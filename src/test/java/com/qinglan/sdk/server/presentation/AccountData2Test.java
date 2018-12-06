@@ -17,7 +17,7 @@ import com.qinglan.sdk.server.presentation.basic.dto.LoginPattern;
 import com.qinglan.sdk.server.presentation.basic.dto.LogoutPattern;
 import com.qinglan.sdk.server.presentation.basic.dto.OrderGeneratePattern;
 import com.qinglan.sdk.server.presentation.basic.dto.QuitPattern;
-import com.qinglan.sdk.server.presentation.basic.dto.RoleEstablishPattern;
+import com.qinglan.sdk.server.presentation.basic.dto.RoleCreatePattern;
 
 public class AccountData2Test {
 	
@@ -203,7 +203,7 @@ public class AccountData2Test {
 		orderGenerate.setRoleId(roleId);
 		orderGenerate.setRoleName("角色_"+roleId);
 		orderGenerate.setClientType(1);
-		orderGenerate.setCpExtInfo("123456789");
+		orderGenerate.setExtInfo("123456789");
 		orderGenerate.setCpOrderId(UUID.randomUUID().toString());
 		orderGenerate.setAmount(100);
 		orderGenerate.setNotifyUrl("http://localhost:8092/platform/testcallback");
@@ -242,7 +242,7 @@ public class AccountData2Test {
 	}
 	
 	public void roleEstablish(String deviceId,String uid,String roleId){
-		RoleEstablishPattern roleEstablish=new RoleEstablishPattern();
+		RoleCreatePattern roleEstablish=new RoleCreatePattern();
 		roleEstablish.setGameId(150212661932L);
 		roleEstablish.setPlatformId(1001);
 		roleEstablish.setDeviceId(deviceId);
@@ -253,7 +253,7 @@ public class AccountData2Test {
 		roleEstablish.setRoleName("角色_"+roleId);
 		roleEstablish.setRoleLevel("1");
 		roleEstablish.setClientType(1);
-		accountService.roleEstablish(roleEstablish);		
+		accountService.roleCreate(roleEstablish);
 	}
 	
 	public void initial(String deviceId,String imsi){

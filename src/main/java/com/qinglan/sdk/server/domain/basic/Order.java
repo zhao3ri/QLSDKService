@@ -1,24 +1,22 @@
 package com.qinglan.sdk.server.domain.basic;
 
-import com.qinglan.sdk.server.presentation.basic.dto.OrderBasicInfo;
-
 import java.io.Serializable;
 import java.util.Date;
 
-public class Order extends OrderBasicInfo implements Serializable {
+public class Order implements Serializable {
     private static final long serialVersionUID = 1L;
 
     //订单状态
-    public final static Integer STATUS_SUBMITSUCCESS = 0;        //提交成功
-    public final static Integer STATUS_SUBMITFAIL = 1;        //提交失败
-    public final static Integer STATUS_PAYSUCCESS = 2;        //支付成功
-    public final static Integer STATUS_PAYFAIL = 3;        //支付失败
+    public final static int ORDER_STATUS_SUBMIT_SUCCESS = 0;        //提交成功
+    public final static int ORDER_STATUS_SUBMIT_FAIL = 1;        //提交失败
+    public final static int ORDER_STATUS_PAYMENT_SUCCESS = 2;        //支付成功
+    public final static int ORDER_STATUS_PAYMENT_FAIL = 3;        //支付失败
     //通知CP状态
-    public final static Integer NOTIFYSTATUS_DEFAULT = 0;        //默认状态
-    public final static Integer NOTIFYSTATUS_WAIT = 1;        //等待通知
-    public final static Integer NOTIFYSTATUS_SUCCESS = 2;        //通知完成
-    public final static Integer NOTIFYSTATUS_FAIL = 3;        //通知失败
-    public final static Integer NOTIFYSTATUS_RESEND = 4;        //重发通知
+    public final static int ORDER_NOTIFY_STATUS_DEFAULT = 0;        //默认状态
+    public final static int ORDER_NOTIFY_STATUS_WAITING = 1;        //等待通知
+    public final static int ORDER_NOTIFY_STATUS_SUCCESS = 2;        //通知完成
+    public final static int ORDER_NOTIFY_STATUS_FAIL = 3;        //通知失败
+    public final static int ORDER_NOTIFY_STATUS_RESEND = 4;        //重发通知
 
     public final static int SUCCESS = 0;    //成功
     public final static int FAIL = 1;    //失败
@@ -26,43 +24,59 @@ public class Order extends OrderBasicInfo implements Serializable {
     public final static int INVALID = 3;    //无效参数
     public final static int BALANCE_ERROR = 4;    //余额不够
 
-    private Long id;
 
-    private Long gameId;
+    private long id;
 
-    private Integer platformId;
+    private long gameId;
+
+    private int platformId;
 
     private String errorMsg;
 
-    private Integer status;
+    private int status;
 
-    private Integer notifyStatus;
+    private int notifyStatus;
 
     private Date createTime;
 
     private Date updateTime;
 
-    public Long getId() {
+    private String uid;
+    private String zoneId;
+    private String roleId;
+    private String roleName;
+    private String cpOrderId;
+    private String extInfo;
+    private int amount;
+    private String notifyUrl;
+    private int fixed;
+    private String deviceId;
+    private int clientType;
+    private String orderId;
+    private int gold;
+    private int selfpay = 0;
+
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public Long getGameId() {
+    public long getGameId() {
         return gameId;
     }
 
-    public void setGameId(Long gameId) {
+    public void setGameId(long gameId) {
         this.gameId = gameId;
     }
 
-    public Integer getPlatformId() {
+    public int getPlatformId() {
         return platformId;
     }
 
-    public void setPlatformId(Integer platformId) {
+    public void setPlatformId(int platformId) {
         this.platformId = platformId;
     }
 
@@ -114,19 +128,19 @@ public class Order extends OrderBasicInfo implements Serializable {
         this.cpOrderId = cpOrderId == null ? null : cpOrderId.trim();
     }
 
-    public String getCpExtInfo() {
-        return cpExtInfo;
+    public String getExtInfo() {
+        return extInfo;
     }
 
-    public void setCpExtInfo(String cpExtInfo) {
-        this.cpExtInfo = cpExtInfo == null ? null : cpExtInfo.trim();
+    public void setExtInfo(String extInfo) {
+        this.extInfo = extInfo == null ? null : extInfo.trim();
     }
 
-    public Integer getAmount() {
+    public int getAmount() {
         return amount;
     }
 
-    public void setAmount(Integer amount) {
+    public void setAmount(int amount) {
         this.amount = amount;
     }
 
@@ -157,36 +171,36 @@ public class Order extends OrderBasicInfo implements Serializable {
     }
 
 
-    public Integer getFixed() {
+    public int getFixed() {
         return fixed;
     }
 
-    public void setFixed(Integer fixed) {
+    public void setFixed(int fixed) {
         this.fixed = fixed;
     }
 
-    public Integer getClientType() {
+    public int getClientType() {
         return clientType;
     }
 
-    public void setClientType(Integer clientType) {
+    public void setClientType(int clientType) {
         this.clientType = clientType;
     }
 
-    public Integer getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(Integer status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 
 
-    public Integer getNotifyStatus() {
+    public int getNotifyStatus() {
         return notifyStatus;
     }
 
-    public void setNotifyStatus(Integer notifyStatus) {
+    public void setNotifyStatus(int notifyStatus) {
         this.notifyStatus = notifyStatus;
     }
 
@@ -206,19 +220,19 @@ public class Order extends OrderBasicInfo implements Serializable {
         this.updateTime = updateTime;
     }
 
-    public Integer getGold() {
+    public int getGold() {
         return gold;
     }
 
-    public Integer getSelfpay() {
+    public void setGold(int gold) {
+        this.gold = gold;
+    }
+
+    public int getSelfpay() {
         return selfpay;
     }
 
-    public void setSelfpay(Integer selfpay) {
+    public void setSelfpay(int selfpay) {
         this.selfpay = selfpay;
-    }
-
-    public void setGold(Integer gold) {
-        this.gold = gold;
     }
 }

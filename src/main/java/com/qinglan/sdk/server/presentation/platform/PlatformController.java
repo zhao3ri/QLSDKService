@@ -4,7 +4,7 @@ import com.qinglan.sdk.server.application.platform.PlatformService;
 import com.qinglan.sdk.server.application.platform.PlatformServicePartTwo;
 import com.qinglan.sdk.server.domain.platform.YaoyueCallback;
 import com.qinglan.sdk.server.domain.platform.YouleCallback;
-import com.qinglan.sdk.server.presentation.channel.entity.UCSessionRequest;
+import com.qinglan.sdk.server.presentation.channel.entity.UCVerifyRequest;
 import com.qinglan.sdk.server.presentation.platform.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +45,7 @@ public class PlatformController {
 	 */
 	@RequestMapping(value = "/ucgame/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
-	public String ucGameSession(UCSessionRequest ucGameSession) {
+	public String ucGameSession(UCVerifyRequest ucGameSession) {
 		logger.debug(ucGameSession.toString());
 		return platformService.verifyUcSession(ucGameSession);
 	}
@@ -56,10 +56,10 @@ public class PlatformController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/ucgame/pay")
+	@RequestMapping("/ucgame/pay/return")
 	@ResponseBody
 	public String ucPayResult(HttpServletRequest request) {
-		return platformService.getUcPayResult(request);
+		return platformService.ucPayReturn(request);
 	}
 
 	/**

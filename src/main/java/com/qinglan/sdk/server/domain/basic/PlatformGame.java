@@ -1,10 +1,10 @@
 package com.qinglan.sdk.server.domain.basic;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.regex.Pattern;
 
+import com.qinglan.sdk.server.common.StringUtil;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
 public class PlatformGame implements Serializable {
@@ -161,5 +161,35 @@ public class PlatformGame implements Serializable {
             return Arrays.asList(array);
         }
         return null;
+    }
+
+    public Map<String, String> getConfigs() {
+        if (StringUtil.isNullOrEmpty(configParams)) {
+            return null;
+        }
+        String regex = "(\\w+)=(\\w+)";
+        String[] params = configParams.split(";");
+        Map<String, String> config = new HashMap<>();
+
+        for (String param : params) {
+            if (!Pattern.matches(regex, param)) {
+                continue;
+            }
+            String key = param.substring(0, param.indexOf("=")).toLowerCase();
+            String value = param.substring(param.indexOf("="));
+            config.put(key, value);
+        }
+        return config;
+    }
+
+    public String getConfig(String key) {
+        Map<String, String> config = getConfigs();
+        if (null == config || config.isEmpty()) {
+            return null;
+        }
+        if (StringUtil.isNullOrEmpty(key)) {
+            return null;
+        }
+        return config.get(key.toLowerCase());
     }
 }

@@ -18,7 +18,7 @@ import com.qinglan.sdk.server.presentation.basic.dto.LoginPattern;
 import com.qinglan.sdk.server.presentation.basic.dto.LogoutPattern;
 import com.qinglan.sdk.server.presentation.basic.dto.OrderGeneratePattern;
 import com.qinglan.sdk.server.presentation.basic.dto.QuitPattern;
-import com.qinglan.sdk.server.presentation.basic.dto.RoleEstablishPattern;
+import com.qinglan.sdk.server.presentation.basic.dto.RoleCreatePattern;
 
 public class AccountServiceTest  extends BaseTestCase{
 
@@ -136,7 +136,7 @@ public class AccountServiceTest  extends BaseTestCase{
 	
 	@Test
 	public void roleEstablish() {
-		RoleEstablishPattern roleEstablish = new RoleEstablishPattern();
+		RoleCreatePattern roleEstablish = new RoleCreatePattern();
 		roleEstablish.setGameId(23L);
 		roleEstablish.setUid("12345678");
 		roleEstablish.setPlatformId(15);
@@ -147,7 +147,7 @@ public class AccountServiceTest  extends BaseTestCase{
 		roleEstablish.setRoleLevel("");
 		roleEstablish.setZoneId("1");
 		roleEstablish.setZoneName("test分区");
-		accountService.roleEstablish(roleEstablish);
+		accountService.roleCreate(roleEstablish);
 	}
 	
 	@Test
@@ -161,7 +161,7 @@ public class AccountServiceTest  extends BaseTestCase{
 		orderGenerate.setRoleId("1");
 		orderGenerate.setZoneId("1");
 		orderGenerate.setCpOrderId(1000*2*Math.random()+"");
-		orderGenerate.setCpExtInfo("test");
+		orderGenerate.setExtInfo("test");
 		orderGenerate.setAmount(10);
 		orderGenerate.setNotifyUrl("http://sdk.com.cn");
 		orderGenerate.setFixed(1);
@@ -180,7 +180,7 @@ public class AccountServiceTest  extends BaseTestCase{
 		orderGenerate.setRoleId("1");
 		orderGenerate.setZoneId("1");
 		orderGenerate.setCpOrderId(1000*2*Math.random()+"");
-		orderGenerate.setCpExtInfo("test");
+		orderGenerate.setExtInfo("test");
 		orderGenerate.setAmount(10);
 		orderGenerate.setNotifyUrl("http://sdk.com.cn");
 		orderGenerate.setFixed(1);

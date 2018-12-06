@@ -7,9 +7,8 @@ import com.lenovo.pay.sign.JsonUtil;
 import com.qinglan.sdk.server.common.*;
 import com.qinglan.sdk.server.platform.qq.JSONException;
 import com.qinglan.sdk.server.presentation.channel.IChannel;
-import com.qinglan.sdk.server.presentation.channel.entity.UCPayData;
 import com.qinglan.sdk.server.presentation.channel.entity.UCPayResult;
-import com.qinglan.sdk.server.presentation.channel.entity.UCSessionRequest;
+import com.qinglan.sdk.server.presentation.channel.entity.UCVerifyRequest;
 import com.qinglan.sdk.server.presentation.channel.impl.UCChannel;
 import com.qinglan.sdk.server.presentation.platform.dto.*;
 import com.sun.org.apache.xerces.internal.parsers.DOMParser;
@@ -71,7 +70,6 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import static com.qinglan.sdk.server.ChannelConstants.UC_PAY_RESULT_FAILED;
-import static com.qinglan.sdk.server.ChannelConstants.UC_PAY_RESULT_SUCCESS;
 
 @Service
 public class PlatformServiceImpl implements PlatformService {
@@ -151,7 +149,7 @@ public class PlatformServiceImpl implements PlatformService {
     }
 
     @Override
-    public String verifyUcSession(UCSessionRequest ucSession) {
+    public String verifyUcSession(UCVerifyRequest ucSession) {
         if (ucSession.getGameId() == 0 || ucSession.getPlatformId() == 0
                 || StringUtils.isEmpty(ucSession.getSid()) || StringUtils.isEmpty(ucSession.getAppID())) {
             return "";
@@ -185,49 +183,12 @@ public class PlatformServiceImpl implements PlatformService {
     }
 
     @Override
-    public String getUcPayResult(HttpServletRequest request) {
+    public String ucPayReturn(HttpServletRequest request) {
         try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(request.getInputStream(), "utf-8"));
-            String ln;
-            StringBuffer stringBuffer = new StringBuffer();
-            while ((ln = in.readLine()) != null) {
-                stringBuffer.append(ln);
-                stringBuffer.append("\r\n");
-            }
-
-            if (StringUtils.isEmpty(stringBuffer.toString()))
-                return UC_PAY_RESULT_FAILED;
-            //记录日志
-            PlatformStatsLogger.info(PlatformStatsLogger.UC, stringBuffer.toString());
-            UCPayResult ucResult = JsonMapper.toObject(stringBuffer.toString(), UCPayResult.class);
-            if (ucResult.getData() == null || StringUtils.isEmpty(ucResult.getSign()))
-                return UC_PAY_RESULT_FAILED;
-
-            //note穿透 OrderId
-            Order order = orderService.getOrderByOrderId(ucResult.getData().getCpOrderId());
-            if (order == null) {
-                return UC_PAY_RESULT_FAILED;
-            }
-
             IChannel channel = getChannel(UCChannel.class);
-            channel.init(basicRepository, order.getGameId(), order.getPlatformId());
-            Map<String, Object> resultMap = JsonMapper.getMapper().readValue(stringBuffer.toString(), new org.codehaus.jackson.type.TypeReference<Map<String, Object>>() {
-            });
-            boolean isSuccess = channel.getPayResult(stringBuffer.toString(), resultMap);
-            if (isSuccess) {
-                //游戏需根据orderStatus参数的值判断是否给玩家过账虚拟货币。（S为充值成功、F为充值失败，避免假卡、无效卡充值成功）
-                if ("S".equals(ucResult.getData().getOrderStatus())) {
-                    if (Double.valueOf(ucResult.getData().getAmount()) * 100 >= order.getAmount()) {
-                        orderService.paySuccess(order.getOrderId());
-                    } else {
-                        orderService.payFail(order.getOrderId(), "order amount error");
-                        PlatformStatsLogger.error(PlatformStatsLogger.UC, order.getOrderId(), "order amount error");
-                    }
-                } else {
-                    orderService.payFail(order.getOrderId(), ucResult.getData().getFailedDesc());
-                }
-                return UC_PAY_RESULT_SUCCESS;
-            }
+            channel.init(basicRepository);
+            String result = channel.returnPayResult(request, orderService);
+            return result;
 //
 //            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
 //            if (platformGame == null) return UC_PAY_RESULT_FAILED;
@@ -258,7 +219,7 @@ public class PlatformServiceImpl implements PlatformService {
 //                return UC_PAY_RESULT_SUCCESS;
 //            }
         } catch (Exception e) {
-            PlatformStatsLogger.error(PlatformStatsLogger.UC, request.getQueryString(), "uc getUcPayResult error:" + e);
+            PlatformStatsLogger.error(PlatformStatsLogger.UC, request.getQueryString(), "uc ucPayReturn error:" + e);
         }
         return UC_PAY_RESULT_FAILED;
     }
@@ -3512,7 +3473,7 @@ public class PlatformServiceImpl implements PlatformService {
             return JsonMapper.toJson(result);
         }
 
-        if (order.getStatus() == Order.STATUS_PAYSUCCESS) {
+        if (order.getStatus() == Order.ORDER_STATUS_PAYMENT_SUCCESS) {
             result.put("code", "1");
             result.put("msg", "订单已经支付成功");
             return JsonMapper.toJson(result);
@@ -3665,7 +3626,7 @@ public class PlatformServiceImpl implements PlatformService {
             return JsonMapper.toJson(result);
         }
 
-        if (order.getStatus() == Order.STATUS_PAYSUCCESS) {
+        if (order.getStatus() == Order.ORDER_STATUS_PAYMENT_SUCCESS) {
             result.put("code", "1");
             result.put("msg", "订单已经支付成功");
             return JsonMapper.toJson(result);

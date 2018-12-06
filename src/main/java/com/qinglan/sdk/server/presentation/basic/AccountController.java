@@ -62,9 +62,9 @@ public class AccountController {
 
     @RequestMapping("/account/role/establish")
     @ResponseBody
-    public Map<String, Object> roleEstablish(RoleEstablishPattern roleEstablish) {
+    public Map<String, Object> roleEstablish(RoleCreatePattern roleEstablish) {
         logger.debug("params: {}", roleEstablish);
-        return accountService.roleEstablish(roleEstablish);
+        return accountService.roleCreate(roleEstablish);
     }
 
     @RequestMapping("/account/order/generate")
@@ -80,6 +80,7 @@ public class AccountController {
         logger.debug("params: {}", request);
         return "0";
     }
+
     //IOS订单支付成功通知
     @RequestMapping("/order/success/notify")
     @ResponseBody
@@ -107,8 +108,8 @@ public class AccountController {
     @ResponseBody
     public String sdkinit(HttpServletRequest request) {
         logger.debug("zhidianparams: {}", request.getParameter("zdPlatformId"));
-        Map<String,Object> m = new HashMap<String, Object>();
-        m.put("code",HeepayTradeConfig.getInstance().getSelfPay());
+        Map<String, Object> m = new HashMap<String, Object>();
+        m.put("code", HeepayTradeConfig.getInstance().getSelfPay());
         return JsonMapper.toJson(m);
     }
 
@@ -124,5 +125,12 @@ public class AccountController {
     public Map<String, Object> getUserId(GetUserInfoPattern pattern) {
         logger.debug("zhidianparams: {}", pattern);
         return accountService.getUserIdByToken(pattern);
+    }
+
+    @RequestMapping("/account/order/query")
+    @ResponseBody
+    public Map<String, Object> queryOrderStatus(QueryOrderRequest request) {
+        logger.debug("query order: {}", request);
+        return accountService.queryOrder(request);
     }
 }

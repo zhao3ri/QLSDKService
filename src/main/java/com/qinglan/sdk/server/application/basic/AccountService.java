@@ -19,13 +19,15 @@ public interface AccountService {
 
     Map<String, Object> quit(QuitPattern params);
 
-    Map<String, Object> roleEstablish(RoleEstablishPattern params);
+    Map<String, Object> roleCreate(RoleCreatePattern params);
 
     Map<String, Object> orderGenerate(OrderGeneratePattern params);
 
     Map<String, Object> loginSuccess(LoginSuccessPattern params);
 
     Map<String, Object> getUserIdByToken(GetUserInfoPattern params);
+
+    Map<String, Object> queryOrder(QueryOrderRequest request);
 
     Map<String, Object> validateSession(ValidateSessionPattern params);
 

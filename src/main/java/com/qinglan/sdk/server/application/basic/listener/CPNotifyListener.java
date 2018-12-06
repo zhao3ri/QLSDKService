@@ -50,8 +50,8 @@ public class CPNotifyListener {
 			return false;
 		}
 		try{
-			if(order.getStatus() == null || order.getStatus().intValue() != Order.STATUS_PAYSUCCESS ||
-					!(order.getNotifyStatus() == Order.NOTIFYSTATUS_WAIT  || order.getNotifyStatus() == Order.NOTIFYSTATUS_RESEND)){
+			if(order.getStatus() != Order.ORDER_STATUS_PAYMENT_SUCCESS ||
+					!(order.getNotifyStatus() == Order.ORDER_NOTIFY_STATUS_WAITING || order.getNotifyStatus() == Order.ORDER_NOTIFY_STATUS_RESEND)){
 				log.info("订单"+order.getOrderId()+"所处的状态不能完成通知到CP！！！");
 				return false;
 			}

@@ -3,6 +3,10 @@ package com.qinglan.sdk.server.application.platform.impl;
 import com.lenovo.pay.sign.JsonUtil;
 import com.qinglan.sdk.server.common.*;
 import com.qinglan.sdk.server.platform.qq.JSONException;
+import com.qinglan.sdk.server.presentation.channel.IChannel;
+import com.qinglan.sdk.server.presentation.channel.entity.HMSPaySignRequest;
+import com.qinglan.sdk.server.presentation.channel.entity.HMSVerifyRequest;
+import com.qinglan.sdk.server.presentation.channel.impl.HmsChannel;
 import com.qinglan.sdk.server.presentation.platform.dto.dtotwo.*;
 import com.qinglan.sdk.server.platform.ibei.SignHelper;
 import com.qinglan.sdk.server.platform.lewan.util.MD5Util;
@@ -32,8 +36,10 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -41,6 +47,8 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static com.qinglan.sdk.server.Constants.RESPONSE_KEY_SIGN;
 
 /**
  * Created by engine on 2016/10/21.
@@ -56,6 +64,39 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
     private PlatformUtilsService platformUtilsService;
     @Resource
     private RedisUtil redisUtil;
+
+    @Override
+    public String signOrderHuawei(HMSPaySignRequest request) {
+        IChannel channel = new HmsChannel();
+        channel.init(basicRepository, request.getGameId(), request.getPlatformId());
+        return channel.signOrder(request);
+    }
+
+    @Override
+    public String huaweiPayReturn(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        IChannel channel = new HmsChannel();
+        channel.init(basicRepository);
+        String result = channel.returnPayResult(request, orderService);
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        System.out.println("HMS Response string: " + result);
+        PrintWriter out = response.getWriter();
+
+        out.print(result);
+        out.close();
+        return null;
+    }
+
+    @Override
+    public String verifyHuawei(HMSVerifyRequest request) {
+        IChannel channel = new HmsChannel();
+        channel.init(basicRepository, request.getGameId(), request.getPlatformId());
+        //顺序需相同
+        String result = channel.verifySession(request.getAppID(), request.getCpID(), request.getTs()
+                , request.getPlayerId(), request.getPlayerLevel(), request.getPlayerSSign());
+        return result;
+    }
 
     @Override
     public String verifyAoChuangsdk(HttpServletRequest request) {
@@ -472,7 +513,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
     public String verifyChangqu(HttpServletRequest request) {
         PlatformStatsLogger.info(PlatformStatsLogger.CHANGQU, HttpUtils.getRequestParams(request).toString());
         String transdata = request.getParameter("transdata");
-        String sign = (String) request.getParameter("sign");
+        String sign = (String) request.getParameter(RESPONSE_KEY_SIGN);
         String signtype = request.getParameter("signtype");
 
         String orderId = null;
@@ -1438,7 +1479,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
         String user_account = request.getParameter("user_account");
 
         String sign = request.getParameter("sign");
-        
+
         Order order = basicRepository.getOrderByOrderId(cp_order_id);
         if (order == null) {
             returnMap.put("ret", 0);
@@ -1556,7 +1597,6 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
         }
 
 
-
         Map<String, Object> returnMap = new HashMap<String, Object>();
         String orderid = request.getParameter("out_order_no");
         String order_status = request.getParameter("order_status");
@@ -1646,7 +1686,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             logger.error("Verify Xmw Session error", e);
             result.put("status", "2");
             result.put("msg", "服务器异常！");
-            result.put("exception",e.getMessage());
+            result.put("exception", e.getMessage());
             return JsonMapper.toJson(result);
         }
     }
@@ -1678,21 +1718,21 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             return "fail";
         }
         String client_secret = platformGame.getConfigParamsList().get(3);
-        logger.info("client_secret = {}",client_secret);
+        logger.info("client_secret = {}", client_secret);
 
         StringBuilder sb = new StringBuilder();
         sb.append("amount=").append(request.getParameter("amount")).append("&");
-        if(request.getParameter("app_description")!=null){
+        if (request.getParameter("app_description") != null) {
             sb.append("app_description=").append(request.getParameter("app_description")).append("&");
         }
-        if(request.getParameter("app_ext1")!=null){
+        if (request.getParameter("app_ext1") != null) {
             sb.append("app_ext1=").append(request.getParameter("app_ext1")).append("&");
         }
-        if(request.getParameter("app_ext2")!=null){
+        if (request.getParameter("app_ext2") != null) {
             sb.append("app_ext2=").append(request.getParameter("app_ext2")).append("&");
         }
         sb.append("app_order_id=").append(request.getParameter("app_order_id")).append("&");
-        if(request.getParameter("app_subject")!=null){
+        if (request.getParameter("app_subject") != null) {
             sb.append("app_subject=").append(request.getParameter("app_subject")).append("&");
         }
         sb.append("app_user_id=").append(request.getParameter("app_user_id")).append("&");
@@ -1701,9 +1741,9 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
         sb.append("client_secret=").append(client_secret);
 
 
-        logger.info("签名文本 = {}",sb.toString());
+        logger.info("签名文本 = {}", sb.toString());
         String validSign = MD5.encode(sb.toString());
-        logger.info("签名后md5值validSign = {}",validSign);
+        logger.info("签名后md5值validSign = {}", validSign);
 
         if ("success".equals(orderStatus) && validSign.equals(request.getParameter("sign"))) {
             if (order.getAmount() > Float.parseFloat(amount) * 100) {
@@ -1738,7 +1778,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
     public String createXmwOrder(XmwOrderSession xmwOrderSession) {
         Map<String, Object> result = new HashMap<String, Object>();
 
-        logger.info("createXmwOrder req={}",JsonMapper.toJson(xmwOrderSession));
+        logger.info("createXmwOrder req={}", JsonMapper.toJson(xmwOrderSession));
 
         try {
             PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(xmwOrderSession.getPlatformId()), Long.valueOf(xmwOrderSession.getYgAppId()));
@@ -1751,13 +1791,13 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             //signParamsByMD5WithKey
             StringBuilder sb = new StringBuilder();
             sb.append("amount=").append(xmwOrderSession.getAmount()).append("&");
-            if(xmwOrderSession.getApp_description()!=null){
+            if (xmwOrderSession.getApp_description() != null) {
                 sb.append("app_description=").append(URLEncoder.encode(xmwOrderSession.getApp_description())).append("&");
             }
-            if(xmwOrderSession.getApp_ext1()!=null){
+            if (xmwOrderSession.getApp_ext1() != null) {
                 sb.append("app_ext1=").append(URLEncoder.encode(xmwOrderSession.getApp_ext1())).append("&");
             }
-            if(xmwOrderSession.getApp_ext2()!=null){
+            if (xmwOrderSession.getApp_ext2() != null) {
                 sb.append("app_ext2=").append(URLEncoder.encode(xmwOrderSession.getApp_ext2())).append("&");
             }
             sb.append("app_order_id=").append(xmwOrderSession.getApp_order_id()).append("&");
@@ -1767,10 +1807,10 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             sb.append("timestamp=").append(xmwOrderSession.getTimestamp()).append("&");
             sb.append("client_secret=").append(xmwOrderSession.getClient_secret());
 
-            String signStr=sb.toString();
-            logger.info("signStr = {}",signStr);
+            String signStr = sb.toString();
+            logger.info("signStr = {}", signStr);
             String validSign = MD5.encode(sb.toString());
-            logger.info("sign = {}",validSign);
+            logger.info("sign = {}", validSign);
             Map<String, Object> params = new HashMap<String, Object>(16);
             params.put("access_token", xmwOrderSession.getAccess_token());
             params.put("client_id", xmwOrderSession.getClient_id());
@@ -1780,34 +1820,34 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             params.put("notify_url", xmwOrderSession.getNotify_url());
             params.put("amount", xmwOrderSession.getAmount());
             params.put("timestamp", xmwOrderSession.getTimestamp());
-            params.put("app_subject", URLEncoder.encode(xmwOrderSession.getApp_subject(),"utf-8"));
-            if(xmwOrderSession.getApp_description()!=null){
+            params.put("app_subject", URLEncoder.encode(xmwOrderSession.getApp_subject(), "utf-8"));
+            if (xmwOrderSession.getApp_description() != null) {
                 params.put("app_description", URLEncoder.encode(xmwOrderSession.getApp_description()));
             }
-            if(xmwOrderSession.getApp_ext1()!=null){
+            if (xmwOrderSession.getApp_ext1() != null) {
                 params.put("app_ext1", URLEncoder.encode(xmwOrderSession.getApp_ext1()));
             }
-            if(xmwOrderSession.getApp_ext2()!=null){
+            if (xmwOrderSession.getApp_ext2() != null) {
                 params.put("app_ext2", URLEncoder.encode(xmwOrderSession.getApp_ext2()));
             }
             params.put("game_detail", URLEncoder.encode(xmwOrderSession.getGame_detail()));
-            params.put("sign",validSign);
-            logger.info("new req params={}",JsonMapper.toJson(params));
+            params.put("sign", validSign);
+            logger.info("new req params={}", JsonMapper.toJson(params));
 
-            logger.info("url = {}",url);
-            String returnMsg = HttpUtils.doPostToJson(url, JsonMapper.toJson(params),3000);
-            logger.info("返回消息 = {}",returnMsg);
+            logger.info("url = {}", url);
+            String returnMsg = HttpUtils.doPostToJson(url, JsonMapper.toJson(params), 3000);
+            logger.info("返回消息 = {}", returnMsg);
 
             JSONObject returnJson = new JSONObject(returnMsg);
             if (returnJson.has("serial")) {
-                result.put("result",returnJson.toString());
+                result.put("result", returnJson.toString());
                 result.put("code", "0");
-                result.put("msg","生成订单成功");
+                result.put("msg", "生成订单成功");
             } else {
                 result.put("code", "1");
                 result.put("msg", "生成订单失败");
-                result.put("param",params);
-                result.put("result",returnMsg);
+                result.put("param", params);
+                result.put("result", returnMsg);
             }
             return JsonMapper.toJson(result);
         } catch (Exception e) {
@@ -1839,7 +1879,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
         String sign = request.getParameter("sign");
 
         Order order = basicRepository.getOrderByOrderId(callBackInfo);
-        logger.debug("order= {}",order);
+        logger.debug("order= {}", order);
         if (order == null) {
             map.put("code", 1);
             map.put("msg", "notfind order");
@@ -1864,7 +1904,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
         params.put("roleName", roleName);
         params.put("orderId", orderId);
         params.put("orderStatus", orderStatus);
-        params.put("payType",payType);
+        params.put("payType", payType);
         params.put("amount", amount);
         params.put("remark", remark);
         params.put("callBackInfo", callBackInfo);
@@ -1904,9 +1944,9 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
     }
 
     @Override
-    public String verifyDlSession(DlSession dlSession){
+    public String verifyDlSession(DlSession dlSession) {
         PlatformStatsLogger.info(PlatformStatsLogger.DL, dlSession.toString());
-        Map<String,Object> map = new LinkedHashMap<String, Object>();
+        Map<String, Object> map = new LinkedHashMap<String, Object>();
         int appid = dlSession.getAppid();
         String umid = dlSession.getUmid();
         String token = dlSession.getToken();
@@ -1914,53 +1954,53 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
                 getByPlatformAndGameId(Integer.valueOf(dlSession.getPlatformId()), Long.valueOf(dlSession.getYgAppId()));
         if (platformGame == null) {
             logger.debug("error not find platformGame");
-            map.put("valid","2");
-            map.put("roll",true);
-            map.put("interval",60);
-            map.put("times",1);
-            map.put("msg_code",6011);
-            map.put("msg_desc","platformGame not find");
+            map.put("valid", "2");
+            map.put("roll", true);
+            map.put("interval", 60);
+            map.put("times", 1);
+            map.put("msg_code", 6011);
+            map.put("msg_desc", "platformGame not find");
             return JsonUtil.toJson(map);
         }
 
         String appkey = platformGame.getConfigParamsList().get(0);
         StringBuilder sbUrl = new StringBuilder();
-        if(token.startsWith("ZB_")){
+        if (token.startsWith("ZB_")) {
             sbUrl.append(platformGame.getConfigParamsList().get(1));
-        }else {
+        } else {
             sbUrl.append(platformGame.getConfigParamsList().get(2));
         }
         sbUrl.append("?appid=").append(appid);
         sbUrl.append("&umid=").append(umid);
         sbUrl.append("&token=").append(token);
-        String sigStr = appid+"|"+appkey+"|"+token+"|"+umid;
-        String sig = MD5Util.MD5Encode(sigStr,"UTF-8");
+        String sigStr = appid + "|" + appkey + "|" + token + "|" + umid;
+        String sig = MD5Util.MD5Encode(sigStr, "UTF-8");
         sbUrl.append("&sig=").append(sig);
 
         PlatformStatsLogger.info(PlatformStatsLogger.DL, sbUrl.toString() + " sig: " + sig);
 
         try {
             String result = HttpUtils.get(sbUrl.toString());
-            logger.info("verifyDlSession Result: {}",result);
+            logger.info("verifyDlSession Result: {}", result);
             return result;
         } catch (Exception e) {
             e.printStackTrace();
             logger.debug("doGet error");
-            map.put("valid","2");
-            map.put("roll",true);
-            map.put("interval",60);
-            map.put("times",1);
-            map.put("msg_code",2002);
-            map.put("msg_desc","失败");
+            map.put("valid", "2");
+            map.put("roll", true);
+            map.put("interval", 60);
+            map.put("times", 1);
+            map.put("msg_code", 2002);
+            map.put("msg_desc", "失败");
             return JsonUtil.toJson(map);
         }
     }
 
     @Override
-    public String createDlPaySign(HttpServletRequest request){
+    public String createDlPaySign(HttpServletRequest request) {
         PlatformStatsLogger.info(PlatformStatsLogger.DL, HttpUtils.getRequestParams(request).toString());
 
-        Map<String,Object> map = new LinkedHashMap<String, Object>();
+        Map<String, Object> map = new LinkedHashMap<String, Object>();
         String cpOrder = request.getParameter("cpOrder");
         String ext = request.getParameter("ext");
         String money = request.getParameter("money");
@@ -1968,18 +2008,18 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
         String umid = request.getParameter("umid");
 
         Order order = basicRepository.getOrderByOrderId(cpOrder);
-        logger.debug("order= {}",order);
+        logger.debug("order= {}", order);
         if (order == null) {
-            map.put("code",1);
-            map.put("msg","error order not find");
+            map.put("code", 1);
+            map.put("msg", "error order not find");
             return JsonUtil.toJson(map);
         }
 
         PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
 
         if (platformGame == null) {
-            map.put("code",1);
-            map.put("msg","error platformGame not find");
+            map.put("code", 1);
+            map.put("msg", "error platformGame not find");
             return JsonUtil.toJson(map);
         }
         String paymentKey = platformGame.getConfigParamsList().get(3);
@@ -1987,35 +2027,35 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
 
         /** 生成签名*/
         StringBuilder sb = new StringBuilder();
-        sb.append(cpOrder==null?"":cpOrder).append("|");
-        sb.append(ext==null?"":ext).append("|");
-        sb.append(moneyTow==null?"":moneyTow).append("|");
-        sb.append(roleId==null?"":roleId).append("|");
-        sb.append(umid==null?"":umid).append("|");
+        sb.append(cpOrder == null ? "" : cpOrder).append("|");
+        sb.append(ext == null ? "" : ext).append("|");
+        sb.append(moneyTow == null ? "" : moneyTow).append("|");
+        sb.append(roleId == null ? "" : roleId).append("|");
+        sb.append(umid == null ? "" : umid).append("|");
         sb.append(paymentKey);
-        logger.info("cpSignSb: {}",sb.toString());
-        String cpSign = MD5Util.MD5Encode(sb.toString(),"UTF-8");
+        logger.info("cpSignSb: {}", sb.toString());
+        String cpSign = MD5Util.MD5Encode(sb.toString(), "UTF-8");
 
-        PlatformStatsLogger.info(PlatformStatsLogger.DL, "cpSign:"+cpSign);
+        PlatformStatsLogger.info(PlatformStatsLogger.DL, "cpSign:" + cpSign);
 
-        map.put("code",0);
-        map.put("msg","成功");
-        map.put("cpSign",cpSign);
+        map.put("code", 0);
+        map.put("msg", "成功");
+        map.put("cpSign", cpSign);
         return JsonUtil.toJson(map);
     }
 
     @Override
-    public String verifyDl(HttpServletRequest request){
+    public String verifyDl(HttpServletRequest request) {
         PlatformStatsLogger.info(PlatformStatsLogger.DL, HttpUtils.getRequestParams(request).toString());
 
         String result = request.getParameter("result");
         String cpOrder = request.getParameter("cpOrder");
         String money = request.getParameter("money");
-        String ext = request.getParameter("ext")==null?"":request.getParameter("ext");
+        String ext = request.getParameter("ext") == null ? "" : request.getParameter("ext");
         String signature = request.getParameter("signature");
 
         Order order = basicRepository.getOrderByOrderId(cpOrder);
-        logger.info("order {}",order);
+        logger.info("order {}", order);
         if (order == null) {
             return "error order not find";
         }
@@ -2036,14 +2076,14 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
         sb.append("&cpOrder=").append(cpOrder);
         sb.append("&ext=").append(ext);
         sb.append("&key=").append(paymentKey);
-        logger.info("signSb: {} ,orderAmount {}",sb.toString(),order.getAmount());
+        logger.info("signSb: {} ,orderAmount {}", sb.toString(), order.getAmount());
         String sig = MD5Util.MD5Encode(sb.toString(), "UTF-8");
 
-        PlatformStatsLogger.info(PlatformStatsLogger.DL, "signature:"+signature+",sig:"+sig);
+        PlatformStatsLogger.info(PlatformStatsLogger.DL, "signature:" + signature + ",sig:" + sig);
         try {
             if (sig.equalsIgnoreCase(signature)) { // 验证通过
                 if ("1".equals(result)) {
-                    if (order.getAmount() > Float.valueOf(money)*100) {
+                    if (order.getAmount() > Float.valueOf(money) * 100) {
                         orderService.payFail(order.getOrderId(), "order amount error");
                         PlatformStatsLogger.error(PlatformStatsLogger.DL, order.getOrderId(), "order amount error");
                     } else {
@@ -2063,9 +2103,9 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
     }
 
     @Override
-    public String verifyJianguoSession(JianguoSession session){
+    public String verifyJianguoSession(JianguoSession session) {
         Map<String, String> result = new HashMap<String, String>();
-        logger.info("坚果session req = {}",JsonMapper.toJson(session));
+        logger.info("坚果session req = {}", JsonMapper.toJson(session));
 
         try {
             PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
@@ -2092,21 +2132,21 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             params.put("app_id", app_id);
             params.put("mem_id", mem_id);
             params.put("user_token", user_token);
-            params.put("sign",validSign);
+            params.put("sign", validSign);
 
-            String returnMsg = HttpUtils.doPost(url,params);
+            String returnMsg = HttpUtils.doPost(url, params);
 
-            logger.info("坚果session 请求返回结果 = {}",returnMsg);
+            logger.info("坚果session 请求返回结果 = {}", returnMsg);
 
             JSONObject returnJson = new JSONObject(returnMsg);
 
-            if("1".equals(returnJson.get("status"))){
+            if ("1".equals(returnJson.get("status"))) {
                 result.put("code", "0");
                 result.put("msg", "校验成功！");
                 return JsonMapper.toJson(result);
-            }else{
+            } else {
                 result.put("code", "1");
-                result.put("msg",returnJson.get("msg").toString());
+                result.put("msg", returnJson.get("msg").toString());
                 return JsonMapper.toJson(result);
             }
         } catch (Exception e) {
@@ -2118,7 +2158,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
     }
 
     @Override
-    public String verifyJianguo(HttpServletRequest request){
+    public String verifyJianguo(HttpServletRequest request) {
         PlatformStatsLogger.info(PlatformStatsLogger.JG, HttpUtils.getRequestParams(request).toString());
         String app_id = request.getParameter("app_id");
         String cp_order_id = request.getParameter("cp_order_id");
@@ -2134,7 +2174,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
         Map<String, Object> returnMap = new HashMap<String, Object>();
         Order order = basicRepository.getOrderByOrderId(cp_order_id);
         if (order == null) {
-            logger.error("坚果支付回调订单不存在:{}",cp_order_id);
+            logger.error("坚果支付回调订单不存在:{}", cp_order_id);
             returnMap.put("ret", 1);
             returnMap.put("msg", "Can find Order");
             returnMap.put("content", "");
@@ -2154,18 +2194,18 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
         String app_key = platformGame.getConfigParamsList().get(1);
 
         Map<String, Object> signParams = new LinkedHashMap<String, Object>();
-        signParams.put("app_id",app_id);
-        signParams.put("cp_order_id",cp_order_id);
-        signParams.put("mem_id",mem_id);
-        signParams.put("order_id",order_id);
-        signParams.put("order_status",order_status);
-        signParams.put("pay_time",pay_time);
-        signParams.put("product_id",product_id);
-        signParams.put("product_name",URLEncoder.encode(product_name));
-        signParams.put("product_price",product_price);
-        signParams.put("app_key",app_key);
+        signParams.put("app_id", app_id);
+        signParams.put("cp_order_id", cp_order_id);
+        signParams.put("mem_id", mem_id);
+        signParams.put("order_id", order_id);
+        signParams.put("order_status", order_status);
+        signParams.put("pay_time", pay_time);
+        signParams.put("product_id", product_id);
+        signParams.put("product_name", URLEncoder.encode(product_name));
+        signParams.put("product_price", product_price);
+        signParams.put("app_key", app_key);
 
-        String validSign = Sign.signByMD5Unsort(signParams,"");
+        String validSign = Sign.signByMD5Unsort(signParams, "");
 
         if ("2".equals(order_status) && validSign.equals(sign)) {
             if (order.getAmount() > Float.parseFloat(product_price) * 100) {
@@ -2193,9 +2233,8 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
     }
 
 
-
     @Override
-    public String verifyBinghuSession(BinghuSession session){
+    public String verifyBinghuSession(BinghuSession session) {
         Map<String, String> result = new HashMap<String, String>();
         logger.info(JsonMapper.toJson(session));
 
@@ -2224,18 +2263,18 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             params.put("app_id", app_id);
             params.put("mem_id", mem_id);
             params.put("user_token", user_token);
-            params.put("sign",validSign);
+            params.put("sign", validSign);
 
-            String returnMsg = HttpUtils.doPost(url,params);
+            String returnMsg = HttpUtils.doPost(url, params);
             JSONObject returnJson = new JSONObject(returnMsg);
 
-            if("1".equals(returnJson.get("status"))){
+            if ("1".equals(returnJson.get("status"))) {
                 result.put("code", "0");
                 result.put("msg", "校验成功！");
                 return JsonMapper.toJson(result);
-            }else{
+            } else {
                 result.put("code", "1");
-                result.put("msg",returnJson.get("msg").toString());
+                result.put("msg", returnJson.get("msg").toString());
                 return JsonMapper.toJson(result);
             }
         } catch (Exception e) {
@@ -2247,7 +2286,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
     }
 
     @Override
-    public String verifyBinghu(HttpServletRequest request){
+    public String verifyBinghu(HttpServletRequest request) {
 
         PlatformStatsLogger.info(PlatformStatsLogger.BH, HttpUtils.getRequestParams(request).toString());
         String app_id = request.getParameter("app_id");
@@ -2282,22 +2321,22 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
         String app_key = platformGame.getConfigParamsList().get(1);
 
         Map<String, Object> signParams = new LinkedHashMap<String, Object>();
-        signParams.put("app_id",app_id);
-        signParams.put("cp_order_id",cp_order_id);
-        signParams.put("mem_id",mem_id);
-        signParams.put("order_id",order_id);
-        signParams.put("order_status",order_status);
-        signParams.put("pay_time",pay_time);
-        signParams.put("product_id",product_id);
-        signParams.put("product_name",URLEncoder.encode(product_name));
-        signParams.put("product_price",product_price);
-        signParams.put("app_key",app_key);
+        signParams.put("app_id", app_id);
+        signParams.put("cp_order_id", cp_order_id);
+        signParams.put("mem_id", mem_id);
+        signParams.put("order_id", order_id);
+        signParams.put("order_status", order_status);
+        signParams.put("pay_time", pay_time);
+        signParams.put("product_id", product_id);
+        signParams.put("product_name", URLEncoder.encode(product_name));
+        signParams.put("product_price", product_price);
+        signParams.put("app_key", app_key);
 
-        String validSign = Sign.signByMD5Unsort(signParams,"");
+        String validSign = Sign.signByMD5Unsort(signParams, "");
 
-        logger.info("validSign = {}",validSign);
-        logger.info("sign = {}",sign);
-        logger.info("order_status = {}",order_status);
+        logger.info("validSign = {}", validSign);
+        logger.info("sign = {}", sign);
+        logger.info("order_status = {}", order_status);
 
         if ("2".equals(order_status) && validSign.equals(sign)) {
             if (order.getAmount() > Float.parseFloat(product_price) * 100) {
@@ -2325,7 +2364,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
     }
 
     @Override
-    public String verifyDxSession(DianxinSession session){
+    public String verifyDxSession(DianxinSession session) {
         PlatformStatsLogger.info(PlatformStatsLogger.DX, session.toString());
         if (StringUtils.isBlank(session.getYgAppId()) || StringUtils.isBlank(session.getPlatformId()) || StringUtils.isBlank(session.getCode())) {
             return "param delivery error";
@@ -2359,7 +2398,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
     }
 
     @Override
-    public String verifyDxToken(DianxinSession session){
+    public String verifyDxToken(DianxinSession session) {
         PlatformStatsLogger.info(PlatformStatsLogger.DX, session.toString());
         if (StringUtils.isBlank(session.getYgAppId()) || StringUtils.isBlank(session.getPlatformId())) {
             return "param delivery error";
@@ -2391,7 +2430,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
     }
 
     @Override
-    public String verifyUuSyzhuSession(UuSyzhuSession session){
+    public String verifyUuSyzhuSession(UuSyzhuSession session) {
         PlatformStatsLogger.info(PlatformStatsLogger.UUSYZ, session.toString());
         try {
             PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
@@ -2404,7 +2443,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             String token = session.getToken();
             SimpleDateFormat sdf = new SimpleDateFormat("YYYYMMddHHmmssSSS");
             String qtime = sdf.format(new Date());
-            String sign = MD5Util.sign(appid+qtime+serverMD5Key).toUpperCase();
+            String sign = MD5Util.sign(appid + qtime + serverMD5Key).toUpperCase();
 
             StringBuilder sbData = new StringBuilder();
             sbData.append("appid=").append(appid);
@@ -2413,7 +2452,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             sbData.append("&sign=").append(sign);
 
             String result = HttpUtils.post(verifySessionUrl, sbData.toString());
-            logger.info("verifyUuSyzhuSession result: {}",result);
+            logger.info("verifyUuSyzhuSession result: {}", result);
             return result;
         } catch (Exception e) {
             e.printStackTrace();
@@ -2422,7 +2461,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
     }
 
     @Override
-    public String verifyUuSyzhu(HttpServletRequest request){
+    public String verifyUuSyzhu(HttpServletRequest request) {
         PlatformStatsLogger.info(PlatformStatsLogger.UUSYZ, HttpUtils.getRequestParams(request).toString());
         String cporderno = request.getParameter("cporderno");
         Order order = basicRepository.getOrderByOrderId(cporderno);
@@ -2442,13 +2481,13 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
         String status = request.getParameter("status");
         String qtime = request.getParameter("qtime");
         String sign = request.getParameter("sign");
-        String verifySign = MD5Util.sign(cporderno+money+status+qtime+serverMD5Key).toUpperCase();
-        logger.info("sign:{} verifySign:{}",sign,verifySign);
+        String verifySign = MD5Util.sign(cporderno + money + status + qtime + serverMD5Key).toUpperCase();
+        logger.info("sign:{} verifySign:{}", sign, verifySign);
 
         if (sign.equalsIgnoreCase(verifySign)) { // 验证通过
             if ("1".equals(status)) {
-                logger.info("orderAmount:{} money:{}",order.getAmount(),Float.valueOf(money));
-                if (order.getAmount() > Float.valueOf(money)*100) {
+                logger.info("orderAmount:{} money:{}", order.getAmount(), Float.valueOf(money));
+                if (order.getAmount() > Float.valueOf(money) * 100) {
                     orderService.payFail(order.getOrderId(), "order amount error");
                     PlatformStatsLogger.error(PlatformStatsLogger.UUSYZ, order.getOrderId(), "order amount error");
                     return "failure";
@@ -2467,7 +2506,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
     }
 
     @Override
-    public String verifyGuangFanSession(GuangFanSession session){
+    public String verifyGuangFanSession(GuangFanSession session) {
         PlatformStatsLogger.info(PlatformStatsLogger.GF, session.toString());
         try {
 
@@ -2480,14 +2519,14 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             String token = session.getToken();
             String userID = session.getUserID();
 
-            String sign = MD5Util.MD5Encode("userID="+userID+"token="+token+appKey,"UTF-8");
+            String sign = MD5Util.MD5Encode("userID=" + userID + "token=" + token + appKey, "UTF-8");
             StringBuilder sbData = new StringBuilder();
             sbData.append("userID=").append(userID)
-                .append("&token=").append(token)
-                .append("&sign=").append(sign);
+                    .append("&token=").append(token)
+                    .append("&sign=").append(sign);
 
             String result = HttpUtils.post(verifySessionUrl, sbData.toString());
-            logger.info("verifyGuangFanSession result: {}",result);
+            logger.info("verifyGuangFanSession result: {}", result);
             return result;
         } catch (Exception e) {
             e.printStackTrace();
@@ -2496,7 +2535,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
     }
 
     @Override
-    public String createGuangFanOrderId(GuangFanSession session){
+    public String createGuangFanOrderId(GuangFanSession session) {
         PlatformStatsLogger.info(PlatformStatsLogger.GF, session.toString());
         try {
             PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
@@ -2506,33 +2545,33 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             String appSecret = platformGame.getConfigParamsList().get(2);
             String orderIdUrl = platformGame.getConfigParamsList().get(3);
             /** 加密源串拼接*/
-            String productName = new String(session.getProductName().getBytes("ISO-8859-1"),"UTF-8");
+            String productName = new String(session.getProductName().getBytes("ISO-8859-1"), "UTF-8");
 //            String productName = URLDecoder.decode(session.getProductName(), "UTF-8");
             StringBuilder sb = new StringBuilder();
             sb.append("userID=").append(session.getUserID())
-                .append("&productID=").append(session.getProductID())
-                .append("&productName=").append(productName)
-                .append("&productDesc=").append(session.getProductDesc())
-                .append("&money=").append(session.getMoney())
-                .append("&roleID=").append(session.getRoleID())
-                .append("&roleName=").append(session.getRoleName())
-                .append("&serverID=").append(session.getServerID())
-                .append("&serverName=").append(session.getServerName())
-                .append("&extension=").append(session.getExtension());
+                    .append("&productID=").append(session.getProductID())
+                    .append("&productName=").append(productName)
+                    .append("&productDesc=").append(session.getProductDesc())
+                    .append("&money=").append(session.getMoney())
+                    .append("&roleID=").append(session.getRoleID())
+                    .append("&roleName=").append(session.getRoleName())
+                    .append("&serverID=").append(session.getServerID())
+                    .append("&serverName=").append(session.getServerName())
+                    .append("&extension=").append(session.getExtension());
             String notifyUrl = session.getNotifyUrl();
-            if(null != notifyUrl && !notifyUrl.trim().equals("")){
+            if (null != notifyUrl && !notifyUrl.trim().equals("")) {
                 sb.append("&notifyUrl=").append(notifyUrl);
             }
             sb.append(appSecret);
-            logger.info("sbSign: {}",sb.toString());
+            logger.info("sbSign: {}", sb.toString());
             /** URLEncode拼接的源字符串,MD5加密*/
-            String encodeData = URLEncoder.encode(sb.toString(),"UTF-8");
-            String sign = MD5Util.MD5Encode(encodeData,"UTF-8");
+            String encodeData = URLEncoder.encode(sb.toString(), "UTF-8");
+            String sign = MD5Util.MD5Encode(encodeData, "UTF-8");
             /** 封装请求参数*/
             StringBuilder sbUrlData = new StringBuilder();
             sbUrlData.append("userID=").append(session.getUserID())
                     .append("&productID=").append(session.getProductID())
-                    .append("&productName=").append(URLEncoder.encode(productName,"UTF-8"))
+                    .append("&productName=").append(URLEncoder.encode(productName, "UTF-8"))
                     .append("&productDesc=").append(session.getProductDesc())
                     .append("&money=").append(session.getMoney())
                     .append("&roleID=").append(session.getRoleID())
@@ -2543,7 +2582,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
                     .append("&signType=").append("md5")
                     .append("&sign=").append(sign);
             String result = HttpUtils.post(orderIdUrl, sbUrlData.toString());
-            logger.info("createGuangFanOrderId result: {}",result);
+            logger.info("createGuangFanOrderId result: {}", result);
             return result;
         } catch (Exception e) {
             e.printStackTrace();
@@ -2552,20 +2591,20 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
     }
 
     @Override
-    public String verifyGuangFan(HttpServletRequest request){
+    public String verifyGuangFan(HttpServletRequest request) {
         try {
             BufferedReader br = request.getReader();
             String line;
             StringBuilder sbr = new StringBuilder();
-            while((line=br.readLine()) != null){
+            while ((line = br.readLine()) != null) {
                 sbr.append(line).append("\r\n");
             }
 
             logger.info("U8Server Pay Callback response params:" + sbr.toString());
             Map map = JsonUtil.toObject(sbr.toString(), Map.class);
 
-            if(StringUtil.isNullOrEmpty(map.get("state").toString())||
-                    StringUtil.isNullOrEmpty(map.get("data").toString()) ){
+            if (StringUtil.isNullOrEmpty(map.get("state").toString()) ||
+                    StringUtil.isNullOrEmpty(map.get("data").toString())) {
                 logger.info("verifyGuangFan param error");
                 return "FAIL";
             }
@@ -2578,7 +2617,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             Object dataObj = map.get("data");
             String dataJson = JsonUtil.toJson(dataObj);
             Map dataMap = JsonUtil.toObject(dataJson, Map.class);
-            logger.info("verifyGuangFan dataJson: {}",dataJson);
+            logger.info("verifyGuangFan dataJson: {}", dataJson);
             String cpOrderId = dataMap.get("extension").toString();
             Order order = basicRepository.getOrderByOrderId(cpOrderId);
             if (order == null) {
@@ -2609,7 +2648,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
             /** 验证回调*/
             boolean flag = RSAUtils.verify(sb.toString(), sign, publicKey, "UTF-8", "SHA1withRSA");
             if (flag) {
-                logger.info("amount: {} money: {}",order.getAmount(),dataMap.get("money").toString());
+                logger.info("amount: {} money: {}", order.getAmount(), dataMap.get("money").toString());
                 if (order.getAmount() > Float.parseFloat(dataMap.get("money").toString())) {
                     orderService.payFail(order.getOrderId(), "order amount error");
                     return "FAIL";
@@ -2621,7 +2660,7 @@ public class PlatformServicePartTwoImpl implements PlatformServicePartTwo {
                 logger.info("verify sign fail");
                 return "FAIL";
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return "FAIL";
         }
     }

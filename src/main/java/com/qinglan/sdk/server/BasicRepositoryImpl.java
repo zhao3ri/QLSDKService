@@ -101,6 +101,15 @@ public class BasicRepositoryImpl implements BasicRepository {
     }
 
     @Override
+    public Order getOrderStatus(String orderId, long gameId, int platformId) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put(PARAM_PLATFORM_ID, platformId);
+        params.put(PARAM_GAME_ID, gameId);
+        params.put(PARAM_ORDER_ID, orderId);
+        return mybatisRepository.findOne(Order.class, "getOrderStatus", params);
+    }
+
+    @Override
     public int updateStatusPay(Order order) {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(PARAM_ORDER_ID, order.getOrderId());

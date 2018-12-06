@@ -44,7 +44,7 @@ import com.qinglan.sdk.server.presentation.basic.dto.LoginPattern;
 import com.qinglan.sdk.server.presentation.basic.dto.LogoutPattern;
 import com.qinglan.sdk.server.presentation.basic.dto.OrderGeneratePattern;
 import com.qinglan.sdk.server.presentation.basic.dto.QuitPattern;
-import com.qinglan.sdk.server.presentation.basic.dto.RoleEstablishPattern;
+import com.qinglan.sdk.server.presentation.basic.dto.RoleCreatePattern;
 
 @Component @EventListener
 public class GameOperateListener {
@@ -417,7 +417,7 @@ public class GameOperateListener {
 	
 	@EventListener(asynchronous = true)
 	public void handleRoleEstablishEvent(RoleEstablishEvent event) {
-		RoleEstablishPattern params = event.getHelper();
+		RoleCreatePattern params = event.getHelper();
 		
 		Role role = new Role(params.getClientType(), params.getGameId(), params.getPlatformId(), params.getZoneId(), params.getRoleId(), params.getRoleName());
 		role.setCreateTime(params.getCreatTime());

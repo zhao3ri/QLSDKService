@@ -1,5 +1,7 @@
 package com.qinglan.sdk.server.application.platform;
 
+import com.qinglan.sdk.server.presentation.channel.entity.HMSPaySignRequest;
+import com.qinglan.sdk.server.presentation.channel.entity.HMSVerifyRequest;
 import com.qinglan.sdk.server.presentation.platform.dto.AoChuangSession;
 import com.qinglan.sdk.server.presentation.platform.dto.MangGuoWanSession;
 import com.qinglan.sdk.server.presentation.platform.dto.Six7Session;
@@ -7,11 +9,19 @@ import com.qinglan.sdk.server.presentation.platform.dto.TaoShouYouSession;
 import com.qinglan.sdk.server.presentation.platform.dto.dtotwo.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * Created by engine on 2016/10/21.
  */
 public interface PlatformServicePartTwo {
+
+    String signOrderHuawei(HMSPaySignRequest request);
+
+    String huaweiPayReturn(HttpServletRequest request, HttpServletResponse response) throws IOException;
+
+    String verifyHuawei(HMSVerifyRequest request);
 
     String verifyAoChuangsdk(HttpServletRequest request);
 
@@ -63,8 +73,9 @@ public interface PlatformServicePartTwo {
 
     String verifyM2166(HttpServletRequest request);
 
-    String verifySix7Session(Six7Session session) ;
-    String verifySix7(HttpServletRequest request) ;
+    String verifySix7Session(Six7Session session);
+
+    String verifySix7(HttpServletRequest request);
 
     String verifyXmwSession(XmwSession xmwSession);
 

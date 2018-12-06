@@ -97,7 +97,7 @@ public class BasicServiceTest  extends BaseTestCase{
 		params.put("orderId", order.getOrderId());
 		params.put("orderStatus", 1);
 		params.put("amount", order.getAmount());
-		params.put("extInfo", order.getCpExtInfo());
+		params.put("extInfo", order.getExtInfo());
 		params.put("payTime", DateUtils.format(order.getCreateTime(), DateUtils.yyyyMMddHHmmss));
 		params.put("paySucTime", DateUtils.format(order.getUpdateTime(), DateUtils.yyyyMMddHHmmss));
 		params.put("notifyUrl", order.getNotifyUrl());

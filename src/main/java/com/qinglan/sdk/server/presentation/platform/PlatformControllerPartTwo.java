@@ -1,6 +1,8 @@
 package com.qinglan.sdk.server.presentation.platform;
 
 import com.qinglan.sdk.server.application.platform.PlatformServicePartTwo;
+import com.qinglan.sdk.server.presentation.channel.entity.HMSPaySignRequest;
+import com.qinglan.sdk.server.presentation.channel.entity.HMSVerifyRequest;
 import com.qinglan.sdk.server.presentation.platform.dto.Six7Session;
 import com.qinglan.sdk.server.presentation.platform.dto.dtotwo.*;
 import org.slf4j.Logger;
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * Created by engine on 2016/10/21.
@@ -24,6 +28,25 @@ public class PlatformControllerPartTwo {
 
     @Resource
     private PlatformServicePartTwo platformServiceTwo;
+
+    @RequestMapping(value = "/hms/pay/sign", produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String signHuaweiPay(HMSPaySignRequest request) {
+        return platformServiceTwo.signOrderHuawei(request);
+    }
+
+    @RequestMapping(value = "/hms/pay/return", produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String huaweiPayReturn(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        return platformServiceTwo.huaweiPayReturn(request, response);
+    }
+
+    @RequestMapping(value = "/hms/session", produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String huaweiSession(HMSVerifyRequest req) {
+        logger.debug(req.toString());
+        return platformServiceTwo.verifyHuawei(req);
+    }
 
     /**
      * 青木 SDK session验证
@@ -233,6 +256,7 @@ public class PlatformControllerPartTwo {
     public String verifyM2166(HttpServletRequest request) {
         return platformServiceTwo.verifyM2166(request);
     }
+
     /**
      * Six7 登录 session验证
      *
@@ -259,10 +283,11 @@ public class PlatformControllerPartTwo {
 
     /**
      * 熊猫玩 session 验证
+     *
      * @param request
      * @return
      */
-    @RequestMapping(value = "/xmw/session",produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/xmw/session", produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String verifyXmwSession(XmwSession request) {
         return platformServiceTwo.verifyXmwSession(request);
@@ -270,10 +295,11 @@ public class PlatformControllerPartTwo {
 
     /**
      * 熊猫玩创建订单
+     *
      * @param request
      * @return
      */
-    @RequestMapping(value = "/xmw/createOrder",produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/xmw/createOrder", produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String createXmwOrder(XmwOrderSession request) {
         return platformServiceTwo.createXmwOrder(request);
@@ -281,10 +307,11 @@ public class PlatformControllerPartTwo {
 
     /**
      * 熊猫玩 session 验证
+     *
      * @param request
      * @return
      */
-    @RequestMapping(value = "/xmw",produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/xmw", produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String verifyXmw(HttpServletRequest request) {
         return platformServiceTwo.verifyXmw(request);
@@ -340,25 +367,25 @@ public class PlatformControllerPartTwo {
 
     @RequestMapping(value = "/jianguo/session", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String verifyJianguoSession(JianguoSession session){
+    public String verifyJianguoSession(JianguoSession session) {
         return platformServiceTwo.verifyJianguoSession(session);
     }
 
     @RequestMapping(value = "/jianguo", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String verifyJianguo(HttpServletRequest request){
+    public String verifyJianguo(HttpServletRequest request) {
         return platformServiceTwo.verifyJianguo(request);
     }
 
     @RequestMapping(value = "/binghu/session", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String verifyBinghuSession(BinghuSession session){
+    public String verifyBinghuSession(BinghuSession session) {
         return platformServiceTwo.verifyBinghuSession(session);
     }
 
     @RequestMapping(value = "/binghu", produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String verifyBinghu(HttpServletRequest request){
+    public String verifyBinghu(HttpServletRequest request) {
         return platformServiceTwo.verifyBinghu(request);
     }
 

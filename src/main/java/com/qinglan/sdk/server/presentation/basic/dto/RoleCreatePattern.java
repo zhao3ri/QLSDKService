@@ -9,7 +9,7 @@ import com.qinglan.sdk.server.common.StringUtil;
 import lombok.ToString;
 
 @ToString(callSuper = true)
-public class RoleEstablishPattern extends BaseDto implements Serializable {
+public class RoleCreatePattern extends BaseDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private String uid;

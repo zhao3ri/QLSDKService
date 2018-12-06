@@ -3,6 +3,7 @@ package com.qinglan.sdk.server.common;
 import org.apache.commons.codec.CharEncoding;
 import org.apache.http.Consts;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -16,6 +17,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.codehaus.jackson.type.TypeReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -195,16 +197,7 @@ public class HttpUtils {
         HttpURLConnection conn = null;
         try {
 
-            URL url = new URL(toUrl);
-            conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setConnectTimeout(10000);
-            conn.setRequestProperty("Content-Type",
-                    "application/x-www-form-urlencoded");
-            conn.setUseCaches(false);
-            conn.setDoOutput(true);
-            conn.setInstanceFollowRedirects(true);
-            conn.connect();
+            conn = getHttpConnection(toUrl, "application/x-www-form-urlencoded", DEFALUT_TIME_OUT);
 
             DataOutputStream out = new DataOutputStream(conn.getOutputStream());
             if (sb != null && !sb.toString().trim().equals(""))
@@ -233,7 +226,6 @@ public class HttpUtils {
         return buffer.toString();
     }
 
-
     /**
      * POST方式发送
      *
@@ -247,18 +239,7 @@ public class HttpUtils {
         StringBuffer sb = new StringBuffer();
         HttpURLConnection conn = null;
         try {
-
-            URL url = new URL(toUrl);
-            conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setConnectTimeout(timeout);
-            conn.setRequestProperty("Content-Type",
-                    "application/x-www-form-urlencoded");
-            conn.setUseCaches(false);
-            conn.setDoOutput(true);
-            conn.setInstanceFollowRedirects(true);
-            conn.connect();
-
+            conn = getHttpConnection(toUrl, "application/x-www-form-urlencoded", timeout);
             DataOutputStream out = new DataOutputStream(conn.getOutputStream());
             if (params != null && !params.trim().equals(""))
                 out.writeBytes(params);
@@ -296,17 +277,7 @@ public class HttpUtils {
         StringBuffer sb = new StringBuffer();
         HttpURLConnection conn = null;
         try {
-
-            URL url = new URL(toUrl);
-            conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setConnectTimeout(timeout);
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setUseCaches(false);
-            conn.setDoOutput(true);
-            conn.setInstanceFollowRedirects(true);
-            conn.connect();
-
+            conn = getHttpConnection(toUrl, "application/json", timeout);
             DataOutputStream out = new DataOutputStream(conn.getOutputStream());
             if (data != null && !data.trim().equals(""))
                 out.writeBytes(data);
@@ -321,8 +292,8 @@ public class HttpUtils {
                     sb.append(buf);
                 }
                 reader.close();
-            }else{
-                logger.info("错误码："+conn.getResponseCode()+"错误消息："+conn.getResponseMessage());
+            } else {
+                logger.info("错误码：" + conn.getResponseCode() + "错误消息：" + conn.getResponseMessage());
             }
         } catch (Exception e) {
             logger.error("io exception", e);
@@ -333,9 +304,23 @@ public class HttpUtils {
         return sb.toString();
     }
 
+    private static HttpURLConnection getHttpConnection(String url, String property, int timeout) throws IOException {
+        URL connUrl = new URL(url);
+        HttpURLConnection conn = (HttpURLConnection) connUrl.openConnection();
+        conn.setRequestMethod("POST");
+        if (timeout > 0)
+            conn.setConnectTimeout(timeout);
+        if (!StringUtil.isNullOrEmpty(property))
+            conn.setRequestProperty("Content-Type", property);
+        conn.setUseCaches(false);
+        conn.setDoOutput(true);
+        conn.setInstanceFollowRedirects(true);
+        conn.connect();
+        return conn;
+    }
+
     /**
-     *
-     * @param url 发送地址
+     * @param url     发送地址
      * @param urldata 发送报文数据
      * @param headers 发送头部数据
      * @return
@@ -349,7 +334,7 @@ public class HttpUtils {
         StringEntity stringEntity = new StringEntity(urldata, ContentType.APPLICATION_JSON);
         stringEntity.setContentEncoding("UTF-8");
 
-        httpPost.addHeader("Content-Type","application/json");
+        httpPost.addHeader("Content-Type", "application/json");
         Set<String> keySet = headers.keySet();
         for (String itemKey : keySet) {
             httpPost.addHeader(itemKey, String.valueOf(headers.get(itemKey)));
@@ -448,12 +433,7 @@ public class HttpUtils {
     public static String post(String reqUrl, String data) throws Exception {
         String invokeUrl = reqUrl;
         URL serverUrl = new URL(invokeUrl);
-        HttpURLConnection conn = (HttpURLConnection) serverUrl.openConnection();
-        conn.setConnectTimeout(5000);
-        conn.setReadTimeout(5000);
-        conn.setRequestMethod("POST");
-        conn.setDoOutput(true);
-        conn.connect();
+        HttpURLConnection conn = getHttpConnection(reqUrl, "", 5000);
 
         conn.getOutputStream().write(data.getBytes(CharEncoding.UTF_8));
         BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), CharEncoding.UTF_8));

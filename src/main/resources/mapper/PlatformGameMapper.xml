@@ -14,10 +14,9 @@
         <result column="secretKey" property="secretKey" jdbcType="VARCHAR"/>
         <result column="privateKey" property="privateKey" jdbcType="VARCHAR"/>
         <result column="publicKey" property="publicKey" jdbcType="VARCHAR"/>
-        <result column="notifyUrl" property="notifyUrl" jdbcType="VARCHAR"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, platformId, gameId, configParams, createTime,status,registStatus,discount,appKey,appID,secretKey,privateKey,publicKey,notifyUrl
+    id, platformId, gameId, configParams, createTime,status,registStatus,discount,appKey,appID,secretKey,privateKey,publicKey
   </sql>
 
     <select id="getByPlatformAndGameId" resultMap="BaseResultMap" parameterType="java.util.Map">

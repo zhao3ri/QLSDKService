@@ -1,22 +1,22 @@
-package com.qinglan.sdk.server.presentation.basic.dto;
+package com.qinglan.sdk.server.presentation.channel.entity;
 
-import java.io.Serializable;
+import com.qinglan.sdk.server.presentation.basic.dto.OrderGeneratePattern;
 
-public class OrderBasicInfo extends BaseDto implements Serializable {
-    protected String uid;
-    protected String zoneId;
-    protected String roleId;
-    protected String roleName;
-    protected String cpOrderId;
-    protected String cpExtInfo;
-    protected Integer amount;
-    protected String notifyUrl;
-    protected Integer fixed;
-    protected String deviceId;
-    protected Integer clientType;
-    protected String orderId;
-    protected Integer gold;
-    protected Integer selfpay = 0;
+public class OrderRequest extends BaseRequest {
+    private String uid;
+    private String zoneId;
+    private String roleId;
+    private String roleName;
+    private String cpOrderId;
+    private String cpExtInfo;
+    private Integer amount;
+    private String notifyUrl;
+    private Integer fixed;
+    private String deviceId;
+    private Integer clientType;
+    private String orderId;
+    private Integer gold;
+    private Integer selfpay = 0;
 
     public String getUid() {
         return uid;
@@ -130,8 +130,13 @@ public class OrderBasicInfo extends BaseDto implements Serializable {
         this.selfpay = selfpay;
     }
 
-    @Override
-    public boolean isEmpty() {
-        return false;
+    public static OrderRequest getOrderByBean(OrderGeneratePattern order) {
+        OrderRequest request = new OrderRequest();
+        request.setCpExtInfo(order.getExtInfo());
+        request.setNotifyUrl(order.getNotifyUrl());
+        request.setAmount(order.getAmount());
+        request.setCpOrderId(order.getCpOrderId());
+        request.setUid(order.getUid());
+        return request;
     }
 }

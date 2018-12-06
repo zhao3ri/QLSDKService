@@ -62,14 +62,14 @@ public class OrderServiceImpl implements OrderService {
         }
 
         order.setCpOrderId(params.getCpOrderId());
-        order.setCpExtInfo(params.getCpExtInfo());
+        order.setExtInfo(params.getExtInfo());
         order.setAmount(params.getAmount());
         order.setNotifyUrl(params.getNotifyUrl());
         order.setFixed(params.getFixed());
         order.setDeviceId(params.getDeviceId());
         order.setClientType(params.getClientType());
-        order.setStatus(Order.STATUS_SUBMITSUCCESS);
-        order.setNotifyStatus(Order.NOTIFYSTATUS_DEFAULT);
+        order.setStatus(Order.ORDER_STATUS_SUBMIT_SUCCESS);
+        order.setNotifyStatus(Order.ORDER_NOTIFY_STATUS_DEFAULT);
         order.setCreateTime(new Date());
         order.setGold(params.getGold() == null ? 0 : params.getGold());
         order.setSelfpay(params.getSelfpay());
@@ -86,12 +86,12 @@ public class OrderServiceImpl implements OrderService {
         Order order = basicRepository.getOrderByOrderId(orderId);
         if (order == null)
             return Order.INVALID;
-        if (Order.STATUS_PAYSUCCESS.intValue() == order.getStatus().intValue())
+        if (Order.ORDER_STATUS_PAYMENT_SUCCESS == order.getStatus())
             return Order.REPEAT;
-        if (Order.STATUS_SUBMITSUCCESS.intValue() != order.getStatus().intValue())
+        if (Order.ORDER_STATUS_SUBMIT_SUCCESS != order.getStatus())
             return Order.INVALID;
 
-        order.setStatus(Order.STATUS_PAYFAIL);
+        order.setStatus(Order.ORDER_STATUS_PAYMENT_FAIL);
         order.setUpdateTime(new Date());
         order.setErrorMsg(errorMsg);
         if (basicRepository.updateStatusPay(order) < 1)
@@ -105,12 +105,12 @@ public class OrderServiceImpl implements OrderService {
         Order order = basicRepository.getOrderByOrderId(orderId);
         if (order == null)
             return Order.INVALID;
-        if (Order.STATUS_PAYSUCCESS.intValue() == order.getStatus().intValue())
+        if (Order.ORDER_STATUS_PAYMENT_SUCCESS == order.getStatus())
             return Order.REPEAT;
-        if (Order.STATUS_SUBMITSUCCESS.intValue() != order.getStatus().intValue())
+        if (Order.ORDER_STATUS_SUBMIT_SUCCESS != order.getStatus())
             return Order.INVALID;
-        order.setStatus(Order.STATUS_PAYSUCCESS);
-        order.setNotifyStatus(Order.NOTIFYSTATUS_WAIT);
+        order.setStatus(Order.ORDER_STATUS_PAYMENT_SUCCESS);
+        order.setNotifyStatus(Order.ORDER_NOTIFY_STATUS_WAITING);
         order.setUpdateTime(new Date());
         order.setErrorMsg(null);
         if (basicRepository.updateStatusPay(order) < 1) {
@@ -182,7 +182,7 @@ public class OrderServiceImpl implements OrderService {
         params.setZoneId(order.getZoneId());
         params.setRoleId(order.getRoleId());
         params.setCpOrderId(order.getCpOrderId());
-        params.setCpExtInfo(order.getCpExtInfo());
+        params.setExtInfo(order.getExtInfo());
         params.setAmount(order.getAmount());
         params.setNotifyUrl(order.getNotifyUrl());
         params.setFixed(order.getFixed());
@@ -197,13 +197,13 @@ public class OrderServiceImpl implements OrderService {
         Order order = basicRepository.getOrderByOrderId(orderId);
         if (order == null)
             return Order.INVALID;
-        if (Order.STATUS_PAYSUCCESS.intValue() != order.getStatus())
+        if (Order.ORDER_STATUS_PAYMENT_SUCCESS != order.getStatus())
             return Order.INVALID;
 
-        if (Order.NOTIFYSTATUS_SUCCESS.intValue() == order.getNotifyStatus())
+        if (Order.ORDER_NOTIFY_STATUS_SUCCESS == order.getNotifyStatus())
             return Order.REPEAT;
 
-        order.setNotifyStatus(Order.NOTIFYSTATUS_RESEND);
+        order.setNotifyStatus(Order.ORDER_NOTIFY_STATUS_RESEND);
         order.setUpdateTime(new Date());
         order.setErrorMsg(errorMsg);
 
@@ -217,14 +217,14 @@ public class OrderServiceImpl implements OrderService {
         Order order = basicRepository.getOrderByOrderId(orderId);
         if (order == null)
             return Order.INVALID;
-        if (Order.STATUS_PAYSUCCESS.intValue() != order.getStatus())
+        if (Order.ORDER_STATUS_PAYMENT_SUCCESS != order.getStatus())
             return Order.INVALID;
 
-        if (Order.NOTIFYSTATUS_SUCCESS.intValue() == order.getNotifyStatus()
-                || Order.NOTIFYSTATUS_FAIL.intValue() == order.getNotifyStatus())
+        if (Order.ORDER_NOTIFY_STATUS_SUCCESS == order.getNotifyStatus()
+                || Order.ORDER_NOTIFY_STATUS_FAIL == order.getNotifyStatus())
             return Order.REPEAT;
 
-        order.setNotifyStatus(Order.NOTIFYSTATUS_FAIL);
+        order.setNotifyStatus(Order.ORDER_NOTIFY_STATUS_FAIL);
         order.setUpdateTime(new Date());
         order.setErrorMsg(errorMsg);
 
@@ -238,13 +238,13 @@ public class OrderServiceImpl implements OrderService {
         Order order = basicRepository.getOrderByOrderId(orderId);
         if (order == null)
             return Order.INVALID;
-        if (Order.STATUS_PAYSUCCESS.intValue() != order.getStatus())
+        if (Order.ORDER_STATUS_PAYMENT_SUCCESS != order.getStatus())
             return Order.INVALID;
-        if (Order.NOTIFYSTATUS_SUCCESS.intValue() == order.getNotifyStatus()
-                || Order.NOTIFYSTATUS_FAIL.intValue() == order.getNotifyStatus())
+        if (Order.ORDER_NOTIFY_STATUS_SUCCESS == order.getNotifyStatus()
+                || Order.ORDER_NOTIFY_STATUS_FAIL == order.getNotifyStatus())
             return Order.REPEAT;
 
-        order.setNotifyStatus(Order.NOTIFYSTATUS_SUCCESS);
+        order.setNotifyStatus(Order.ORDER_NOTIFY_STATUS_SUCCESS);
         order.setUpdateTime(new Date());
         order.setErrorMsg(null);
 

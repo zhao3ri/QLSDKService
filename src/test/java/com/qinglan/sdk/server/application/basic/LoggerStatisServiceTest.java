@@ -10,7 +10,7 @@ import com.qinglan.sdk.server.presentation.basic.dto.HeartbeatPattern;
 import com.qinglan.sdk.server.presentation.basic.dto.InitialPattern;
 import com.qinglan.sdk.server.presentation.basic.dto.LoginPattern;
 import com.qinglan.sdk.server.presentation.basic.dto.QuitPattern;
-import com.qinglan.sdk.server.presentation.basic.dto.RoleEstablishPattern;
+import com.qinglan.sdk.server.presentation.basic.dto.RoleCreatePattern;
 
 public class LoggerStatisServiceTest extends BaseTestCase{
 	@Resource
@@ -94,7 +94,7 @@ public class LoggerStatisServiceTest extends BaseTestCase{
 	
 	@Test
 	public void roleEstablishLogger() throws InterruptedException{
-		RoleEstablishPattern roleEstablish = new RoleEstablishPattern();
+		RoleCreatePattern roleEstablish = new RoleCreatePattern();
 		roleEstablish.setGameId(150212661932L);
 		roleEstablish.setUid("zxbtest24");
 		roleEstablish.setPlatformId(1019);
@@ -105,7 +105,7 @@ public class LoggerStatisServiceTest extends BaseTestCase{
 		roleEstablish.setRoleLevel("100级");
 		roleEstablish.setZoneId("2");
 		roleEstablish.setZoneName("test分区");
-		accountService.roleEstablish(roleEstablish);
+		accountService.roleCreate(roleEstablish);
 		Thread.sleep(10000);
 	}
 	
@@ -120,7 +120,7 @@ public class LoggerStatisServiceTest extends BaseTestCase{
 //		orderGenerate.setRoleId("1");
 //		orderGenerate.setZoneId("1");
 //		orderGenerate.setCpOrderId(RandomTool.getOrderId());
-//		orderGenerate.setCpExtInfo("test");
+//		orderGenerate.setExtInfo("test");
 //		orderGenerate.setAmount(10);
 //		orderGenerate.setNotifyUrl("http://sdk.com.cn");
 //		orderGenerate.setFixed(1);

@@ -11,6 +11,7 @@ import com.qinglan.sdk.server.domain.basic.*;
 import com.qinglan.sdk.server.domain.basic.event.*;
 import com.qinglan.sdk.server.presentation.basic.dto.*;
 import com.qinglan.sdk.server.application.basic.redis.RedisUtil;
+import com.qinglan.sdk.server.presentation.channel.entity.OrderRequest;
 import com.qinglan.sdk.server.presentation.channel.impl.UCChannel;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -23,9 +24,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.util.*;
 
-import static com.qinglan.sdk.server.Constants.CHANNEL_STATUS_NORMAL;
-import static com.qinglan.sdk.server.Constants.RESPONSE_KEY_CREATE_TIME;
-import static com.qinglan.sdk.server.Constants.RESPONSE_KEY_LOGIN_TIME;
+import static com.qinglan.sdk.server.Constants.*;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -51,7 +50,7 @@ public class AccountServiceImpl implements AccountService {
         }
 
         PlatformGame platformGame = basicRepository.getByPlatformAndGameId(params.getPlatformId(), params.getGameId());
-        if (platformGame.getRegistStatus().equals(1)) {
+        if (platformGame.getRegistStatus().equals(GAME_CHANNEL_CODE_REGISTE_STATUS_DISABLE)) {
             result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_STOP_REGIST);
             return result;
         }
@@ -126,7 +125,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Map<String, Object> roleEstablish(RoleEstablishPattern params) {
+    public Map<String, Object> roleCreate(RoleCreatePattern params) {
         Map<String, Object> result = new HashMap<String, Object>();
 
         if (!isParameterValid(params)) {
@@ -270,7 +269,7 @@ public class AccountServiceImpl implements AccountService {
                 return "ok";
             }
             if ("1".equals(result)) {
-                if (order.getAmount().doubleValue() > Double.valueOf(pay_amt) * 100) {
+                if (order.getAmount() > Double.valueOf(pay_amt) * 100) {
                     orderService.payFail(agent_bill_id, "实际充值金额与订单金额不一致");
                     return "error";
                 }
@@ -284,7 +283,6 @@ public class AccountServiceImpl implements AccountService {
         }
 
     }
-
 
     private String buildMetaOption(String appName, String packageName) {
         Map<String, String> androidMap = new HashMap<String, String>();
@@ -326,7 +324,7 @@ public class AccountServiceImpl implements AccountService {
 
 
         if (!this.checkPlatformBalance(params.getAmount(), platformGame)) {
-            result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_BLANCEERROR);
+            result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_BLANCE_ERROR);
             return result;
         }
 
@@ -347,7 +345,7 @@ public class AccountServiceImpl implements AccountService {
         result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SUCCESS);
         result.put(Constants.RESPONSE_KEY_ORDER_ID, orderId);
 
-        result.put(Constants.REQUEST_PARAM_NOTIFY_URL, notifyUrl);
+        result.put(Constants.RESPONSE_KEY_NOTIFY_URL, notifyUrl);
 
         //如果是07073、乐嗨嗨平台则返回加密后的订单号
         if (params.getPlatformId() == Constants.LESHAN_PLATFORM_ID || params.getPlatformId() == Constants.LEHIHI_PLATFORM_ID) {
@@ -356,7 +354,8 @@ public class AccountServiceImpl implements AccountService {
             //UC需要返回参数签名
             UCChannel channel = new UCChannel();
             channel.init(platform, platformGame);
-            result.put(UCChannel.REQUEST_KEY_SIGN, channel.signOrder(params));
+            OrderRequest request = OrderRequest.getOrderByBean(params);
+            result.put(UCChannel.REQUEST_KEY_SIGN, channel.signOrder(request));
         }
 
         return result;
@@ -380,7 +379,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Map<String, Object> getUserIdByToken(GetUserInfoPattern params) {
-        logger.info("-getUserIdByToken--");
+        logger.info("--getUserIdByToken--");
         Map<String, Object> result = new HashMap<String, Object>();
         result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SUCCESS);
         if (params.isEmpty()) {
@@ -401,6 +400,16 @@ public class AccountServiceImpl implements AccountService {
         if (params.getPlatformId() == 38 && params.getGameId().longValue() == Long.parseLong("180830054479")) {
             result.put("userid", getUUWdqkUserid(userid));
         }
+        return result;
+    }
+
+    @Override
+    public Map<String, Object> queryOrder(QueryOrderRequest request) {
+        Map<String, Object> result = new HashMap<>();
+        Order order = basicRepository.getOrderStatus(request.getOrderId(), request.getGameId(), request.getPlatformId());
+        result.put(RESPONSE_KEY_ORDER_STATUS, order.getStatus());
+        result.put(RESPONSE_KEY_ORDER_NOTIFY_STATUS, order.getNotifyStatus());
+        result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SUCCESS);
         return result;
     }
 
@@ -475,8 +484,8 @@ public class AccountServiceImpl implements AccountService {
         }
 
         if (StringUtils.equals("0", status)) {
-            order.setStatus(Order.STATUS_PAYSUCCESS);
-            order.setNotifyStatus(Order.NOTIFYSTATUS_SUCCESS);
+            order.setStatus(Order.ORDER_STATUS_PAYMENT_SUCCESS);
+            order.setNotifyStatus(Order.ORDER_NOTIFY_STATUS_SUCCESS);
             order.setUpdateTime(new Date());
             order.setErrorMsg(null);
             basicRepository.updateStatusPay(order);

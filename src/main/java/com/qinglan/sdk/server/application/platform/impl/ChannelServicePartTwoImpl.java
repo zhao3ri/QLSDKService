@@ -2,7 +2,9 @@ package com.qinglan.sdk.server.application.platform.impl;
 
 import com.lenovo.pay.sign.JsonUtil;
 import com.qinglan.sdk.server.application.platform.ChannelUtilsService;
+import com.qinglan.sdk.server.application.platform.log.ChannelStatsLogger;
 import com.qinglan.sdk.server.common.*;
+import com.qinglan.sdk.server.domain.basic.ChannelGameEntity;
 import com.qinglan.sdk.server.platform.qq.JSONException;
 import com.qinglan.sdk.server.presentation.channel.IChannel;
 import com.qinglan.sdk.server.presentation.channel.entity.HMSPaySignRequest;
@@ -16,10 +18,8 @@ import com.qinglan.sdk.server.platform.six7.Six7payUtils;
 import com.qinglan.sdk.server.application.basic.OrderService;
 import com.qinglan.sdk.server.application.basic.redis.RedisUtil;
 import com.qinglan.sdk.server.application.platform.ChannelServicePartTwo;
-import com.qinglan.sdk.server.application.platform.log.PlatformStatsLogger;
 import com.qinglan.sdk.server.BasicRepository;
 import com.qinglan.sdk.server.domain.basic.Order;
-import com.qinglan.sdk.server.domain.basic.PlatformGame;
 import com.qinglan.sdk.server.presentation.platform.dto.AoChuangSession;
 import com.qinglan.sdk.server.presentation.platform.dto.MangGuoWanSession;
 import com.qinglan.sdk.server.presentation.platform.dto.Six7Session;
@@ -100,7 +100,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
 
     @Override
     public String verifyAoChuangsdk(HttpServletRequest request) {
-        PlatformStatsLogger.info(PlatformStatsLogger.AOCHUANG, HttpUtils.getRequestParams(request).toString());
+        ChannelStatsLogger.info(ChannelStatsLogger.AOCHUANG, HttpUtils.getRequestParams(request).toString());
         Map<String, String> resultMap = new HashMap<String, String>();
         Map<String, Object> paramMap = new HashMap<String, Object>();
         paramMap.put("cporderid", request.getParameter("cporderid"));
@@ -117,16 +117,16 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
         if (order == null) {
             return "error order not Fund param:" + HttpUtils.getRequestParams(request).toString();
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
-        if (platformGame == null) {
+        ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(order.getChannelId(), order.getGameId());
+        if (channelGame == null) {
             return "Not Fund Game";
         }
-        String privateKey = platformGame.getConfigParamsList().get(2);
+        String privateKey = channelGame.getConfigParamsList().get(2);
         String validString = Sign.signByMD5(paramMap, privateKey);
         String sign = request.getParameter("sign");
         if (validString.equals(sign)) {
             if (order.getAmount() > Float.parseFloat(request.getParameter("amount")) * 100) {
-                PlatformStatsLogger.info(PlatformStatsLogger.AOCHUANG, "order amount error");
+                ChannelStatsLogger.info(ChannelStatsLogger.AOCHUANG, "order amount error");
                 orderService.payFail(order.getOrderId(), "order amount error");
                 return "FAILURE";
             } else {
@@ -135,7 +135,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             }
         } else {
 
-            PlatformStatsLogger.info(PlatformStatsLogger.FANSDK, "签名验证失败 ");
+            ChannelStatsLogger.info(ChannelStatsLogger.FANSDK, "签名验证失败 ");
             return "FAILURE";
         }
     }
@@ -147,12 +147,12 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             return JsonMapper.toJson(session.verifySession());
         }
         try {
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
-            if (platformGame == null) {
+            ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
+            if (channelGame == null) {
                 return "";
             }
-            String url = platformGame.getConfigParamsList().get(0);
-            String key = platformGame.getConfigParamsList().get(1);
+            String url = channelGame.getConfigParamsList().get(0);
+            String key = channelGame.getConfigParamsList().get(1);
             long time = System.currentTimeMillis();
             String sessionid = URLDecoder.decode(session.getSessionid(), "utf-8");
             StringBuilder sb = new StringBuilder();
@@ -183,7 +183,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
 
     @Override
     public String verifyPaPaYou(HttpServletRequest request) {
-        PlatformStatsLogger.info(PlatformStatsLogger.PAPAYOU, HttpUtils.getRequestParams(request).toString());
+        ChannelStatsLogger.info(ChannelStatsLogger.PAPAYOU, HttpUtils.getRequestParams(request).toString());
         Map<String, Object> paramMap = new HashMap<String, Object>();
         paramMap.put("app_key", request.getParameter("app_key"));
         paramMap.put("app_order_id", request.getParameter("app_order_id"));
@@ -202,18 +202,18 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
         if (order == null) {
             return "error order not Fund param:" + HttpUtils.getRequestParams(request).toString();
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
-        if (platformGame == null) {
+        ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(order.getChannelId(), order.getGameId());
+        if (channelGame == null) {
             return "Not Fund Game";
         }
-        String appKey = platformGame.getConfigParamsList().get(0);
-        String appSecretKey = platformGame.getConfigParamsList().get(1);
+        String appKey = channelGame.getConfigParamsList().get(0);
+        String appSecretKey = channelGame.getConfigParamsList().get(1);
         String key = appKey.concat(appSecretKey);
         String validString = Sign.signByMD5KeyPre(paramMap, key);
         String sign = request.getParameter("sign");
         if (validString.equals(sign)) {
             if (order.getAmount() > Float.parseFloat(request.getParameter("money_amount")) * 100) {
-                PlatformStatsLogger.info(PlatformStatsLogger.PAPAYOU, "order amount error");
+                ChannelStatsLogger.info(ChannelStatsLogger.PAPAYOU, "order amount error");
                 orderService.payFail(order.getOrderId(), "order amount error");
                 return "FAILURE";
             } else {
@@ -222,7 +222,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             }
         } else {
 
-            PlatformStatsLogger.info(PlatformStatsLogger.FANSDK, "签名验证失败 ");
+            ChannelStatsLogger.info(ChannelStatsLogger.FANSDK, "签名验证失败 ");
             return "FAILURE";
         }
     }
@@ -234,12 +234,12 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             return JsonMapper.toJson(session.verifySession());
         }
         try {
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
-            if (platformGame == null) {
+            ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
+            if (channelGame == null) {
                 return "";
             }
-            String url = platformGame.getConfigParamsList().get(0);
-            String appid = platformGame.getConfigParamsList().get(1);
+            String url = channelGame.getConfigParamsList().get(0);
+            String appid = channelGame.getConfigParamsList().get(1);
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("userid", session.getUserid());
             params.put("token", session.getToken());
@@ -263,7 +263,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
 
     @Override
     public String verifyTaoShouYousdk(HttpServletRequest request) {
-        PlatformStatsLogger.info(PlatformStatsLogger.TAOSHOUYOU, HttpUtils.getRequestParams(request).toString());
+        ChannelStatsLogger.info(ChannelStatsLogger.TAOSHOUYOU, HttpUtils.getRequestParams(request).toString());
         Map<String, Object> paramMap = new HashMap<String, Object>();
         paramMap.put("appid", request.getParameter("appid"));
         paramMap.put("bizno", request.getParameter("bizno"));
@@ -280,16 +280,16 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
         if (order == null) {
             return "error order not Fund param:" + HttpUtils.getRequestParams(request).toString();
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
-        if (platformGame == null) {
+        ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(order.getChannelId(), order.getGameId());
+        if (channelGame == null) {
             return "Not Fund Game";
         }
-        String appSecretKey = platformGame.getConfigParamsList().get(2);
+        String appSecretKey = channelGame.getConfigParamsList().get(2);
         String validString = Sign.signByMD5(paramMap, appSecretKey);
         String sign = request.getParameter("signature");
         if (validString.equals(sign)) {
             if (order.getAmount() > Float.parseFloat(request.getParameter("total_fee")) * 100) {
-                PlatformStatsLogger.info(PlatformStatsLogger.TAOSHOUYOU, "order amount error");
+                ChannelStatsLogger.info(ChannelStatsLogger.TAOSHOUYOU, "order amount error");
                 orderService.payFail(order.getOrderId(), "order amount error");
                 return "fail";
             } else {
@@ -298,7 +298,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             }
         } else {
 
-            PlatformStatsLogger.info(PlatformStatsLogger.TAOSHOUYOU, "签名验证失败 ");
+            ChannelStatsLogger.info(ChannelStatsLogger.TAOSHOUYOU, "签名验证失败 ");
             return "fail";
         }
     }
@@ -310,13 +310,13 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             return JsonMapper.toJson(session.verifySession());
         }
         try {
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
-            if (platformGame == null) {
+            ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
+            if (channelGame == null) {
                 return "";
             }
-            String url = platformGame.getConfigParamsList().get(0);
-            String appid = platformGame.getConfigParamsList().get(1);
-            String appkey = platformGame.getConfigParamsList().get(2);
+            String url = channelGame.getConfigParamsList().get(0);
+            String appid = channelGame.getConfigParamsList().get(1);
+            String appkey = channelGame.getConfigParamsList().get(2);
             StringBuilder sb = new StringBuilder();
             sb.append("app_id=").append(appid).append("&");
             sb.append("mem_id=").append(session.getMemId()).append("&");
@@ -345,7 +345,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
     public String verifyMangGuoWansdk(HttpServletRequest request) {
         try {
             String paramString = HttpUtils.inputStream2String(request.getInputStream());
-            PlatformStatsLogger.info(PlatformStatsLogger.MANGGUOWAN, paramString);
+            ChannelStatsLogger.info(ChannelStatsLogger.MANGGUOWAN, paramString);
             JSONObject dataObject = new JSONObject(paramString);
             String orderId = dataObject.optString("attach");
             if (!"2".equals(dataObject.optString("order_status"))) {
@@ -356,11 +356,11 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             if (order == null) {
                 return "error order not Fund param:" + HttpUtils.getRequestParams(request).toString();
             }
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
-            if (platformGame == null) {
+            ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(order.getChannelId(), order.getGameId());
+            if (channelGame == null) {
                 return "Not Fund Game";
             }
-            String appkey = platformGame.getConfigParamsList().get(2);
+            String appkey = channelGame.getConfigParamsList().get(2);
             StringBuilder sb = new StringBuilder();
             sb.append("order_id=").append(dataObject.optString("order_id")).append("&");
             sb.append("mem_id=").append(dataObject.optString("mem_id")).append("&");
@@ -375,7 +375,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             logger.info("sign ============= " + sign);
             if (validString.equals(sign)) {
                 if (order.getAmount() > Float.parseFloat(dataObject.optString("money")) * 100) {
-                    PlatformStatsLogger.info(PlatformStatsLogger.MANGGUOWAN, "order amount error");
+                    ChannelStatsLogger.info(ChannelStatsLogger.MANGGUOWAN, "order amount error");
                     orderService.payFail(order.getOrderId(), "order amount error");
                     return "FAILURE";
                 } else {
@@ -384,7 +384,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
                 }
             } else {
 
-                PlatformStatsLogger.info(PlatformStatsLogger.MANGGUOWAN, "签名验证失败 ");
+                ChannelStatsLogger.info(ChannelStatsLogger.MANGGUOWAN, "签名验证失败 ");
                 return "FAILURE";
             }
         } catch (IOException e) {
@@ -402,12 +402,12 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             return JsonMapper.toJson(session.verifySession());
         }
         try {
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
-            if (platformGame == null) {
+            ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
+            if (channelGame == null) {
                 return "";
             }
-            String url = platformGame.getConfigParamsList().get(1);
-            String app_secret = platformGame.getConfigParamsList().get(0);
+            String url = channelGame.getConfigParamsList().get(1);
+            String app_secret = channelGame.getConfigParamsList().get(0);
             long time = System.currentTimeMillis();
             StringBuffer sb = new StringBuffer("authorize_code=");
             sb.append(session.getAuthorize_code());
@@ -434,7 +434,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
 
     @Override
     public String verifyQimu(HttpServletRequest request) {
-        PlatformStatsLogger.info(PlatformStatsLogger.QINGMU, HttpUtils.getRequestParams(request).toString());
+        ChannelStatsLogger.info(ChannelStatsLogger.QINGMU, HttpUtils.getRequestParams(request).toString());
         Map<String, Object> returnMap = new HashMap<String, Object>();
         String app_key = request.getParameter("app_key");
         String product_id = request.getParameter("product_id");
@@ -455,8 +455,8 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             logger.info(JsonMapper.toJson(returnMap));
             return JsonMapper.toJson(returnMap);
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
-        if (platformGame == null) {
+        ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(order.getChannelId(), order.getGameId());
+        if (channelGame == null) {
             returnMap.put("ret", 0);
             returnMap.put("msg", "Can find Game");
             returnMap.put("content", "");
@@ -470,7 +470,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             logger.info(JsonMapper.toJson(returnMap));
             return JsonMapper.toJson(returnMap);
         }
-        String app_secret = platformGame.getConfigParamsList().get(0);
+        String app_secret = channelGame.getConfigParamsList().get(0);
         StringBuilder sb = new StringBuilder();
         sb.append("app_key=").append(app_key).append("&");
         sb.append("app_order_id=").append(app_order_id).append("&");
@@ -486,7 +486,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
         String validSigin = MD5.encode(sb.toString());
         if (validSigin.equals(sign)) {
             if (order.getAmount() > Integer.parseInt(total_fee)) {
-                PlatformStatsLogger.info(PlatformStatsLogger.QINGMU, "order amount error");
+                ChannelStatsLogger.info(ChannelStatsLogger.QINGMU, "order amount error");
                 orderService.payFail(order.getOrderId(), "order amount error");
                 returnMap.put("ret", 0);
                 returnMap.put("msg", "Amount error");
@@ -500,7 +500,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
                 return JsonMapper.toJson(returnMap);
             }
         } else {
-            PlatformStatsLogger.info(PlatformStatsLogger.QINGMU, "签名验证失败 ");
+            ChannelStatsLogger.info(ChannelStatsLogger.QINGMU, "签名验证失败 ");
             returnMap.put("ret", 0);
             returnMap.put("msg", "Sigin error");
             returnMap.put("content", "");
@@ -511,7 +511,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
 
     @Override
     public String verifyChangqu(HttpServletRequest request) {
-        PlatformStatsLogger.info(PlatformStatsLogger.CHANGQU, HttpUtils.getRequestParams(request).toString());
+        ChannelStatsLogger.info(ChannelStatsLogger.CHANGQU, HttpUtils.getRequestParams(request).toString());
         String transdata = request.getParameter("transdata");
         String sign = (String) request.getParameter(RESPONSE_KEY_SIGN);
         String signtype = request.getParameter("signtype");
@@ -531,18 +531,18 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
         if (order == null) {
             return "Order not fund";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
+        ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(order.getChannelId(), order.getGameId());
 
-        String platp_key = platformGame.getConfigParamsList().get(2);
-        if (platformGame == null) {
-            return "platform not unition";
+        String platp_key = channelGame.getConfigParamsList().get(2);
+        if (channelGame == null) {
+            return "channel not unition";
         }
         if (signtype == null) {
             return "signType null";
         } else {
             if (SignHelper.verify(transdata, sign, platp_key)) {
                 if (order.getAmount() > money * 100) {
-                    PlatformStatsLogger.info(PlatformStatsLogger.CHANGQU, "order amount error");
+                    ChannelStatsLogger.info(ChannelStatsLogger.CHANGQU, "order amount error");
                     orderService.payFail(order.getOrderId(), "order amount error");
                     return "money not match";
                 } else {
@@ -566,13 +566,13 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             return JsonMapper.toJson(session.verifySession());
         }
         try {
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
-            if (platformGame == null) {
+            ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
+            if (channelGame == null) {
                 result.put("code", "1");
                 result.put("msg", "platorm not unition");
                 return JsonMapper.toJson(result);
             }
-            String url = platformGame.getConfigParamsList().get(0);
+            String url = channelGame.getConfigParamsList().get(0);
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("uid", session.getUid());
             params.put("session_id", session.getSession_id());
@@ -592,7 +592,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
 
     @Override
     public String verifyQitianledi(HttpServletRequest request) {
-        PlatformStatsLogger.info(PlatformStatsLogger.QITIANLEDI, HttpUtils.getRequestParams(request).toString());
+        ChannelStatsLogger.info(ChannelStatsLogger.QITIANLEDI, HttpUtils.getRequestParams(request).toString());
         Map<String, Object> returnMap = new HashMap<String, Object>();
         String sid = request.getParameter("sid");
         String orderid = request.getParameter("orderid");
@@ -613,8 +613,8 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             logger.info(JsonMapper.toJson(returnMap));
             return "0";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
-        if (platformGame == null) {
+        ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(order.getChannelId(), order.getGameId());
+        if (channelGame == null) {
             returnMap.put("ret", 0);
             returnMap.put("msg", "Can find Game");
             returnMap.put("content", "");
@@ -622,7 +622,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             return "0";
         }
 
-        String app_secret = platformGame.getConfigParamsList().get(1);
+        String app_secret = channelGame.getConfigParamsList().get(1);
 
         StringBuilder sb = new StringBuilder();
         sb.append("amount=").append(amount);
@@ -640,7 +640,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
         logger.info(validSigin);
         if (validSigin.equals(sign)) {
             if (order.getAmount() > Float.parseFloat(money) * 100) {
-                PlatformStatsLogger.info(PlatformStatsLogger.QITIANLEDI, "order amount error");
+                ChannelStatsLogger.info(ChannelStatsLogger.QITIANLEDI, "order amount error");
                 orderService.payFail(order.getOrderId(), "order amount error");
                 returnMap.put("ret", 0);
                 returnMap.put("msg", "Amount error");
@@ -654,7 +654,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
                 return "1";
             }
         } else {
-            PlatformStatsLogger.info(PlatformStatsLogger.QITIANLEDI, "签名验证失败 ");
+            ChannelStatsLogger.info(ChannelStatsLogger.QITIANLEDI, "签名验证失败 ");
             returnMap.put("ret", 0);
             returnMap.put("msg", "Sigin error");
             returnMap.put("content", "");
@@ -674,17 +674,17 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             long ygAppId = Long.valueOf(session.getYgAppId());
             //logger.info(session.toString());
             logger.info("platformId:" + platformId + ";ygAppId:" + ygAppId);
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(platformId, ygAppId);
-            logger.info(JsonMapper.toJson(platformGame));
-            if (platformGame == null) {
+            ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(platformId, ygAppId);
+            logger.info(JsonMapper.toJson(channelGame));
+            if (channelGame == null) {
                 result.put("code", "0");
                 result.put("msg", "platorm not unition");
                 return JsonMapper.toJson(result);
             }
             long time = System.currentTimeMillis();
-            List<String> msgLst = platformGame.getConfigParamsList();
+            List<String> msgLst = channelGame.getConfigParamsList();
             logger.info("msgLst:" + msgLst.toString());
-            String url = platformGame.getConfigParamsList().get(0);
+            String url = channelGame.getConfigParamsList().get(0);
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("game_id", session.getGame_id());
             params.put("user_id", session.getUser_id());
@@ -708,7 +708,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
 
     @Override
     public String verifyCangluan(HttpServletRequest request) {
-        PlatformStatsLogger.info(PlatformStatsLogger.CANGLUAN, HttpUtils.getRequestParams(request).toString());
+        ChannelStatsLogger.info(ChannelStatsLogger.CANGLUAN, HttpUtils.getRequestParams(request).toString());
         Map<String, Object> returnMap = new HashMap<String, Object>();
         String player_id = request.getParameter("player_id");
         String goods_id = request.getParameter("goods_id");
@@ -726,8 +726,8 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             logger.info(JsonMapper.toJson(returnMap));
             return "1";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
-        if (platformGame == null) {
+        ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(order.getChannelId(), order.getGameId());
+        if (channelGame == null) {
             returnMap.put("ret", 1);
             returnMap.put("msg", "Can find Game");
             returnMap.put("content", "");
@@ -735,7 +735,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             return "1";
         }
 
-        String game_key = platformGame.getConfigParamsList().get(1);
+        String game_key = channelGame.getConfigParamsList().get(1);
         logger.info(game_key);
         StringBuilder sb = new StringBuilder();
         sb.append(currency);
@@ -751,7 +751,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
         logger.info(validSigin);
         if (validSigin.equals(sign)) {
             if (order.getAmount() > Float.parseFloat(money) * 100) {
-                PlatformStatsLogger.info(PlatformStatsLogger.CANGLUAN, "order amount error");
+                ChannelStatsLogger.info(ChannelStatsLogger.CANGLUAN, "order amount error");
                 orderService.payFail(order.getOrderId(), "order amount error");
                 returnMap.put("ret", 1);
                 returnMap.put("msg", "Amount error");
@@ -765,7 +765,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
                 return "0";
             }
         } else {
-            PlatformStatsLogger.info(PlatformStatsLogger.CANGLUAN, "签名验证失败 ");
+            ChannelStatsLogger.info(ChannelStatsLogger.CANGLUAN, "签名验证失败 ");
             returnMap.put("ret", 1);
             returnMap.put("msg", "Sigin error");
             returnMap.put("content", "");
@@ -784,16 +784,16 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             int platformId = Integer.valueOf(session.getPlatformId());
             long ygAppId = Long.valueOf(session.getYgAppId());
             logger.info("platformId:" + platformId + ";ygAppId:" + ygAppId);
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(platformId, ygAppId);
-            logger.info(JsonMapper.toJson(platformGame));
-            if (platformGame == null) {
+            ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(platformId, ygAppId);
+            logger.info(JsonMapper.toJson(channelGame));
+            if (channelGame == null) {
                 result.put("code", "0");
                 result.put("msg", "platorm not unition");
                 return JsonMapper.toJson(result);
             }
 
-            String ldurl = platformGame.getConfigParamsList().get(0);
-            String appkey = platformGame.getConfigParamsList().get(1);
+            String ldurl = channelGame.getConfigParamsList().get(0);
+            String appkey = channelGame.getConfigParamsList().get(1);
             String userid = session.getUser_id();
             String ldToken = session.getToken();
             String ldAppId = session.getLdAppId();
@@ -857,7 +857,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
         try {
             String keyValue = HttpUtils.getRequestParams(request).toString();
             String bodyJson = HttpUtils.inputStream2String(request.getInputStream());
-            PlatformStatsLogger.info(PlatformStatsLogger.LINGDONG, "返回键值：" + keyValue + "；body：" + bodyJson);
+            ChannelStatsLogger.info(ChannelStatsLogger.LINGDONG, "返回键值：" + keyValue + "；body：" + bodyJson);
 
             JSONObject bodyObj = new JSONObject(bodyJson);
             //Double amount = bodyObj.optDouble("amount");
@@ -880,8 +880,8 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
                 logger.info(JsonMapper.toJson(returnMap));
                 return "1";
             }
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
-            if (platformGame == null) {
+            ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(order.getChannelId(), order.getGameId());
+            if (channelGame == null) {
                 returnMap.put("ret", 1);
                 returnMap.put("msg", "Can find Game");
                 returnMap.put("content", "");
@@ -889,8 +889,8 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
                 return "1";
             }
 
-            String appkey = platformGame.getConfigParamsList().get(1);
-            //String url = platformGame.getConfigParamsList().get(2);
+            String appkey = channelGame.getConfigParamsList().get(1);
+            //String url = channelGame.getConfigParamsList().get(2);
 
             //Map<String, Object> body = new LinkedHashMap<String, Object>();
             //body.put("amount", amount);
@@ -912,8 +912,8 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             JSONObject keyValueObj = new JSONObject(keyValue);
             String sign = keyValueObj.optString("sign");
 
-            PlatformStatsLogger.info(PlatformStatsLogger.LINGDONG, "加密的appkey：" + appkey);
-            PlatformStatsLogger.info(PlatformStatsLogger.LINGDONG, "签名结果：" + validSign);
+            ChannelStatsLogger.info(ChannelStatsLogger.LINGDONG, "加密的appkey：" + appkey);
+            ChannelStatsLogger.info(ChannelStatsLogger.LINGDONG, "签名结果：" + validSign);
             if (validSign.equals(sign)) {
                 orderService.paySuccess(order.getOrderId());
                 returnMap.put("ret", 0);
@@ -921,7 +921,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
                 returnMap.put("content", "");
                 return "ok";
             } else {
-                PlatformStatsLogger.info(PlatformStatsLogger.LINGDONG, "签名验证失败 ");
+                ChannelStatsLogger.info(ChannelStatsLogger.LINGDONG, "签名验证失败 ");
                 returnMap.put("ret", 1);
                 returnMap.put("msg", "Sigin error");
                 returnMap.put("content", "");
@@ -947,8 +947,8 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
         try {
             int platformId = Integer.valueOf(session.getPlatformId());
             long ygAppId = Long.valueOf(session.getYgAppId());
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(platformId, ygAppId);
-            if (platformGame == null) {
+            ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(platformId, ygAppId);
+            if (channelGame == null) {
                 result.put("code", "0");
                 result.put("msg", "platorm not unition");
                 logger.error("**********************【platorm not unition】");
@@ -969,8 +969,8 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             logger.error("**********************【sessionidUrlEncode】:" + sessionid);
             logger.error("**********************【time】:" + time);
 
-            String url = platformGame.getConfigParamsList().get(0);
-            String appkey = platformGame.getConfigParamsList().get(1);
+            String url = channelGame.getConfigParamsList().get(0);
+            String appkey = channelGame.getConfigParamsList().get(1);
             //logger.error("**********************【url】:" + url);
             //logger.error("**********************【appkey】:" + appkey);
 
@@ -1017,7 +1017,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
 
     @Override
     public String verifyZhizhuyou(HttpServletRequest request) {
-        PlatformStatsLogger.info(PlatformStatsLogger.ZHIZHUYOU, HttpUtils.getRequestParams(request).toString());
+        ChannelStatsLogger.info(ChannelStatsLogger.ZHIZHUYOU, HttpUtils.getRequestParams(request).toString());
         Map<String, Object> returnMap = new HashMap<String, Object>();
         String cporderid = request.getParameter("cporderid");
         String orderid = request.getParameter("orderid");
@@ -1035,20 +1035,20 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             returnMap.put("ret", 1);
             returnMap.put("msg", "Can find Order");
             returnMap.put("content", "");
-            PlatformStatsLogger.info(PlatformStatsLogger.ZHIZHUYOU, JsonMapper.toJson(returnMap));
+            ChannelStatsLogger.info(ChannelStatsLogger.ZHIZHUYOU, JsonMapper.toJson(returnMap));
             return "1";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
-        if (platformGame == null) {
+        ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(order.getChannelId(), order.getGameId());
+        if (channelGame == null) {
             returnMap.put("ret", 1);
             returnMap.put("msg", "Can find Game");
             returnMap.put("content", "");
-            PlatformStatsLogger.info(PlatformStatsLogger.ZHIZHUYOU, JsonMapper.toJson(returnMap));
+            ChannelStatsLogger.info(ChannelStatsLogger.ZHIZHUYOU, JsonMapper.toJson(returnMap));
             return "1";
         }
 
-        String pay_key = platformGame.getConfigParamsList().get(2);
-        PlatformStatsLogger.info(PlatformStatsLogger.ZHIZHUYOU, pay_key);
+        String pay_key = channelGame.getConfigParamsList().get(2);
+        ChannelStatsLogger.info(ChannelStatsLogger.ZHIZHUYOU, pay_key);
         StringBuilder sb = new StringBuilder();
         sb.append("amount=").append(amount).append("&");
         sb.append("appid=").append(appid).append("&");
@@ -1062,10 +1062,10 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
         sb.append("uid=").append(uid);
         sb.append(pay_key);
         String validSigin = MD5.encode(sb.toString());
-        PlatformStatsLogger.info(PlatformStatsLogger.ZHIZHUYOU, validSigin);
+        ChannelStatsLogger.info(ChannelStatsLogger.ZHIZHUYOU, validSigin);
         if (validSigin.equals(sign)) {
             if (order.getAmount() > Float.parseFloat(amount) * 100) {
-                PlatformStatsLogger.info(PlatformStatsLogger.ZHIZHUYOU, "order amount error");
+                ChannelStatsLogger.info(ChannelStatsLogger.ZHIZHUYOU, "order amount error");
                 orderService.payFail(order.getOrderId(), "order amount error");
                 returnMap.put("ret", 1);
                 returnMap.put("msg", "Amount error");
@@ -1079,7 +1079,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
                 return "SUCCESS";
             }
         } else {
-            PlatformStatsLogger.info(PlatformStatsLogger.ZHIZHUYOU, "签名验证失败 ");
+            ChannelStatsLogger.info(ChannelStatsLogger.ZHIZHUYOU, "签名验证失败 ");
             returnMap.put("ret", 1);
             returnMap.put("msg", "Sigin error");
             returnMap.put("content", "");
@@ -1098,8 +1098,8 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
         try {
             int platformId = Integer.valueOf(session.getPlatformId());
             long ygAppId = Long.valueOf(session.getYgAppId());
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(platformId, ygAppId);
-            if (platformGame == null) {
+            ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(platformId, ygAppId);
+            if (channelGame == null) {
                 result.put("code", "0");
                 result.put("msg", "platorm not unition");
                 logger.error("**********************【platorm not unition】");
@@ -1108,8 +1108,8 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
 
             String appid = session.getAppid();
             String logintoken = session.getLogintoken();
-            String url = platformGame.getConfigParamsList().get(0);
-            String APPV_KEY = platformGame.getConfigParamsList().get(1);
+            String url = channelGame.getConfigParamsList().get(0);
+            String APPV_KEY = channelGame.getConfigParamsList().get(1);
 
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("appid", appid);
@@ -1169,15 +1169,15 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
         try {
             int platformId = Integer.valueOf(session.getPlatformId());
             long ygAppId = Long.valueOf(session.getYgAppId());
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(platformId, ygAppId);
-            if (platformGame == null) {
+            ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(platformId, ygAppId);
+            if (channelGame == null) {
                 result.put("code", "0");
                 result.put("msg", "platorm not unition");
                 logger.error("**********************【platorm not unition】");
                 return JsonMapper.toJson(result);
             }
 
-            String APPV_KEY = platformGame.getConfigParamsList().get(1);
+            String APPV_KEY = channelGame.getConfigParamsList().get(1);
 
             String appid = session.getAppid();
             String waresname = session.getWaresname();
@@ -1236,7 +1236,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
 
     @Override
     public String verifyXingkongshijie(HttpServletRequest request) {
-        PlatformStatsLogger.info(PlatformStatsLogger.XINGKONGSHIJIE, HttpUtils.getRequestParams(request).toString());
+        ChannelStatsLogger.info(ChannelStatsLogger.XINGKONGSHIJIE, HttpUtils.getRequestParams(request).toString());
         Map<String, Object> returnMap = new HashMap<String, Object>();
 
         String transdata = request.getParameter("transdata");
@@ -1259,34 +1259,34 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             returnMap.put("ret", 1);
             returnMap.put("msg", "Order not fund");
             returnMap.put("content", "");
-            PlatformStatsLogger.info(PlatformStatsLogger.XINGKONGSHIJIE, JsonMapper.toJson(returnMap));
+            ChannelStatsLogger.info(ChannelStatsLogger.XINGKONGSHIJIE, JsonMapper.toJson(returnMap));
             return "Order not fund";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
+        ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(order.getChannelId(), order.getGameId());
 
-        String platp_key = platformGame.getConfigParamsList().get(2);
-        if (platformGame == null) {
+        String platp_key = channelGame.getConfigParamsList().get(2);
+        if (channelGame == null) {
             returnMap.put("ret", 1);
-            returnMap.put("msg", "platform not unition");
+            returnMap.put("msg", "channel not unition");
             returnMap.put("content", "");
-            PlatformStatsLogger.info(PlatformStatsLogger.XINGKONGSHIJIE, JsonMapper.toJson(returnMap));
-            return "platform not unition";
+            ChannelStatsLogger.info(ChannelStatsLogger.XINGKONGSHIJIE, JsonMapper.toJson(returnMap));
+            return "channel not unition";
         }
         if (signtype == null) {
             returnMap.put("ret", 1);
             returnMap.put("msg", "signType null");
             returnMap.put("content", "");
-            PlatformStatsLogger.info(PlatformStatsLogger.XINGKONGSHIJIE, JsonMapper.toJson(returnMap));
+            ChannelStatsLogger.info(ChannelStatsLogger.XINGKONGSHIJIE, JsonMapper.toJson(returnMap));
             return "signType null";
         } else {
             if (SignHelper.verify(transdata, sign, platp_key)) {
                 if (order.getAmount() > money * 100) {
-                    PlatformStatsLogger.info(PlatformStatsLogger.CHANGQU, "order amount error");
+                    ChannelStatsLogger.info(ChannelStatsLogger.CHANGQU, "order amount error");
                     orderService.payFail(order.getOrderId(), "order amount error");
                     returnMap.put("ret", 1);
                     returnMap.put("msg", "money not match");
                     returnMap.put("content", "");
-                    PlatformStatsLogger.info(PlatformStatsLogger.XINGKONGSHIJIE, JsonMapper.toJson(returnMap));
+                    ChannelStatsLogger.info(ChannelStatsLogger.XINGKONGSHIJIE, JsonMapper.toJson(returnMap));
                     return "money not match";
                 } else {
                     if (result.equals("0")) {
@@ -1294,13 +1294,13 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
                         returnMap.put("ret", 0);
                         returnMap.put("msg", "SUCCESS");
                         returnMap.put("content", "");
-                        PlatformStatsLogger.info(PlatformStatsLogger.XINGKONGSHIJIE, JsonMapper.toJson(returnMap));
+                        ChannelStatsLogger.info(ChannelStatsLogger.XINGKONGSHIJIE, JsonMapper.toJson(returnMap));
                         return "SUCCESS";
                     } else {
                         returnMap.put("ret", 1);
                         returnMap.put("msg", "result:" + result);
                         returnMap.put("content", "");
-                        PlatformStatsLogger.info(PlatformStatsLogger.XINGKONGSHIJIE, JsonMapper.toJson(returnMap));
+                        ChannelStatsLogger.info(ChannelStatsLogger.XINGKONGSHIJIE, JsonMapper.toJson(returnMap));
                         return "result:" + result;
                     }
                 }
@@ -1308,7 +1308,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
                 returnMap.put("ret", 1);
                 returnMap.put("msg", "verify fail");
                 returnMap.put("content", "");
-                PlatformStatsLogger.info(PlatformStatsLogger.XINGKONGSHIJIE, JsonMapper.toJson(returnMap));
+                ChannelStatsLogger.info(ChannelStatsLogger.XINGKONGSHIJIE, JsonMapper.toJson(returnMap));
                 return "verify fail";
             }
         }
@@ -1324,15 +1324,15 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
         try {
             int platformId = Integer.valueOf(ucSession.getPlatformId());
             long ygAppId = Long.valueOf(ucSession.getYgAppId());
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(platformId, ygAppId);
-            if (platformGame == null) {
+            ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(platformId, ygAppId);
+            if (channelGame == null) {
                 result.put("code", "0");
                 result.put("msg", "platorm not unition");
                 logger.error("**********************【platorm not unition】");
                 return JsonMapper.toJson(result);
             }
 
-            String apikey = platformGame.getConfigParamsList().get(0);
+            String apikey = channelGame.getConfigParamsList().get(0);
             StringBuffer sb = new StringBuffer();
             sb.append("accountId=").append(ucSession.getAccountId());
             sb.append("amount=").append(ucSession.getAmount());
@@ -1360,13 +1360,13 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             return JsonMapper.toJson(session.verifySession());
         }
         try {
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
-            if (platformGame == null) {
+            ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
+            if (channelGame == null) {
                 result.put("code", "1");
                 result.put("msg", "platorm not unition");
                 return JsonMapper.toJson(result);
             }
-            String url = platformGame.getConfigParamsList().get(0);
+            String url = channelGame.getConfigParamsList().get(0);
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("user_id", session.getUser_id());
             params.put("token", session.getToken());
@@ -1403,7 +1403,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
 
     @Override
     public String verifyMoguwan(HttpServletRequest request) {
-        PlatformStatsLogger.info(PlatformStatsLogger.MOGUWAN, HttpUtils.getRequestParams(request).toString());
+        ChannelStatsLogger.info(ChannelStatsLogger.MOGUWAN, HttpUtils.getRequestParams(request).toString());
         Map<String, Object> returnMap = new HashMap<String, Object>();
         String out_trade_no = request.getParameter("out_trade_no");
         String price = request.getParameter("price");
@@ -1419,8 +1419,8 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             logger.info(JsonMapper.toJson(returnMap));
             return "0";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
-        if (platformGame == null) {
+        ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(order.getChannelId(), order.getGameId());
+        if (channelGame == null) {
             returnMap.put("ret", 0);
             returnMap.put("msg", "Can find Game");
             returnMap.put("content", "");
@@ -1428,7 +1428,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             return "0";
         }
 
-        String app_secret = platformGame.getConfigParamsList().get(1);
+        String app_secret = channelGame.getConfigParamsList().get(1);
 
         StringBuilder sb = new StringBuilder();
         sb.append(out_trade_no);
@@ -1440,7 +1440,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
         logger.info(validSigin);
         if (validSigin.equals(sign)) {
             if (order.getAmount() > Float.parseFloat(price) * 100) {
-                PlatformStatsLogger.info(PlatformStatsLogger.MOGUWAN, "order amount error");
+                ChannelStatsLogger.info(ChannelStatsLogger.MOGUWAN, "order amount error");
                 orderService.payFail(order.getOrderId(), "order amount error");
                 returnMap.put("ret", 0);
                 returnMap.put("msg", "Amount error");
@@ -1454,7 +1454,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
                 return "1";
             }
         } else {
-            PlatformStatsLogger.info(PlatformStatsLogger.MOGUWAN, "签名验证失败 ");
+            ChannelStatsLogger.info(ChannelStatsLogger.MOGUWAN, "签名验证失败 ");
             returnMap.put("ret", 0);
             returnMap.put("msg", "Sigin error");
             returnMap.put("content", "");
@@ -1465,7 +1465,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
 
     @Override
     public String verifyM2166(HttpServletRequest request) {
-        PlatformStatsLogger.info(PlatformStatsLogger.M2166, HttpUtils.getRequestParams(request).toString());
+        ChannelStatsLogger.info(ChannelStatsLogger.M2166, HttpUtils.getRequestParams(request).toString());
         Map<String, Object> returnMap = new HashMap<String, Object>();
         String cp_order_id = request.getParameter("cp_order_id");
         String extend_info = request.getParameter("extend_info");
@@ -1488,8 +1488,8 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             logger.info(JsonMapper.toJson(returnMap));
             return "0";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
-        if (platformGame == null) {
+        ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(order.getChannelId(), order.getGameId());
+        if (channelGame == null) {
             returnMap.put("ret", 0);
             returnMap.put("msg", "Can find Game");
             returnMap.put("content", "");
@@ -1497,7 +1497,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             return "0";
         }
 
-        String signKey = platformGame.getConfigParamsList().get(0);
+        String signKey = channelGame.getConfigParamsList().get(0);
 
         StringBuilder sb = new StringBuilder();
         sb.append("cp_order_id=").append(cp_order_id).append("&");
@@ -1517,7 +1517,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
         logger.info(validSign);
         if (validSign.equals(sign)) {
             if (order.getAmount() > Float.parseFloat(pay_amount) * 100) {
-                PlatformStatsLogger.info(PlatformStatsLogger.M2166, "order amount error");
+                ChannelStatsLogger.info(ChannelStatsLogger.M2166, "order amount error");
                 orderService.payFail(order.getOrderId(), "order amount error");
                 returnMap.put("ret", 0);
                 returnMap.put("msg", "Amount error");
@@ -1531,7 +1531,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
                 return "1";
             }
         } else {
-            PlatformStatsLogger.info(PlatformStatsLogger.M2166, "签名验证失败 ");
+            ChannelStatsLogger.info(ChannelStatsLogger.M2166, "签名验证失败 ");
             returnMap.put("ret", 0);
             returnMap.put("msg", "Sigin error");
             returnMap.put("content", "");
@@ -1544,13 +1544,13 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
     public String verifySix7Session(Six7Session session) {
         Map<String, String> result = new HashMap<String, String>();
         try {
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatform()), Long.valueOf(session.getYgAppId()));
-            if (platformGame == null) {
+            ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(Integer.valueOf(session.getPlatform()), Long.valueOf(session.getYgAppId()));
+            if (channelGame == null) {
                 result.put("code", "1");
                 result.put("msg", "platorm not unition");
                 return JsonMapper.toJson(result);
             }
-            String url = platformGame.getConfigParamsList().get(0);
+            String url = channelGame.getConfigParamsList().get(0);
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("apk_id", session.getApk_id());
             params.put("token", session.getToken());
@@ -1579,7 +1579,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
     @Override
     public String verifySix7(HttpServletRequest request) {
 
-        PlatformStatsLogger.info(PlatformStatsLogger.SIX7, HttpUtils.getRequestParams(request).toString());
+        ChannelStatsLogger.info(ChannelStatsLogger.SIX7, HttpUtils.getRequestParams(request).toString());
 
         Map<String, String> params = new HashMap<String, String>();
         Map requestParams = request.getParameterMap();
@@ -1607,23 +1607,23 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             returnMap.put("ret", 1);
             returnMap.put("msg", "Can find Order");
             returnMap.put("content", "");
-            PlatformStatsLogger.info(PlatformStatsLogger.SIX7, JsonMapper.toJson(returnMap));
+            ChannelStatsLogger.info(ChannelStatsLogger.SIX7, JsonMapper.toJson(returnMap));
             return "fail";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
-        if (platformGame == null) {
+        ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(order.getChannelId(), order.getGameId());
+        if (channelGame == null) {
             returnMap.put("ret", 1);
             returnMap.put("msg", "Can find Game");
             returnMap.put("content", "");
-            PlatformStatsLogger.info(PlatformStatsLogger.SIX7, JsonMapper.toJson(returnMap));
+            ChannelStatsLogger.info(ChannelStatsLogger.SIX7, JsonMapper.toJson(returnMap));
             return "fail";
         }
 
-        String pay_key = platformGame.getConfigParamsList().get(1);
+        String pay_key = channelGame.getConfigParamsList().get(1);
 
         if (order_status.equals("PAY_SUCCESS") && Six7payUtils.verify(params, "UTF-8", pay_key)) {
             if (order.getAmount() > Float.parseFloat(amount) * 100) {
-                PlatformStatsLogger.info(PlatformStatsLogger.SIX7, "order amount error");
+                ChannelStatsLogger.info(ChannelStatsLogger.SIX7, "order amount error");
                 orderService.payFail(order.getOrderId(), "order amount error");
                 returnMap.put("ret", 1);
                 returnMap.put("msg", "Amount error");
@@ -1637,7 +1637,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
                 return "success";
             }
         } else {
-            PlatformStatsLogger.info(PlatformStatsLogger.SIX7, "签名验证失败 ");
+            ChannelStatsLogger.info(ChannelStatsLogger.SIX7, "签名验证失败 ");
             returnMap.put("ret", 1);
             returnMap.put("msg", "Sigin error or not pay " + order_status);
             returnMap.put("content", "");
@@ -1654,13 +1654,13 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
         logger.error(JsonMapper.toJson(xmwSession));
 
         try {
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(xmwSession.getPlatformId()), Long.valueOf(xmwSession.getYgAppId()));
-            if (platformGame == null) {
+            ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(Integer.valueOf(xmwSession.getPlatformId()), Long.valueOf(xmwSession.getYgAppId()));
+            if (channelGame == null) {
                 result.put("code", "1");
                 result.put("msg", "platorm not unition");
                 return JsonMapper.toJson(result);
             }
-            String url = platformGame.getConfigParamsList().get(0);
+            String url = channelGame.getConfigParamsList().get(0);
             Map<String, Object> params = new HashMap<String, Object>(16);
             params.put("client_id", xmwSession.getClient_id());
             params.put("client_secret", xmwSession.getClient_secret());
@@ -1693,7 +1693,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
 
     @Override
     public String verifyXmw(HttpServletRequest request) {
-        PlatformStatsLogger.info(PlatformStatsLogger.XMW, HttpUtils.getRequestParams(request).toString());
+        ChannelStatsLogger.info(ChannelStatsLogger.XMW, HttpUtils.getRequestParams(request).toString());
 
         Map<String, Object> returnMap = new HashMap<String, Object>();
 
@@ -1706,18 +1706,18 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             returnMap.put("ret", 1);
             returnMap.put("msg", "Can find Order");
             returnMap.put("content", "");
-            PlatformStatsLogger.info(PlatformStatsLogger.XMW, JsonMapper.toJson(returnMap));
+            ChannelStatsLogger.info(ChannelStatsLogger.XMW, JsonMapper.toJson(returnMap));
             return "fail";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
-        if (platformGame == null) {
+        ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(order.getChannelId(), order.getGameId());
+        if (channelGame == null) {
             returnMap.put("ret", 1);
             returnMap.put("msg", "Can find Game");
             returnMap.put("content", "");
-            PlatformStatsLogger.info(PlatformStatsLogger.XMW, JsonMapper.toJson(returnMap));
+            ChannelStatsLogger.info(ChannelStatsLogger.XMW, JsonMapper.toJson(returnMap));
             return "fail";
         }
-        String client_secret = platformGame.getConfigParamsList().get(3);
+        String client_secret = channelGame.getConfigParamsList().get(3);
         logger.info("client_secret = {}", client_secret);
 
         StringBuilder sb = new StringBuilder();
@@ -1747,19 +1747,19 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
 
         if ("success".equals(orderStatus) && validSign.equals(request.getParameter("sign"))) {
             if (order.getAmount() > Float.parseFloat(amount) * 100) {
-                PlatformStatsLogger.info(PlatformStatsLogger.XMW, "order amount error");
+                ChannelStatsLogger.info(ChannelStatsLogger.XMW, "order amount error");
                 orderService.payFail(order.getOrderId(), "order amount error");
                 returnMap.put("ret", 1);
                 returnMap.put("msg", "Amount error");
                 returnMap.put("content", "");
-                PlatformStatsLogger.info(PlatformStatsLogger.XMW, JsonMapper.toJson(returnMap));
+                ChannelStatsLogger.info(ChannelStatsLogger.XMW, JsonMapper.toJson(returnMap));
                 return "fail";
             } else {
                 orderService.paySuccess(order.getOrderId());
                 returnMap.put("ret", 0);
                 returnMap.put("msg", "success");
                 returnMap.put("content", "");
-                PlatformStatsLogger.info(PlatformStatsLogger.XMW, JsonMapper.toJson(returnMap));
+                ChannelStatsLogger.info(ChannelStatsLogger.XMW, JsonMapper.toJson(returnMap));
                 return "success";
             }
 
@@ -1781,13 +1781,13 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
         logger.info("createXmwOrder req={}", JsonMapper.toJson(xmwOrderSession));
 
         try {
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(xmwOrderSession.getPlatformId()), Long.valueOf(xmwOrderSession.getYgAppId()));
-            if (platformGame == null) {
+            ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(Integer.valueOf(xmwOrderSession.getPlatformId()), Long.valueOf(xmwOrderSession.getYgAppId()));
+            if (channelGame == null) {
                 result.put("code", "1");
                 result.put("msg", "platorm not unition");
                 return JsonMapper.toJson(result);
             }
-            String url = platformGame.getConfigParamsList().get(1);
+            String url = channelGame.getConfigParamsList().get(1);
             //signParamsByMD5WithKey
             StringBuilder sb = new StringBuilder();
             sb.append("amount=").append(xmwOrderSession.getAmount()).append("&");
@@ -1860,7 +1860,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
 
     @Override
     public String verifyWuKong(HttpServletRequest request) {
-        PlatformStatsLogger.info(PlatformStatsLogger.WUKONG, HttpUtils.getRequestParams(request).toString());
+        ChannelStatsLogger.info(ChannelStatsLogger.WUKONG, HttpUtils.getRequestParams(request).toString());
 
         Map<String, Object> map = new HashMap<String, Object>();
         String openId = request.getParameter("openId");
@@ -1883,18 +1883,18 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
         if (order == null) {
             map.put("code", 1);
             map.put("msg", "notfind order");
-            PlatformStatsLogger.info(PlatformStatsLogger.WUKONG, JsonMapper.toJson(map));
+            ChannelStatsLogger.info(ChannelStatsLogger.WUKONG, JsonMapper.toJson(map));
             return "error";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
-        if (platformGame == null) {
+        ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(order.getChannelId(), order.getGameId());
+        if (channelGame == null) {
             map.put("code", 1);
-            map.put("msg", "notfind platformGame");
-            PlatformStatsLogger.info(PlatformStatsLogger.WUKONG, JsonMapper.toJson(map));
+            map.put("msg", "notfind channelGame");
+            ChannelStatsLogger.info(ChannelStatsLogger.WUKONG, JsonMapper.toJson(map));
             return "error";
         }
-        String appkey = platformGame.getConfigParamsList().get(0);
+        String appkey = channelGame.getConfigParamsList().get(0);
 
         Map<String, Object> params = new LinkedHashMap<String, Object>();
         params.put("openId", openId);
@@ -1911,7 +1911,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
         params.put("payTime", payTime);
         params.put("paySUTime", paySUTime);
 
-        PlatformStatsLogger.info(PlatformStatsLogger.WUKONG, params.toString() + " sign: " + sign);
+        ChannelStatsLogger.info(ChannelStatsLogger.WUKONG, params.toString() + " sign: " + sign);
 
         /** 生成签名 */
         String validSign = null;
@@ -1921,11 +1921,11 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             logger.debug("sign error");
             e.printStackTrace();
         }
-        PlatformStatsLogger.info(PlatformStatsLogger.WUKONG, " validSign: " + validSign);
+        ChannelStatsLogger.info(ChannelStatsLogger.WUKONG, " validSign: " + validSign);
         if (StringUtils.equals(validSign, sign)) {
             logger.debug("verify wukong valid sign success");
             if (order.getAmount() > Integer.valueOf(amount) * 100) {
-                PlatformStatsLogger.info(PlatformStatsLogger.WUKONG, "order amount error");
+                ChannelStatsLogger.info(ChannelStatsLogger.WUKONG, "order amount error");
                 orderService.payFail(order.getOrderId(), "order amount error");
                 map.put("code", 1);
                 map.put("msg", "Amount error");
@@ -1934,7 +1934,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
                 orderService.paySuccess(order.getOrderId());
                 map.put("code", 0);
                 map.put("msg", "sing success");
-                PlatformStatsLogger.info(PlatformStatsLogger.WUKONG, JsonMapper.toJson(map));
+                ChannelStatsLogger.info(ChannelStatsLogger.WUKONG, JsonMapper.toJson(map));
                 return "success";
             }
         } else {
@@ -1945,30 +1945,30 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
 
     @Override
     public String verifyDlSession(DlSession dlSession) {
-        PlatformStatsLogger.info(PlatformStatsLogger.DL, dlSession.toString());
+        ChannelStatsLogger.info(ChannelStatsLogger.DL, dlSession.toString());
         Map<String, Object> map = new LinkedHashMap<String, Object>();
         int appid = dlSession.getAppid();
         String umid = dlSession.getUmid();
         String token = dlSession.getToken();
-        PlatformGame platformGame = basicRepository.
-                getByPlatformAndGameId(Integer.valueOf(dlSession.getPlatformId()), Long.valueOf(dlSession.getYgAppId()));
-        if (platformGame == null) {
-            logger.debug("error not find platformGame");
+        ChannelGameEntity channelGame = basicRepository.
+                getByChannelAndGameId(Integer.valueOf(dlSession.getPlatformId()), Long.valueOf(dlSession.getYgAppId()));
+        if (channelGame == null) {
+            logger.debug("error not find channelGame");
             map.put("valid", "2");
             map.put("roll", true);
             map.put("interval", 60);
             map.put("times", 1);
             map.put("msg_code", 6011);
-            map.put("msg_desc", "platformGame not find");
+            map.put("msg_desc", "channelGame not find");
             return JsonUtil.toJson(map);
         }
 
-        String appkey = platformGame.getConfigParamsList().get(0);
+        String appkey = channelGame.getConfigParamsList().get(0);
         StringBuilder sbUrl = new StringBuilder();
         if (token.startsWith("ZB_")) {
-            sbUrl.append(platformGame.getConfigParamsList().get(1));
+            sbUrl.append(channelGame.getConfigParamsList().get(1));
         } else {
-            sbUrl.append(platformGame.getConfigParamsList().get(2));
+            sbUrl.append(channelGame.getConfigParamsList().get(2));
         }
         sbUrl.append("?appid=").append(appid);
         sbUrl.append("&umid=").append(umid);
@@ -1977,7 +1977,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
         String sig = MD5Util.MD5Encode(sigStr, "UTF-8");
         sbUrl.append("&sig=").append(sig);
 
-        PlatformStatsLogger.info(PlatformStatsLogger.DL, sbUrl.toString() + " sig: " + sig);
+        ChannelStatsLogger.info(ChannelStatsLogger.DL, sbUrl.toString() + " sig: " + sig);
 
         try {
             String result = HttpUtils.get(sbUrl.toString());
@@ -1998,7 +1998,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
 
     @Override
     public String createDlPaySign(HttpServletRequest request) {
-        PlatformStatsLogger.info(PlatformStatsLogger.DL, HttpUtils.getRequestParams(request).toString());
+        ChannelStatsLogger.info(ChannelStatsLogger.DL, HttpUtils.getRequestParams(request).toString());
 
         Map<String, Object> map = new LinkedHashMap<String, Object>();
         String cpOrder = request.getParameter("cpOrder");
@@ -2015,14 +2015,14 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             return JsonUtil.toJson(map);
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
+        ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(order.getChannelId(), order.getGameId());
 
-        if (platformGame == null) {
+        if (channelGame == null) {
             map.put("code", 1);
-            map.put("msg", "error platformGame not find");
+            map.put("msg", "error channelGame not find");
             return JsonUtil.toJson(map);
         }
-        String paymentKey = platformGame.getConfigParamsList().get(3);
+        String paymentKey = channelGame.getConfigParamsList().get(3);
         String moneyTow = new BigDecimal(money).setScale(2, RoundingMode.DOWN).toString();
 
         /** 生成签名*/
@@ -2036,7 +2036,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
         logger.info("cpSignSb: {}", sb.toString());
         String cpSign = MD5Util.MD5Encode(sb.toString(), "UTF-8");
 
-        PlatformStatsLogger.info(PlatformStatsLogger.DL, "cpSign:" + cpSign);
+        ChannelStatsLogger.info(ChannelStatsLogger.DL, "cpSign:" + cpSign);
 
         map.put("code", 0);
         map.put("msg", "成功");
@@ -2046,7 +2046,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
 
     @Override
     public String verifyDl(HttpServletRequest request) {
-        PlatformStatsLogger.info(PlatformStatsLogger.DL, HttpUtils.getRequestParams(request).toString());
+        ChannelStatsLogger.info(ChannelStatsLogger.DL, HttpUtils.getRequestParams(request).toString());
 
         String result = request.getParameter("result");
         String cpOrder = request.getParameter("cpOrder");
@@ -2060,12 +2060,12 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             return "error order not find";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
+        ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(order.getChannelId(), order.getGameId());
 
-        if (platformGame == null) {
-            return "error platformGame not find";
+        if (channelGame == null) {
+            return "error channelGame not find";
         }
-        String paymentKey = platformGame.getConfigParamsList().get(3);
+        String paymentKey = channelGame.getConfigParamsList().get(3);
 
         StringBuilder sb = new StringBuilder();
         sb.append("order=").append(request.getParameter("order"));
@@ -2079,13 +2079,13 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
         logger.info("signSb: {} ,orderAmount {}", sb.toString(), order.getAmount());
         String sig = MD5Util.MD5Encode(sb.toString(), "UTF-8");
 
-        PlatformStatsLogger.info(PlatformStatsLogger.DL, "signature:" + signature + ",sig:" + sig);
+        ChannelStatsLogger.info(ChannelStatsLogger.DL, "signature:" + signature + ",sig:" + sig);
         try {
             if (sig.equalsIgnoreCase(signature)) { // 验证通过
                 if ("1".equals(result)) {
                     if (order.getAmount() > Float.valueOf(money) * 100) {
                         orderService.payFail(order.getOrderId(), "order amount error");
-                        PlatformStatsLogger.error(PlatformStatsLogger.DL, order.getOrderId(), "order amount error");
+                        ChannelStatsLogger.error(ChannelStatsLogger.DL, order.getOrderId(), "order amount error");
                     } else {
                         logger.info("verifyDl success");
                         orderService.paySuccess(order.getOrderId());
@@ -2108,14 +2108,14 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
         logger.info("坚果session req = {}", JsonMapper.toJson(session));
 
         try {
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
-            if (platformGame == null) {
+            ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
+            if (channelGame == null) {
                 result.put("status", "0");
                 result.put("msg", "platorm not unition");
                 return JsonMapper.toJson(result);
             }
-            String url = platformGame.getConfigParamsList().get(0);
-            String app_key = platformGame.getConfigParamsList().get(1);
+            String url = channelGame.getConfigParamsList().get(0);
+            String app_key = channelGame.getConfigParamsList().get(1);
             String app_id = session.getApp_id();
             String mem_id = session.getMem_id();
             String user_token = session.getUser_token();
@@ -2159,7 +2159,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
 
     @Override
     public String verifyJianguo(HttpServletRequest request) {
-        PlatformStatsLogger.info(PlatformStatsLogger.JG, HttpUtils.getRequestParams(request).toString());
+        ChannelStatsLogger.info(ChannelStatsLogger.JG, HttpUtils.getRequestParams(request).toString());
         String app_id = request.getParameter("app_id");
         String cp_order_id = request.getParameter("cp_order_id");
         String mem_id = request.getParameter("mem_id");
@@ -2178,20 +2178,20 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             returnMap.put("ret", 1);
             returnMap.put("msg", "Can find Order");
             returnMap.put("content", "");
-            PlatformStatsLogger.info(PlatformStatsLogger.JG, JsonMapper.toJson(returnMap));
+            ChannelStatsLogger.info(ChannelStatsLogger.JG, JsonMapper.toJson(returnMap));
             return "fail";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
-        if (platformGame == null) {
+        ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(order.getChannelId(), order.getGameId());
+        if (channelGame == null) {
             logger.error("坚果支付回调platformGame不存在");
             returnMap.put("ret", 1);
             returnMap.put("msg", "Can find Game");
             returnMap.put("content", "");
-            PlatformStatsLogger.info(PlatformStatsLogger.JG, JsonMapper.toJson(returnMap));
+            ChannelStatsLogger.info(ChannelStatsLogger.JG, JsonMapper.toJson(returnMap));
             return "fail";
         }
 
-        String app_key = platformGame.getConfigParamsList().get(1);
+        String app_key = channelGame.getConfigParamsList().get(1);
 
         Map<String, Object> signParams = new LinkedHashMap<String, Object>();
         signParams.put("app_id", app_id);
@@ -2209,7 +2209,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
 
         if ("2".equals(order_status) && validSign.equals(sign)) {
             if (order.getAmount() > Float.parseFloat(product_price) * 100) {
-                PlatformStatsLogger.info(PlatformStatsLogger.JG, "order amount error");
+                ChannelStatsLogger.info(ChannelStatsLogger.JG, "order amount error");
                 orderService.payFail(order.getOrderId(), "order amount error");
                 returnMap.put("ret", 1);
                 returnMap.put("msg", "Amount error");
@@ -2223,7 +2223,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
                 return "SUCCESS";
             }
         } else {
-            PlatformStatsLogger.info(PlatformStatsLogger.JG, "签名验证失败 ");
+            ChannelStatsLogger.info(ChannelStatsLogger.JG, "签名验证失败 ");
             returnMap.put("ret", 1);
             returnMap.put("msg", "Sigin error or not pay " + order_status);
             returnMap.put("content", "");
@@ -2239,14 +2239,14 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
         logger.info(JsonMapper.toJson(session));
 
         try {
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
-            if (platformGame == null) {
+            ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
+            if (channelGame == null) {
                 result.put("status", "0");
                 result.put("msg", "platorm not unition");
                 return JsonMapper.toJson(result);
             }
-            String url = platformGame.getConfigParamsList().get(0);
-            String app_key = platformGame.getConfigParamsList().get(1);
+            String url = channelGame.getConfigParamsList().get(0);
+            String app_key = channelGame.getConfigParamsList().get(1);
             String app_id = session.getApp_id();
             String mem_id = session.getMem_id();
             String user_token = session.getUser_token();
@@ -2288,7 +2288,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
     @Override
     public String verifyBinghu(HttpServletRequest request) {
 
-        PlatformStatsLogger.info(PlatformStatsLogger.BH, HttpUtils.getRequestParams(request).toString());
+        ChannelStatsLogger.info(ChannelStatsLogger.BH, HttpUtils.getRequestParams(request).toString());
         String app_id = request.getParameter("app_id");
         String cp_order_id = request.getParameter("cp_order_id");
         String mem_id = request.getParameter("mem_id");
@@ -2306,19 +2306,19 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             returnMap.put("ret", 1);
             returnMap.put("msg", "Can find Order");
             returnMap.put("content", "");
-            PlatformStatsLogger.info(PlatformStatsLogger.BH, JsonMapper.toJson(returnMap));
+            ChannelStatsLogger.info(ChannelStatsLogger.BH, JsonMapper.toJson(returnMap));
             return "fail";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
-        if (platformGame == null) {
+        ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(order.getChannelId(), order.getGameId());
+        if (channelGame == null) {
             returnMap.put("ret", 1);
             returnMap.put("msg", "Can find Game");
             returnMap.put("content", "");
-            PlatformStatsLogger.info(PlatformStatsLogger.BH, JsonMapper.toJson(returnMap));
+            ChannelStatsLogger.info(ChannelStatsLogger.BH, JsonMapper.toJson(returnMap));
             return "fail";
         }
 
-        String app_key = platformGame.getConfigParamsList().get(1);
+        String app_key = channelGame.getConfigParamsList().get(1);
 
         Map<String, Object> signParams = new LinkedHashMap<String, Object>();
         signParams.put("app_id", app_id);
@@ -2340,7 +2340,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
 
         if ("2".equals(order_status) && validSign.equals(sign)) {
             if (order.getAmount() > Float.parseFloat(product_price) * 100) {
-                PlatformStatsLogger.info(PlatformStatsLogger.JG, "order amount error");
+                ChannelStatsLogger.info(ChannelStatsLogger.JG, "order amount error");
                 orderService.payFail(order.getOrderId(), "order amount error");
                 returnMap.put("ret", 1);
                 returnMap.put("msg", "Amount error");
@@ -2354,7 +2354,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
                 return "SUCCESS";
             }
         } else {
-            PlatformStatsLogger.info(PlatformStatsLogger.JG, "签名验证失败 ");
+            ChannelStatsLogger.info(ChannelStatsLogger.JG, "签名验证失败 ");
             returnMap.put("ret", 1);
             returnMap.put("msg", "Sigin error or not pay " + order_status);
             returnMap.put("content", "");
@@ -2365,18 +2365,18 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
 
     @Override
     public String verifyDxSession(DianxinSession session) {
-        PlatformStatsLogger.info(PlatformStatsLogger.DX, session.toString());
+        ChannelStatsLogger.info(ChannelStatsLogger.DX, session.toString());
         if (StringUtils.isBlank(session.getYgAppId()) || StringUtils.isBlank(session.getPlatformId()) || StringUtils.isBlank(session.getCode())) {
             return "param delivery error";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
-        if (platformGame == null) {
-            return "platformGame not find";
+        ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
+        if (channelGame == null) {
+            return "channelGame not find";
         }
         //==========================
-        String client_id = platformGame.getConfigParamsList().get(0);
-        String client_secret = platformGame.getConfigParamsList().get(1);
-        String verifySessionUrl = platformGame.getConfigParamsList().get(2);
+        String client_id = channelGame.getConfigParamsList().get(0);
+        String client_secret = channelGame.getConfigParamsList().get(1);
+        String verifySessionUrl = channelGame.getConfigParamsList().get(2);
         //==========================
         Map<String, String> params = new HashMap<String, String>();
         params.put("grant_type", "authorization_code");
@@ -2399,18 +2399,18 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
 
     @Override
     public String verifyDxToken(DianxinSession session) {
-        PlatformStatsLogger.info(PlatformStatsLogger.DX, session.toString());
+        ChannelStatsLogger.info(ChannelStatsLogger.DX, session.toString());
         if (StringUtils.isBlank(session.getYgAppId()) || StringUtils.isBlank(session.getPlatformId())) {
             return "param delivery error";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
-        if (platformGame == null) {
-            return "platformGame not find";
+        ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
+        if (channelGame == null) {
+            return "channelGame not find";
         }
         //==========================
-        String client_id = platformGame.getConfigParamsList().get(0);
-        String client_secret = platformGame.getConfigParamsList().get(1);
-        String verifyTokenUrl = platformGame.getConfigParamsList().get(3);
+        String client_id = channelGame.getConfigParamsList().get(0);
+        String client_secret = channelGame.getConfigParamsList().get(1);
+        String verifyTokenUrl = channelGame.getConfigParamsList().get(3);
         //==========================
         Map<String, String> params = new HashMap<String, String>();
         params.put("access_token", session.getAccessToken());
@@ -2431,14 +2431,14 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
 
     @Override
     public String verifyUuSyzhuSession(UuSyzhuSession session) {
-        PlatformStatsLogger.info(PlatformStatsLogger.UUSYZ, session.toString());
+        ChannelStatsLogger.info(ChannelStatsLogger.UUSYZ, session.toString());
         try {
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
-            if (platformGame == null) {
-                return "platformGame not find";
+            ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
+            if (channelGame == null) {
+                return "channelGame not find";
             }
-            String serverMD5Key = platformGame.getConfigParamsList().get(0);
-            String verifySessionUrl = platformGame.getConfigParamsList().get(1);
+            String serverMD5Key = channelGame.getConfigParamsList().get(0);
+            String verifySessionUrl = channelGame.getConfigParamsList().get(1);
             String appid = session.getAppid();
             String token = session.getToken();
             SimpleDateFormat sdf = new SimpleDateFormat("YYYYMMddHHmmssSSS");
@@ -2462,7 +2462,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
 
     @Override
     public String verifyUuSyzhu(HttpServletRequest request) {
-        PlatformStatsLogger.info(PlatformStatsLogger.UUSYZ, HttpUtils.getRequestParams(request).toString());
+        ChannelStatsLogger.info(ChannelStatsLogger.UUSYZ, HttpUtils.getRequestParams(request).toString());
         String cporderno = request.getParameter("cporderno");
         Order order = basicRepository.getOrderByOrderId(cporderno);
         if (order == null) {
@@ -2470,12 +2470,12 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
             return "failure";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
-        if (platformGame == null) {
-            logger.info("PlatformGame not find");
+        ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(order.getChannelId(), order.getGameId());
+        if (channelGame == null) {
+            logger.info("ChannelGameEntity not find");
             return "failure";
         }
-        String serverMD5Key = platformGame.getConfigParamsList().get(0);
+        String serverMD5Key = channelGame.getConfigParamsList().get(0);
 
         String money = request.getParameter("money");
         String status = request.getParameter("status");
@@ -2489,7 +2489,7 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
                 logger.info("orderAmount:{} money:{}", order.getAmount(), Float.valueOf(money));
                 if (order.getAmount() > Float.valueOf(money) * 100) {
                     orderService.payFail(order.getOrderId(), "order amount error");
-                    PlatformStatsLogger.error(PlatformStatsLogger.UUSYZ, order.getOrderId(), "order amount error");
+                    ChannelStatsLogger.error(ChannelStatsLogger.UUSYZ, order.getOrderId(), "order amount error");
                     return "failure";
                 } else {
                     logger.info("verifyUuSyzhu success");
@@ -2507,15 +2507,15 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
 
     @Override
     public String verifyGuangFanSession(GuangFanSession session) {
-        PlatformStatsLogger.info(PlatformStatsLogger.GF, session.toString());
+        ChannelStatsLogger.info(ChannelStatsLogger.GF, session.toString());
         try {
 
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
-            if (platformGame == null) {
-                return "platformGame not find";
+            ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
+            if (channelGame == null) {
+                return "channelGame not find";
             }
-            String appKey = platformGame.getConfigParamsList().get(0);
-            String verifySessionUrl = platformGame.getConfigParamsList().get(1);
+            String appKey = channelGame.getConfigParamsList().get(0);
+            String verifySessionUrl = channelGame.getConfigParamsList().get(1);
             String token = session.getToken();
             String userID = session.getUserID();
 
@@ -2536,14 +2536,14 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
 
     @Override
     public String createGuangFanOrderId(GuangFanSession session) {
-        PlatformStatsLogger.info(PlatformStatsLogger.GF, session.toString());
+        ChannelStatsLogger.info(ChannelStatsLogger.GF, session.toString());
         try {
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
-            if (platformGame == null) {
-                return "platformGame not find";
+            ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getYgAppId()));
+            if (channelGame == null) {
+                return "channelGame not find";
             }
-            String appSecret = platformGame.getConfigParamsList().get(2);
-            String orderIdUrl = platformGame.getConfigParamsList().get(3);
+            String appSecret = channelGame.getConfigParamsList().get(2);
+            String orderIdUrl = channelGame.getConfigParamsList().get(3);
             /** 加密源串拼接*/
             String productName = new String(session.getProductName().getBytes("ISO-8859-1"), "UTF-8");
 //            String productName = URLDecoder.decode(session.getProductName(), "UTF-8");
@@ -2624,13 +2624,13 @@ public class ChannelServicePartTwoImpl implements ChannelServicePartTwo {
                 logger.info("Order not find");
                 return "FAIL";
             }
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
-            if (platformGame == null) {
-                logger.info("PlatformGame not find");
+            ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(order.getChannelId(), order.getGameId());
+            if (channelGame == null) {
+                logger.info("ChannelGameEntity not find");
                 return "FAIL";
             }
-            String appSecret = platformGame.getConfigParamsList().get(2);
-            String publicKey = platformGame.getConfigParamsList().get(5);
+            String appSecret = channelGame.getConfigParamsList().get(2);
+            String publicKey = channelGame.getConfigParamsList().get(5);
             /** 拼接生成签名字符串,生成签名*/
             StringBuilder sb = new StringBuilder();
             sb.append("channelID=").append(dataMap.get("channelID").toString())

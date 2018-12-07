@@ -42,15 +42,15 @@ public class HmsChannel extends BaseChannel {
     @Override
     public String verifySession(String... args) {
         checkInit();
-        if (null == platformGame || null == platform || null == args || args.length == 0)
+        if (null == channelGame || null == channel || null == args || args.length == 0)
             return null;
-        String priKey = platformGame.getPrivateKey();
-        String verUrl = platform.getVerifyUrl();
+        String priKey = channelGame.getPrivateKey();
+        String verUrl = channel.getVerifyUrl();
         Map<String, Object> mockRequestParams = new HashMap<>();
         mockRequestParams.put(REQUEST_PARAM_METHOD, "external.hms.gs.checkPlayerSign");
         mockRequestParams.put(REQUEST_PARAM_APPID, args[0]);
         if (StringUtil.isNullOrEmpty(args[1])) {
-            String cpId = platformGame.getConfig(REQUEST_PARAM_CPID);
+            String cpId = channelGame.getConfig(REQUEST_PARAM_CPID);
             args[1] = cpId;
         }
         mockRequestParams.put(REQUEST_PARAM_CPID, args[1]);
@@ -67,7 +67,7 @@ public class HmsChannel extends BaseChannel {
     public String signOrder(BaseRequest request) {
         checkInit();
         if (request instanceof HMSPaySignRequest) {
-            String sign = HmsSignHelper.sign(((HMSPaySignRequest) request).getContent(), platformGame.getPrivateKey());
+            String sign = HmsSignHelper.sign(((HMSPaySignRequest) request).getContent(), channelGame.getPrivateKey());
             return sign;
         }
         return null;
@@ -86,11 +86,11 @@ public class HmsChannel extends BaseChannel {
         if (order == null) {
             return JsonMapper.toJson(result);
         }
-        platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
+        channelGame = basicRepository.getByChannelAndGameId(order.getChannelId(), order.getGameId());
         String sign = (String) params.get(RESPONSE_KEY_SIGN);
         String signType = (String) params.get(RESPONSE_KEY_SIGN_TYPE);
         String content = HmsSignHelper.getSignData(params);
-        if (HmsSignHelper.doCheck(content, sign, platformGame.getPublicKey(), signType)) {
+        if (HmsSignHelper.doCheck(content, sign, channelGame.getPublicKey(), signType)) {
             result.setResult(RESULT_PAY_CODE_SUCCESS);
             service.paySuccess(order.getOrderId());
         } else {

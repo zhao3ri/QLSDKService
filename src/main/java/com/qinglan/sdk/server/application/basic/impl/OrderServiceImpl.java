@@ -9,13 +9,13 @@ import com.qinglan.sdk.server.data.infrastructure.event.EventPublisher;
 import com.qinglan.sdk.server.Constants;
 import com.qinglan.sdk.server.application.basic.OrderService;
 import com.qinglan.sdk.server.BasicRepository;
+import com.qinglan.sdk.server.domain.basic.ChannelEntity;
+import com.qinglan.sdk.server.domain.basic.ChannelGameEntity;
 import com.qinglan.sdk.server.domain.basic.Order;
-import com.qinglan.sdk.server.domain.basic.Platform;
-import com.qinglan.sdk.server.domain.basic.PlatformGame;
 import com.qinglan.sdk.server.domain.basic.event.CPAsyncNotifyEvent;
 import com.qinglan.sdk.server.domain.basic.event.OraderCountEvent;
 import com.qinglan.sdk.server.domain.basic.event.OrderGenerateEvent;
-import com.qinglan.sdk.server.presentation.basic.dto.OrderGeneratePattern;
+import com.qinglan.sdk.server.presentation.basic.dto.OrderGenerateRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -31,7 +31,7 @@ public class OrderServiceImpl implements OrderService {
     private EventPublisher publisher;
 
     @Override
-    public String saveOrder(OrderGeneratePattern params) {
+    public String saveOrder(OrderGenerateRequest params) {
         for (int i = 0; i < 3; i++) {
             try {
                 Order order = assembledOrder(params);
@@ -46,7 +46,7 @@ public class OrderServiceImpl implements OrderService {
         return null;
     }
 
-    private Order assembledOrder(OrderGeneratePattern params) {
+    private Order assembledOrder(OrderGenerateRequest params) {
         Order order = new Order();
         order.setGameId(params.getGameId());
         order.setChannelId(params.getChannelId());
@@ -54,6 +54,9 @@ public class OrderServiceImpl implements OrderService {
         order.setZoneId(params.getZoneId());
         order.setRoleId(params.getRoleId());
         order.setRoleName(params.getRoleName());
+        order.setGoodsId(params.getGoodsId());
+        order.setGoodsName(params.getGoodsName());
+        order.setGoodsCount(params.getGoodsCount());
 
         if (Constants.QBAO_PLATFORM_ID == params.getChannelId()) {
             order.setOrderId(RandomTool.getOrderId(3));
@@ -61,7 +64,7 @@ public class OrderServiceImpl implements OrderService {
             order.setOrderId(RandomTool.getOrderId());
         }
 
-        order.setCpOrderId(params.getCpOrderId());
+        order.setChannelOrderId(params.getChannelOrderId());
         order.setExtInfo(params.getExtInfo());
         order.setAmount(params.getAmount());
         order.setNotifyUrl(params.getNotifyUrl());
@@ -120,12 +123,12 @@ public class OrderServiceImpl implements OrderService {
         /**
          * 扣减渠道对应金额
          */
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
-        logger.info("appId:" + platformGame.getGameId() + " platformid:" + platformGame.getChannelId());
+        ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(order.getChannelId(), order.getGameId());
+        logger.info("appId:" + channelGame.getGameId() + " platformid:" + channelGame.getChannelId());
         int updateBalance = -1;
         int i = 0;
         while (i < 3) {
-            updateBalance = this.updatePlatformBalance(order.getAmount(), platformGame);
+            updateBalance = this.updatePlatformBalance(order.getAmount(), channelGame);
             if (updateBalance != 2) {
                 break;
             } else {
@@ -151,22 +154,22 @@ public class OrderServiceImpl implements OrderService {
      * @param money
      * @return 0 ：余额不足 2：扣款失败  1：成功
      */
-    public int updatePlatformBalance(int money, PlatformGame platformGame) {
-        Platform platform = basicRepository.getPlatform(platformGame.getChannelId());
-        logger.info("pre Money:" + money + " discount:" + platformGame.getDiscount());
-        money = money * platformGame.getDiscount() / 100;
-        logger.info("after Money:" + money + " discount:" + platformGame.getDiscount());
-        if (money > platform.getBalance()) {
+    public int updatePlatformBalance(int money, ChannelGameEntity channelGame) {
+        ChannelEntity channel = basicRepository.getChannel(channelGame.getChannelId());
+        logger.info("pre Money:" + money + " discount:" + channelGame.getDiscount());
+        money = money * channelGame.getDiscount() / 100;
+        logger.info("after Money:" + money + " discount:" + channelGame.getDiscount());
+        if (money > channel.getBalance()) {
             return 0;
         }
         /**
          * TODO 发余额报警信息
          */
-        int balance = platform.getBalance() - money;
-        platform.setBalance(balance);
-        int newversion = platform.getVersion() + 1;
-        platform.setNewversion(newversion);
-        int result = basicRepository.updatePlatformBalance(platform);
+        int balance = channel.getBalance() - money;
+        channel.setBalance(balance);
+        int newversion = channel.getVersion() + 1;
+        channel.setNewversion(newversion);
+        int result = basicRepository.updateChannelBalance(channel);
         if (result > 0) {
             return 1;
         } else {
@@ -174,14 +177,14 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-    private OrderGeneratePattern changeOrder(Order order) {
-        OrderGeneratePattern params = new OrderGeneratePattern();
+    private OrderGenerateRequest changeOrder(Order order) {
+        OrderGenerateRequest params = new OrderGenerateRequest();
         params.setGameId(order.getGameId());
         params.setChannelId(order.getChannelId());
         params.setUid(order.getUid());
         params.setZoneId(order.getZoneId());
         params.setRoleId(order.getRoleId());
-        params.setCpOrderId(order.getCpOrderId());
+        params.setChannelOrderId(order.getChannelOrderId());
         params.setExtInfo(order.getExtInfo());
         params.setAmount(order.getAmount());
         params.setNotifyUrl(order.getNotifyUrl());

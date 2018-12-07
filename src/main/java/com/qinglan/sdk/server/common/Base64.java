@@ -64,7 +64,7 @@ public class Base64 {
     }
 
     /**
-     * convert the platform dependent string characters to UTF8 which can
+     * convert the channel dependent string characters to UTF8 which can
      * also be done by calling the java String method getBytes("UTF-8"),but I
      * hope to do it from the ground up.
      */

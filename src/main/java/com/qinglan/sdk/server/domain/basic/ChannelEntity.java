@@ -3,12 +3,12 @@ package com.qinglan.sdk.server.domain.basic;
 import java.io.Serializable;
 import java.util.Date;
 
-public class Platform implements Serializable {
+public class ChannelEntity implements Serializable {
     private Integer id;
 
-    private String platformName;
+    private String channelName;
 
-    private String platformCallbackUrl;
+    private String channelCallbackUrl;
 
     private Date createTime;
     private Integer balance;
@@ -52,20 +52,20 @@ public class Platform implements Serializable {
         this.id = id;
     }
 
-    public String getPlatformName() {
-        return platformName;
+    public String getChannelName() {
+        return channelName;
     }
 
-    public void setPlatformName(String platformName) {
-        this.platformName = platformName == null ? null : platformName.trim();
+    public void setChannelName(String channelName) {
+        this.channelName = channelName == null ? null : channelName.trim();
     }
 
-    public String getPlatformCallbackUrl() {
-        return platformCallbackUrl;
+    public String getChannelCallbackUrl() {
+        return channelCallbackUrl;
     }
 
-    public void setPlatformCallbackUrl(String platformCallbackUrl) {
-        this.platformCallbackUrl = platformCallbackUrl == null ? null : platformCallbackUrl.trim();
+    public void setChannelCallbackUrl(String channelCallbackUrl) {
+        this.channelCallbackUrl = channelCallbackUrl == null ? null : channelCallbackUrl.trim();
     }
 
     public Date getCreateTime() {

@@ -12,6 +12,8 @@ import com.qinglan.sdk.server.common.JsonMapper;
 import com.qinglan.sdk.server.common.MD5;
 import com.qinglan.sdk.server.data.annotation.event.EventListener;
 import com.qinglan.sdk.server.StatsLogger;
+import com.qinglan.sdk.server.domain.basic.*;
+import com.qinglan.sdk.server.presentation.basic.dto.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,16 +22,8 @@ import org.springframework.stereotype.Component;
 
 import com.qinglan.sdk.server.application.basic.kafka.KafkaProducerClient;
 import com.qinglan.sdk.server.application.basic.redis.RedisUtil;
-import com.qinglan.sdk.server.domain.basic.Account;
 import com.qinglan.sdk.server.BasicRepository;
-import com.qinglan.sdk.server.domain.basic.BehaviorDevice;
-import com.qinglan.sdk.server.domain.basic.BehaviorUser;
-import com.qinglan.sdk.server.domain.basic.GameTrace;
-import com.qinglan.sdk.server.domain.basic.HLastLogin;
-import com.qinglan.sdk.server.domain.basic.PlatformGame;
-import com.qinglan.sdk.server.domain.basic.Role;
-import com.qinglan.sdk.server.domain.basic.RoleTrace;
-import com.qinglan.sdk.server.domain.basic.ZoneTrace;
+import com.qinglan.sdk.server.domain.basic.ChannelGameEntity;
 import com.qinglan.sdk.server.domain.basic.event.HeartbeatEvent;
 import com.qinglan.sdk.server.domain.basic.event.InitialEvent;
 import com.qinglan.sdk.server.domain.basic.event.LoginEvent;
@@ -38,13 +32,7 @@ import com.qinglan.sdk.server.domain.basic.event.OraderCountEvent;
 import com.qinglan.sdk.server.domain.basic.event.OrderGenerateEvent;
 import com.qinglan.sdk.server.domain.basic.event.QuitEvent;
 import com.qinglan.sdk.server.domain.basic.event.RoleEstablishEvent;
-import com.qinglan.sdk.server.presentation.basic.dto.HeartbeatPattern;
-import com.qinglan.sdk.server.presentation.basic.dto.InitialPattern;
-import com.qinglan.sdk.server.presentation.basic.dto.LoginPattern;
-import com.qinglan.sdk.server.presentation.basic.dto.LogoutPattern;
-import com.qinglan.sdk.server.presentation.basic.dto.OrderGeneratePattern;
-import com.qinglan.sdk.server.presentation.basic.dto.QuitPattern;
-import com.qinglan.sdk.server.presentation.basic.dto.RoleCreatePattern;
+import com.qinglan.sdk.server.presentation.basic.dto.OrderGenerateRequest;
 
 @Component @EventListener
 public class GameOperateListener {
@@ -236,13 +224,13 @@ public class GameOperateListener {
 		
 		//榴莲平台发送post用户信息
 		if (params.getChannelId() == 1068) {
-			PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(params.getChannelId()), Long.valueOf(params.getGameId()));
-			if (null != platformGame) {
-				String appKey = platformGame.getConfigParamsList().get(1);
-				String appsecret = platformGame.getConfigParamsList().get(2);
+			ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(Integer.valueOf(params.getChannelId()), Long.valueOf(params.getGameId()));
+			if (null != channelGame) {
+				String appKey = channelGame.getConfigParamsList().get(1);
+				String appsecret = channelGame.getConfigParamsList().get(2);
 				String privateKey = MD5.encode(appKey + "#" + appsecret);
-				String appid = platformGame.getConfigParamsList().get(3);
-				String url = platformGame.getConfigParamsList().get(4);
+				String appid = channelGame.getConfigParamsList().get(3);
+				String url = channelGame.getConfigParamsList().get(4);
 				
 				Map<String, Object> postParams = new HashMap<String, Object>();
 				postParams.put("appid", appid);
@@ -268,7 +256,7 @@ public class GameOperateListener {
 	
 	@EventListener(asynchronous = true)
 	public void handleOraderCountEvent(OraderCountEvent event) {
-		OrderGeneratePattern params = event.getHelper();
+		OrderGenerateRequest params = event.getHelper();
 		GameTrace gameTrace = basicRepository.getGameTrace(params.getClientType(), params.getUid(), params.getChannelId(), params.getGameId());
 		int distanceDate = DateUtils.getIntervalDays(DateUtils.parse(gameTrace.loginFirstDay(),"yyyy-MM-dd"),new Date());
 		
@@ -492,7 +480,7 @@ public class GameOperateListener {
 	@EventListener(asynchronous = true)
 	public void handleOrderGenerateEvent(OrderGenerateEvent event) {
 		
-		OrderGeneratePattern params = event.getHelper();
+		OrderGenerateRequest params = event.getHelper();
 		GameTrace gameTrace = basicRepository.getGameTrace(params.getClientType(), params.getUid(), params.getChannelId(), params.getGameId());
 		ZoneTrace zoneTrace = basicRepository.getZoneTrace(params.getClientType(), params.getUid(), params.getChannelId(), params.getGameId(), params.getZoneId());
 		RoleTrace roleTrace = basicRepository.getRoleTrace(params.getClientType(), params.getUid(), params.getChannelId(), params.getGameId(), params.getZoneId(), params.getRoleId(),params.getRoleName());

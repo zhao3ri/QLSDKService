@@ -21,7 +21,7 @@ import com.qinglan.sdk.server.application.basic.redis.RedisUtil;
 
 @Repository
 public class BasicRepositoryImpl implements BasicRepository {
-    private static final String PARAM_PLATFORM_ID = "platformId";
+    private static final String PARAM_CHANNEL_ID = "channelId";
     private static final String PARAM_UID = "uid";
     private static final String PARAM_GAME_ID = "gameId";
     private static final String PARAM_ZONE_ID = "zoneId";
@@ -57,33 +57,33 @@ public class BasicRepositoryImpl implements BasicRepository {
     @Override
     public Account getAccount(int platformId, String uid) {
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put(PARAM_PLATFORM_ID, platformId);
+        params.put(PARAM_CHANNEL_ID, platformId);
         params.put(PARAM_UID, uid);
         return mybatisRepository.findOne(Account.class, "getAccount", params);
     }
 
 
     @Override
-    public PlatformGame getByPlatformAndGameId(int channelId, long gameId) {
+    public ChannelGameEntity getByChannelAndGameId(int channelId, long gameId) {
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put(PARAM_PLATFORM_ID, channelId);
+        params.put(PARAM_CHANNEL_ID, channelId);
         params.put(PARAM_GAME_ID, gameId);
-        PlatformGame platformGame = mybatisRepository.findOne(PlatformGame.class, "getByPlatformAndGameId", params);
-        if (platformGame == null) return null;
+        ChannelGameEntity channelGame = mybatisRepository.findOne(ChannelGameEntity.class, "getByChannelAndGameId", params);
+        if (channelGame == null) return null;
 
-        //redisUtil.setKeyValue("pg_"+platformId+"_"+gameId, JsonMapper.toJson(platformGame));
-        return platformGame;
+        //redisUtil.setKeyValue("pg_"+platformId+"_"+gameId, JsonMapper.toJson(channelGame));
+        return channelGame;
     }
 
 
     @Override
-    public Platform getPlatform(int channelId) {
-        return mybatisRepository.findOne(Platform.class, "getPlatform", channelId);
+    public ChannelEntity getChannel(int channelId) {
+        return mybatisRepository.findOne(ChannelEntity.class, "getChannel", channelId);
     }
 
     @Override
-    public int updatePlatformBalance(Platform platform) {
-        return mybatisRepository.update(Platform.class, "updateBalance", platform);
+    public int updateChannelBalance(ChannelEntity channel) {
+        return mybatisRepository.update(ChannelEntity.class, "updateBalance", channel);
     }
 
 
@@ -103,7 +103,7 @@ public class BasicRepositoryImpl implements BasicRepository {
     @Override
     public Order getOrderStatus(String orderId, long gameId, int platformId) {
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put(PARAM_PLATFORM_ID, platformId);
+        params.put(PARAM_CHANNEL_ID, platformId);
         params.put(PARAM_GAME_ID, gameId);
         params.put(PARAM_ORDER_ID, orderId);
         return mybatisRepository.findOne(Order.class, "getOrderStatus", params);
@@ -149,7 +149,7 @@ public class BasicRepositoryImpl implements BasicRepository {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(PARAM_OS, clientType);
         params.put(PARAM_UID, uid);
-        params.put(PARAM_PLATFORM_ID, platformId);
+        params.put(PARAM_CHANNEL_ID, platformId);
         params.put(PARAM_GAME_ID, gameId);
         List<BehaviorUser> behaviorUsers = mybatisRepository.findList(BehaviorUser.class, "getUserBehavior", params);
         if (!CollectionUtils.isEmpty(behaviorUsers)) {
@@ -173,7 +173,7 @@ public class BasicRepositoryImpl implements BasicRepository {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(PARAM_OS, clientType);
         params.put(PARAM_UID, uid);
-        params.put(PARAM_PLATFORM_ID, platformId);
+        params.put(PARAM_CHANNEL_ID, platformId);
         params.put(PARAM_GAME_ID, appId);
         params.put(PARAM_ZONE_ID, zoneId);
         String key = "userBehavior_" + clientType + SEPARATOR + uid + SEPARATOR + platformId + SEPARATOR + appId + SEPARATOR + zoneId;
@@ -264,7 +264,7 @@ public class BasicRepositoryImpl implements BasicRepository {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(PARAM_OS, behaviorUser.getClientType());
         params.put(PARAM_UID, behaviorUser.getUid());
-        params.put(PARAM_PLATFORM_ID, behaviorUser.getChannelId());
+        params.put(PARAM_CHANNEL_ID, behaviorUser.getChannelId());
         params.put(PARAM_ZONE_ID, behaviorUser.getZoneId());
         params.put(PARAM_GAME_ID, behaviorUser.getGameId());
         params.put(PARAM_DATA, data);
@@ -280,7 +280,7 @@ public class BasicRepositoryImpl implements BasicRepository {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(PARAM_OS, behaviorUser.getClientType());
         params.put(PARAM_UID, behaviorUser.getUid());
-        params.put(PARAM_PLATFORM_ID, behaviorUser.getChannelId());
+        params.put(PARAM_CHANNEL_ID, behaviorUser.getChannelId());
         params.put(PARAM_ZONE_ID, behaviorUser.getZoneId());
         params.put(PARAM_GAME_ID, behaviorUser.getGameId());
         params.put(PARAM_DATA, data);
@@ -562,7 +562,7 @@ public class BasicRepositoryImpl implements BasicRepository {
     public Account getRoleCreateTime(Long appId, Integer platformId,
                                      String zoneId, String roleId, String roleName) {
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put(PARAM_PLATFORM_ID, platformId);
+        params.put(PARAM_CHANNEL_ID, platformId);
         params.put(PARAM_GAME_ID, appId);
         params.put(PARAM_ZONE_ID, zoneId);
         params.put(PARAM_ROLE_ID, roleId);

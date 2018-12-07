@@ -69,7 +69,7 @@ public class AccountController {
 
     @RequestMapping("/account/order/generate")
     @ResponseBody
-    public Map<String, Object> orderGenerate(OrderGeneratePattern orderGenerate) {
+    public Map<String, Object> orderGenerate(OrderGenerateRequest orderGenerate) {
         logger.debug("params: {}", orderGenerate);
         return accountService.orderGenerate(orderGenerate);
     }
@@ -91,7 +91,7 @@ public class AccountController {
 
     @RequestMapping("/account/order/self")
     @ResponseBody
-    public Map<String, Object> selfOrderGenerate(HttpServletRequest request, OrderGeneratePattern orderGenerate) {
+    public Map<String, Object> selfOrderGenerate(HttpServletRequest request, OrderGenerateRequest orderGenerate) {
         logger.debug("params: {}", orderGenerate);
         orderGenerate.setIp(request.getRemoteAddr());
         return accountService.selforderGenerate(orderGenerate);
@@ -107,7 +107,7 @@ public class AccountController {
     @RequestMapping("/account/initsdk")
     @ResponseBody
     public String sdkinit(HttpServletRequest request) {
-        logger.debug("zhidianparams: {}", request.getParameter("zdPlatformId"));
+        logger.debug("zhidianparams: {}", request.getParameter("channelId"));
         Map<String, Object> m = new HashMap<String, Object>();
         m.put("code", HeepayTradeConfig.getInstance().getSelfPay());
         return JsonMapper.toJson(m);

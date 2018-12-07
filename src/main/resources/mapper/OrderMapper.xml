@@ -10,7 +10,7 @@
         <result column="roleId" jdbcType="VARCHAR" property="roleId"/>
         <result column="roleName" jdbcType="VARCHAR" property="roleName"/>
         <result column="orderId" jdbcType="VARCHAR" property="orderId"/>
-        <result column="cpOrderId" jdbcType="VARCHAR" property="cpOrderId"/>
+        <result column="channelOrderId" jdbcType="VARCHAR" property="channelOrderId"/>
         <result column="extInfo" jdbcType="VARCHAR" property="extInfo"/>
         <result column="amount" jdbcType="INTEGER" property="amount"/>
         <result column="notifyUrl" jdbcType="VARCHAR" property="notifyUrl"/>
@@ -23,13 +23,16 @@
         <result column="createTime" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="updateTime" jdbcType="TIMESTAMP" property="updateTime"/>
         <result column="gold" jdbcType="INTEGER" property="gold"/>
-        <result column="selfpay" jdbcType="INTEGER" property="gold"/>
+        <result column="selfpay" jdbcType="INTEGER" property="selfpay"/>
+        <result column="goodsId" jdbcType="VARCHAR" property="goodsId"/>
+        <result column="goodsName" jdbcType="VARCHAR" property="goodsName"/>
+        <result column="goodsCount" jdbcType="INTEGER" property="goodsCount"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-    id, gameId, channelId, uid, zoneId, roleId, orderId, cpOrderId, extInfo, amount,
+    id, gameId, channelId, uid, zoneId, roleId, orderId, channelOrderId, extInfo, amount,
     notifyUrl, fixed, deviceId, clientType, errorMsg, status, notifyStatus, createTime, 
-    updateTime, gold,selfpay
+    updateTime, gold, selfpay, goodsId, goodsName, goodsCount
   </sql>
 
     <select id="getOrderByOrderId" parameterType="java.lang.String"
@@ -51,14 +54,15 @@
       amount, notifyUrl, fixed, 
       deviceId, clientType, errorMsg, 
       status, notifyStatus, createTime, 
-      updateTime, gold,selfpay)
+      updateTime, gold,selfpay,goodsId,goodsName,goodsCount)
     values (#{id,jdbcType=BIGINT}, #{gameId,jdbcType=BIGINT}, #{channelId,jdbcType=INTEGER},
       #{uid,jdbcType=VARCHAR}, #{zoneId,jdbcType=VARCHAR}, #{roleId,jdbcType=VARCHAR}, #{roleName,jdbcType=VARCHAR}, 
-      #{orderId,jdbcType=VARCHAR}, #{cpOrderId,jdbcType=VARCHAR}, #{extInfo,jdbcType=VARCHAR},
+      #{orderId,jdbcType=VARCHAR}, #{channelOrderId,jdbcType=VARCHAR}, #{extInfo,jdbcType=VARCHAR},
       #{amount,jdbcType=INTEGER}, #{notifyUrl,jdbcType=VARCHAR}, #{fixed,jdbcType=BIT}, 
       #{deviceId,jdbcType=VARCHAR}, #{clientType,jdbcType=BIT}, #{errorMsg,jdbcType=VARCHAR}, 
       #{status,jdbcType=BIT}, #{notifyStatus,jdbcType=BIT}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{updateTime,jdbcType=TIMESTAMP}, #{gold,jdbcType=INTEGER}, #{selfpay,jdbcType=INTEGER})
+      #{updateTime,jdbcType=TIMESTAMP}, #{gold,jdbcType=INTEGER}, #{selfpay,jdbcType=INTEGER},
+      #{goodsId,jdbcType=VARCHAR}, #{goodsName,jdbcType=VARCHAR},#{goodsCount,jdbcType=INTEGER})
   </insert>
 
     <update id="updateStatusPay" parameterType="java.util.Map">

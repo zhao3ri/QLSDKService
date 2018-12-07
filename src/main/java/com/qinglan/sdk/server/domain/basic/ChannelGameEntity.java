@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 import com.qinglan.sdk.server.common.StringUtil;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
-public class PlatformGame implements Serializable {
+public class ChannelGameEntity implements Serializable {
     private static final long serialVersionUID = 1L;
     private Long id;
 

@@ -167,7 +167,7 @@ public class AccountControllerTest  extends BaseTestCase{
 		params.put("cpOrderId", UUID.randomUUID().toString());
 		params.put("extInfo", UUID.randomUUID().toString());
 		params.put("amount", "100");
-		params.put("notifyUrl", host+"/platform/testcallback");
+		params.put("notifyUrl", host+"/channel/testcallback");
 		params.put("fixed", "1");
 		params.put("loginTime", System.currentTimeMillis());
 		params.put("clientType", "1");

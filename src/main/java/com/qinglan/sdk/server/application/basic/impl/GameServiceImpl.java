@@ -36,7 +36,7 @@ public class GameServiceImpl implements GameService{
 		params.put("uid", order.getUid());
 		params.put("zoneId", order.getZoneId());
 		params.put("roleId", order.getRoleId());
-		params.put("cpOrderId", order.getCpOrderId());
+		params.put("cpOrderId", order.getChannelOrderId());
 		params.put("orderId", order.getOrderId());
 		params.put("orderStatus", 1);
 		params.put("amount", order.getAmount());

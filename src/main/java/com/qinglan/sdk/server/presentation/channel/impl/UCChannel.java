@@ -1,11 +1,11 @@
 package com.qinglan.sdk.server.presentation.channel.impl;
 
 import com.qinglan.sdk.server.application.basic.OrderService;
-import com.qinglan.sdk.server.application.platform.log.PlatformStatsLogger;
+import com.qinglan.sdk.server.application.platform.log.ChannelStatsLogger;
 import com.qinglan.sdk.server.common.*;
 import com.qinglan.sdk.server.domain.basic.Order;
 import com.qinglan.sdk.server.presentation.channel.entity.BaseRequest;
-import com.qinglan.sdk.server.presentation.channel.entity.OrderRequest;
+import com.qinglan.sdk.server.presentation.channel.entity.UCOrderSignRequest;
 import com.qinglan.sdk.server.presentation.channel.entity.UCPayResult;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.type.TypeReference;
@@ -53,15 +53,15 @@ public class UCChannel extends BaseChannel {
     public String verifySession(String... args) {
         checkInit();
 
-        if (null == platformGame || null == args || args.length == 0)
+        if (null == channelGame || null == args || args.length == 0)
             return null;
         String sid = args[0];
         String appID = null;
         if (args.length > 1)
             appID = args[1];
         if (null == appID || appID.isEmpty())
-            appID = platformGame.getAppID();
-        String appKey = platformGame.getAppKey();
+            appID = channelGame.getAppID();
+        String appKey = channelGame.getAppKey();
 
         Map<String, Object> params = new HashMap<>();
         Map<String, Object> data = new HashMap<>();
@@ -73,7 +73,7 @@ public class UCChannel extends BaseChannel {
         params.put(REQUEST_KEY_GAME, game);
         params.put(REQUEST_KEY_SIGN, MD5.encode(SIGN_PREFIX + sid + appKey));
         try {
-            return HttpUtils.doPostToJson(platform.getVerifyUrl(), JsonMapper.toJson(params), 10000);
+            return HttpUtils.doPostToJson(channel.getVerifyUrl(), JsonMapper.toJson(params), 10000);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -83,14 +83,14 @@ public class UCChannel extends BaseChannel {
     @Override
     public String signOrder(BaseRequest request) {
         checkInit();
-        if (request instanceof OrderRequest) {
-            String appKey = platformGame.getAppKey();
+        if (request instanceof UCOrderSignRequest) {
+            String appKey = channelGame.getAppKey();
             Map<String, String> signMap = new TreeMap<>();
-            signMap.put(PARAM_CALLBACK_INFO, ((OrderRequest) request).getCpExtInfo());
-            signMap.put(PARAM_NOTIFY_URL, ((OrderRequest) request).getNotifyUrl());
-            signMap.put(PARAM_AMOUNT, ((OrderRequest) request).getAmount().toString());
-            signMap.put(PARAM_ORDER_ID, ((OrderRequest) request).getOrderId());
-            signMap.put(PARAM_ACCOUNT_ID, ((OrderRequest) request).getUid());
+            signMap.put(PARAM_CALLBACK_INFO, ((UCOrderSignRequest) request).getExtInfo());
+            signMap.put(PARAM_NOTIFY_URL, ((UCOrderSignRequest) request).getNotifyUrl());
+            signMap.put(PARAM_AMOUNT, ((UCOrderSignRequest) request).getAmount().toString());
+            signMap.put(PARAM_ORDER_ID, ((UCOrderSignRequest) request).getOrderId());
+            signMap.put(PARAM_ACCOUNT_ID, ((UCOrderSignRequest) request).getUid());
             String sign = Sign.aliSign(signMap, appKey);
             return sign;
         }
@@ -125,7 +125,7 @@ public class UCChannel extends BaseChannel {
             if (StringUtils.isEmpty(result))
                 return UC_PAY_RESULT_FAILED;
             //记录日志
-            PlatformStatsLogger.info(PlatformStatsLogger.UC, result);
+            ChannelStatsLogger.info(ChannelStatsLogger.UC, result);
 
             Map<String, Object> payResult = JsonMapper.getMapper().readValue(result, new TypeReference<Map<String, Object>>() {
             });
@@ -145,8 +145,8 @@ public class UCChannel extends BaseChannel {
             if (basicRepository == null) {
                 return UC_PAY_RESULT_FAILED;
             }
-            platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
-            String apiKey = platformGame.getAppKey();
+            channelGame = basicRepository.getByChannelAndGameId(order.getChannelId(), order.getGameId());
+            String apiKey = channelGame.getAppKey();
             String sign = Sign.signParamsByMD5(data, apiKey);
             if (sign.equals(payResult.get(REQUEST_KEY_SIGN).toString())) {
                 handleOrder(payResult, order, service);
@@ -180,7 +180,7 @@ public class UCChannel extends BaseChannel {
                 service.paySuccess(order.getOrderId());
             } else {
                 service.payFail(order.getOrderId(), "order amount error");
-                PlatformStatsLogger.error(PlatformStatsLogger.UC, order.getOrderId(), "order amount error");
+                ChannelStatsLogger.error(ChannelStatsLogger.UC, order.getOrderId(), "order amount error");
             }
         } else {
             service.payFail(order.getOrderId(), ucPay.getData().getFailedDesc());

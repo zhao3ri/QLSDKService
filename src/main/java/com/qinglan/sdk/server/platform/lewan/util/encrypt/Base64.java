@@ -194,7 +194,7 @@ public class Base64  {
         }
 
         // If the output is to be "chunked" into 76 character sections,
-        // for com.zhidian3g.platform.utils.lewanpliance with RFC 2045 MIME, then it is important to
+        // for com.zhidian3g.channel.utils.lewanpliance with RFC 2045 MIME, then it is important to
         // allow for extra length to account for the separator(s)
         if (isChunked) {
 

@@ -16,7 +16,7 @@ import com.qinglan.sdk.server.presentation.basic.dto.HeartbeatPattern;
 import com.qinglan.sdk.server.presentation.basic.dto.InitialPattern;
 import com.qinglan.sdk.server.presentation.basic.dto.LoginPattern;
 import com.qinglan.sdk.server.presentation.basic.dto.LogoutPattern;
-import com.qinglan.sdk.server.presentation.basic.dto.OrderGeneratePattern;
+import com.qinglan.sdk.server.presentation.basic.dto.OrderGenerateRequest;
 import com.qinglan.sdk.server.presentation.basic.dto.QuitPattern;
 import com.qinglan.sdk.server.presentation.basic.dto.RoleCreatePattern;
 
@@ -34,7 +34,7 @@ public class AccountServiceTest  extends BaseTestCase{
 	public void testPost() throws Exception{
 		String url="http://zdsdktest.zhidian3g.cn/account/initial";
 			
-		String param="platform=Android+4.4.4&networkType=wifi&model=MI+4W&appId=23&location=&resolution=1080+x+1920&platformId=16&phonetype=null&networkCountryIso=null&systemVersion=19&manufacturer=Xiaomi&simoperatorname=null&longitude=&latitude=&imsi=460014860996849&deviceId=864895020636062&clientType=1&";
+		String param="channel=Android+4.4.4&networkType=wifi&model=MI+4W&appId=23&location=&resolution=1080+x+1920&platformId=16&phonetype=null&networkCountryIso=null&systemVersion=19&manufacturer=Xiaomi&simoperatorname=null&longitude=&latitude=&imsi=460014860996849&deviceId=864895020636062&clientType=1&";
 	
 		String reStr=HttpUtils.doPost(url, param, 10000);
 		System.out.println(reStr);
@@ -152,7 +152,7 @@ public class AccountServiceTest  extends BaseTestCase{
 	
 	@Test
 	public void orderGenerate() {
-		OrderGeneratePattern orderGenerate = new OrderGeneratePattern();
+		OrderGenerateRequest orderGenerate = new OrderGenerateRequest();
 		orderGenerate.setGameId(23L);
 		orderGenerate.setUid("12345678");
 		orderGenerate.setChannelId(15);
@@ -160,7 +160,7 @@ public class AccountServiceTest  extends BaseTestCase{
 		orderGenerate.setClientType(1);
 		orderGenerate.setRoleId("1");
 		orderGenerate.setZoneId("1");
-		orderGenerate.setCpOrderId(1000*2*Math.random()+"");
+		orderGenerate.setChannelOrderId(1000*2*Math.random()+"");
 		orderGenerate.setExtInfo("test");
 		orderGenerate.setAmount(10);
 		orderGenerate.setNotifyUrl("http://sdk.com.cn");
@@ -171,7 +171,7 @@ public class AccountServiceTest  extends BaseTestCase{
 
 	@Test
 	public void testSelfGenerate(){
-		OrderGeneratePattern orderGenerate = new OrderGeneratePattern();
+		OrderGenerateRequest orderGenerate = new OrderGenerateRequest();
 		orderGenerate.setGameId(23L);
 		orderGenerate.setUid("12345678");
 		orderGenerate.setChannelId(15);
@@ -179,7 +179,7 @@ public class AccountServiceTest  extends BaseTestCase{
 		orderGenerate.setClientType(1);
 		orderGenerate.setRoleId("1");
 		orderGenerate.setZoneId("1");
-		orderGenerate.setCpOrderId(1000*2*Math.random()+"");
+		orderGenerate.setChannelOrderId(1000*2*Math.random()+"");
 		orderGenerate.setExtInfo("test");
 		orderGenerate.setAmount(10);
 		orderGenerate.setNotifyUrl("http://sdk.com.cn");

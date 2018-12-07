@@ -211,7 +211,7 @@ public class AccountDataTest {
 		params.put("extInfo", "1234567889");
 		params.put("cpOrderId", UUID.randomUUID().toString());
 		params.put("amount", "100");
-		params.put("notifyUrl", host+"/platform/testcallback");
+		params.put("notifyUrl", host+"/channel/testcallback");
 		params.put("fixed", "1");
 		params.put("loginTime", System.currentTimeMillis());
 		params.put("clientType", "1");
@@ -224,7 +224,7 @@ public class AccountDataTest {
 		Map<String, Object> response = JsonMapper.toObject(result, Map.class);
 		params.clear();
 		params.put("orderId", (String)response.get("orderId"));
-		HttpUtils.post(host+"/platform/callback", params);
+		HttpUtils.post(host+"/channel/callback", params);
 	}
 	
 	public void heartbeat(String deviceId,String uid,String roleId){

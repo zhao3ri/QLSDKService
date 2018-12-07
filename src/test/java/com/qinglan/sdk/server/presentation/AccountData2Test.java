@@ -11,13 +11,8 @@ import javax.annotation.Resource;
 import com.qinglan.sdk.server.common.HttpUtils;
 import com.qinglan.sdk.server.application.basic.AccountService;
 import com.qinglan.sdk.server.domain.UserTest;
-import com.qinglan.sdk.server.presentation.basic.dto.HeartbeatPattern;
-import com.qinglan.sdk.server.presentation.basic.dto.InitialPattern;
-import com.qinglan.sdk.server.presentation.basic.dto.LoginPattern;
-import com.qinglan.sdk.server.presentation.basic.dto.LogoutPattern;
-import com.qinglan.sdk.server.presentation.basic.dto.OrderGeneratePattern;
-import com.qinglan.sdk.server.presentation.basic.dto.QuitPattern;
-import com.qinglan.sdk.server.presentation.basic.dto.RoleCreatePattern;
+import com.qinglan.sdk.server.presentation.basic.dto.*;
+import com.qinglan.sdk.server.presentation.basic.dto.OrderGenerateRequest;
 
 public class AccountData2Test {
 	
@@ -194,7 +189,7 @@ public class AccountData2Test {
 	
 	public void orderGenerate(String deviceId,String uid,String roleId){
 		
-		OrderGeneratePattern orderGenerate=new OrderGeneratePattern();
+		OrderGenerateRequest orderGenerate=new OrderGenerateRequest();
 		orderGenerate.setGameId(150212661932L);
 		orderGenerate.setChannelId(1001);
 		orderGenerate.setDeviceId(deviceId);
@@ -204,13 +199,13 @@ public class AccountData2Test {
 		orderGenerate.setRoleName("角色_"+roleId);
 		orderGenerate.setClientType(1);
 		orderGenerate.setExtInfo("123456789");
-		orderGenerate.setCpOrderId(UUID.randomUUID().toString());
+		orderGenerate.setChannelOrderId(UUID.randomUUID().toString());
 		orderGenerate.setAmount(100);
-		orderGenerate.setNotifyUrl("http://localhost:8092/platform/testcallback");
+		orderGenerate.setNotifyUrl("http://localhost:8092/channel/testcallback");
 		orderGenerate.setFixed(1);
 		orderGenerate.setLoginTime(System.currentTimeMillis()+"");
 		Map<String, Object> response = accountService.orderGenerate(orderGenerate);
-		HttpUtils.get("http://192.168.3.222:8092/platform/callback?orderId="+(String)response.get("orderId"));
+		HttpUtils.get("http://192.168.3.222:8092/channel/callback?orderId="+(String)response.get("orderId"));
 	}
 	
 	public void heartbeat(String deviceId,String uid,String roleId){

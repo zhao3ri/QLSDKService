@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 import javax.annotation.Resource;
 
 import com.qinglan.sdk.server.application.platform.ChannelUtilsService;
+import com.qinglan.sdk.server.domain.basic.ChannelGameEntity;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -24,7 +25,6 @@ import com.qinglan.sdk.server.release.BaseTestCase;
 import com.qinglan.sdk.server.application.basic.OrderService;
 import com.qinglan.sdk.server.BasicRepository;
 import com.qinglan.sdk.server.domain.basic.Order;
-import com.qinglan.sdk.server.domain.basic.PlatformGame;
 
 public class RechargeServiceTest  extends BaseTestCase{
 
@@ -77,7 +77,7 @@ public class RechargeServiceTest  extends BaseTestCase{
 		String playerId = "869ECD4607314E34A2CC0F2DCE1BFB68";
 		
 		Order order = orderService.getOrderByOrderId(orderId);
-		PlatformGame platform = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
+		ChannelGameEntity platform = basicRepository.getByChannelAndGameId(order.getChannelId(), order.getGameId());
 		
 		String notifyUrl = platform.getConfigParamsList().get(0);
 		String apiKey = platform.getConfigParamsList().get(1);
@@ -108,7 +108,7 @@ public class RechargeServiceTest  extends BaseTestCase{
 	}
 	
 	public static void main(String[] args) throws Exception {
-		String url = "http://rsservice.y6.cn/platform/damai";
+		String url = "http://rsservice.y6.cn/channel/damai";
 		
 		String appkey = "d7277513eb2898c0f09645c9401bc1ee";
 		Map<String, Object> params = new LinkedHashMap<String, Object>();

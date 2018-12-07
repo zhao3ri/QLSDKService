@@ -11,7 +11,7 @@ import com.qinglan.sdk.server.domain.basic.*;
 import com.qinglan.sdk.server.domain.basic.event.*;
 import com.qinglan.sdk.server.presentation.basic.dto.*;
 import com.qinglan.sdk.server.application.basic.redis.RedisUtil;
-import com.qinglan.sdk.server.presentation.channel.entity.OrderRequest;
+import com.qinglan.sdk.server.presentation.channel.entity.UCOrderSignRequest;
 import com.qinglan.sdk.server.presentation.channel.impl.UCChannel;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -49,8 +49,8 @@ public class AccountServiceImpl implements AccountService {
             return result;
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(params.getChannelId(), params.getGameId());
-        if (platformGame.getRegistStatus().equals(GAME_CHANNEL_CODE_REGISTE_STATUS_DISABLE)) {
+        ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(params.getChannelId(), params.getGameId());
+        if (channelGame.getRegistStatus().equals(GAME_CHANNEL_CODE_REGISTE_STATUS_DISABLE)) {
             result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_STOP_REGIST);
             return result;
         }
@@ -146,17 +146,17 @@ public class AccountServiceImpl implements AccountService {
      * @param money
      * @return 0 ：余额不足 2：扣款失败  1：成功
      */
-    public boolean checkPlatformBalance(int money, PlatformGame platformGame) {
-        Platform platform = basicRepository.getPlatform(platformGame.getChannelId());
-        money = money * platformGame.getDiscount() / 100;
-        if (money > platform.getBalance()) {
+    public boolean checkPlatformBalance(int money, ChannelGameEntity channelGame) {
+        ChannelEntity channel = basicRepository.getChannel(channelGame.getChannelId());
+        money = money * channelGame.getDiscount() / 100;
+        if (money > channel.getBalance()) {
             return false;
         }
         return true;
     }
 
     @Override
-    public Map<String, Object> selforderGenerate(OrderGeneratePattern params) {
+    public Map<String, Object> selforderGenerate(OrderGenerateRequest params) {
         String orderId = orderService.saveOrder(params);
         Map<String, Object> result = new HashMap<String, Object>();
 
@@ -179,10 +179,10 @@ public class AccountServiceImpl implements AccountService {
         String notify_url = HeepayTradeConfig.getInstance().getCallbackUrl();
         String user_ip = params.getIp();
         String agent_bill_time = DateUtils.format(new Date(), "yyyyMMddHHmmss");
-        String goods_name = params.getCpOrderId();
+        String goods_name = params.getChannelOrderId();
         String goods_num = "1";
-        String remark = params.getCpOrderId();
-        String goods_note = params.getCpOrderId();
+        String remark = params.getChannelOrderId();
+        String goods_note = params.getChannelOrderId();
 
         Map<String, Object> postparams = new LinkedHashMap<String, Object>();
         postparams.put("version", version);
@@ -308,7 +308,7 @@ public class AccountServiceImpl implements AccountService {
 
 
     @Override
-    public Map<String, Object> orderGenerate(OrderGeneratePattern params) {
+    public Map<String, Object> orderGenerate(OrderGenerateRequest params) {
         Map<String, Object> result = new HashMap<String, Object>();
 
         if (!isParameterValid(params)) {
@@ -316,22 +316,22 @@ public class AccountServiceImpl implements AccountService {
             return result;
         }
         //联运渠道是否正常
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(params.getChannelId(), params.getGameId());
-        if (platformGame.getStatus().equals(CHANNEL_STATUS_NORMAL)) {
+        ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(params.getChannelId(), params.getGameId());
+        if (channelGame.getStatus().equals(CHANNEL_STATUS_NORMAL)) {
             result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_CHANEL_SELF_PAY);
             return result;
         }
 
 
-        if (!this.checkPlatformBalance(params.getAmount(), platformGame)) {
+        if (!this.checkPlatformBalance(params.getAmount(), channelGame)) {
             result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_BLANCE_ERROR);
             return result;
         }
 
-        Platform platform = basicRepository.getPlatform(params.getChannelId());
+        ChannelEntity platform = basicRepository.getChannel(params.getChannelId());
         String notifyUrl = params.getNotifyUrl();//支付回调地址
         if (StringUtil.isNullOrEmpty(notifyUrl)) {
-            notifyUrl = platform.getPlatformCallbackUrl();
+            notifyUrl = platform.getChannelCallbackUrl();
             params.setNotifyUrl(notifyUrl);
         }
 
@@ -352,10 +352,10 @@ public class AccountServiceImpl implements AccountService {
             result.put(Constants.RESPONSE_KEY_ORDER_ID, DES.encryptAndBase64(orderId, Constants.BASE64_ORDERID_KEY));
         } else if (params.getChannelId() == ChannelConstants.CHANNEL_ID_UC) {
             //UC需要返回参数签名
-            UCChannel channel = new UCChannel();
-            channel.init(platform, platformGame);
-            OrderRequest request = OrderRequest.getOrderByBean(params);
-            result.put(UCChannel.REQUEST_KEY_SIGN, channel.signOrder(request));
+            UCChannel ucChannel = new UCChannel();
+            ucChannel.init(platform, channelGame);
+            UCOrderSignRequest request = UCOrderSignRequest.getOrderByBean(params);
+            result.put(UCChannel.REQUEST_KEY_SIGN, ucChannel.signOrder(request));
         }
 
         return result;
@@ -443,9 +443,9 @@ public class AccountServiceImpl implements AccountService {
             return false;
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(params.getChannelId(), params.getGameId());
-        if (null == platformGame) {
-            logger.debug("{}", "平台和游戏没有关联 appid" + params.getGameId() + " platfromId" + params.getChannelId());
+        ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(params.getChannelId(), params.getGameId());
+        if (null == channelGame) {
+            logger.debug("{}", "平台和游戏没有关联 appid" + params.getGameId() + " channelId" + params.getChannelId());
             return false;
         }
         logger.info("params success");

@@ -19,11 +19,11 @@ public interface BasicRepository {
     /*******游戏表*******/
     Game getGameById(long id);
 
-    PlatformGame getByPlatformAndGameId(int channelId, long gameId);
+    ChannelGameEntity getByChannelAndGameId(int channelId, long gameId);
 
-    Platform getPlatform(int channelId);
+    ChannelEntity getChannel(int channelId);
 
-    int updatePlatformBalance(Platform platform);
+    int updateChannelBalance(ChannelEntity channel);
 
     /*******订单表*******/
     int saveOrder(Order order);

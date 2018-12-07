@@ -1,11 +1,11 @@
 package com.qinglan.sdk.server.application.basic;
 
 import com.qinglan.sdk.server.domain.basic.Order;
-import com.qinglan.sdk.server.presentation.basic.dto.OrderGeneratePattern;
+import com.qinglan.sdk.server.presentation.basic.dto.OrderGenerateRequest;
 
 public interface OrderService {
 	
-	String saveOrder(OrderGeneratePattern params);
+	String saveOrder(OrderGenerateRequest params);
 	
 	Order getOrderByOrderId(String orderId);
 	

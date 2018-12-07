@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 
 
-public class PlatformStatsLogger {
+public class ChannelStatsLogger {
     private final static Logger PLATFORM_LOGGER = LoggerFactory.getLogger("platformLogger");
 
     public static final String UC = "uc";

@@ -62,13 +62,13 @@ public class BasicServiceTest  extends BaseTestCase{
 	}
 	@Test
 	public void orderGenerateLogger(){
-//		OrderGeneratePattern params = new OrderGeneratePattern();
+//		OrderGenerateRequest params = new OrderGenerateRequest();
 //		params.setAppID(2L);
 //		params.setChannelId(1);
 //		params.setUid("1");
 //		params.setZoneId("3");
 //		params.setClientType(1);
-//		params.setCpOrderId("cpordernumberhjkljhkljh");
+//		params.setChannelOrderId("cpordernumberhjkljhkljh");
 //		params.setDeviceId("546549898798656");
 //		params.setAmount(10);
 //		loggerStatisService.orderGenerateLogger(params);
@@ -93,7 +93,7 @@ public class BasicServiceTest  extends BaseTestCase{
 		params.put("uid", order.getUid());
 		params.put("zoneId", order.getZoneId());
 		params.put("roleId", order.getRoleId());
-		params.put("cpOrderId", order.getCpOrderId());
+		params.put("cpOrderId", order.getChannelOrderId());
 		params.put("orderId", order.getOrderId());
 		params.put("orderStatus", 1);
 		params.put("amount", order.getAmount());

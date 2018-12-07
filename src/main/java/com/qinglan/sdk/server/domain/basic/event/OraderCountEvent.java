@@ -1,7 +1,7 @@
 package com.qinglan.sdk.server.domain.basic.event;
 
 import com.qinglan.sdk.server.data.annotation.event.Event;
-import com.qinglan.sdk.server.presentation.basic.dto.OrderGeneratePattern;
+import com.qinglan.sdk.server.presentation.basic.dto.OrderGenerateRequest;
 
 @Event
 public class OraderCountEvent implements java.io.Serializable{
@@ -9,13 +9,13 @@ public class OraderCountEvent implements java.io.Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private OrderGeneratePattern orderGeneratePattern;
+	private OrderGenerateRequest orderGenerateRequest;
 
-	public OraderCountEvent(OrderGeneratePattern orderGeneratePattern) {
-		this.orderGeneratePattern=orderGeneratePattern;
+	public OraderCountEvent(OrderGenerateRequest orderGenerateRequest) {
+		this.orderGenerateRequest = orderGenerateRequest;
 	}
 	
-	public OrderGeneratePattern getHelper() {
-		return orderGeneratePattern;
+	public OrderGenerateRequest getHelper() {
+		return orderGenerateRequest;
 	}
 }

@@ -11,8 +11,9 @@ import java.util.*;
 import javax.annotation.Resource;
 
 import com.qinglan.sdk.server.application.platform.ChannelUtilsService;
+import com.qinglan.sdk.server.domain.basic.ChannelGameEntity;
 import com.qinglan.sdk.server.platform.qq.JSONException;
-import com.qinglan.sdk.server.application.platform.log.PlatformStatsLogger;
+import com.qinglan.sdk.server.application.platform.log.ChannelStatsLogger;
 import com.qinglan.sdk.server.presentation.platform.dto.WdjPayCallback;
 import com.qinglan.sdk.server.presentation.platform.dto.YunxiaotanSession;
 import com.qinglan.sdk.server.platform.ibei.SignHelper;
@@ -43,7 +44,6 @@ import com.qinglan.sdk.server.application.basic.OrderService;
 import com.qinglan.sdk.server.application.platform.ChannelService;
 import com.qinglan.sdk.server.BasicRepository;
 import com.qinglan.sdk.server.domain.basic.Order;
-import com.qinglan.sdk.server.domain.basic.PlatformGame;
 import com.qinglan.sdk.server.domain.platform.MMYPayResult;
 import com.qinglan.sdk.server.presentation.platform.dto.PlaySession;
 import com.qinglan.sdk.server.presentation.platform.dto.VivoPaySign;
@@ -111,10 +111,10 @@ public class PlatformControllerTest extends BaseTestCase {
         Order order = basicRepository.getOrderByOrderId(mmYPayResult.getProductDesc());
         if (null == order) {
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
-        if (null == platformGame) {
+        ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(order.getChannelId(), order.getGameId());
+        if (null == channelGame) {
         }
-        if (channelUtilsService.verifyMmy(mmYPayResult.getTradeSign(), platformGame.getConfigParamsList().get(0), mmYPayResult.getOrderID())) {
+        if (channelUtilsService.verifyMmy(mmYPayResult.getTradeSign(), channelGame.getConfigParamsList().get(0), mmYPayResult.getOrderID())) {
             if ("success".equals(mmYPayResult.getTradeState())) {
                 if (order.getAmount() <= Double.valueOf(mmYPayResult.getProductPrice()) * 100) {
                     orderService.paySuccess(order.getOrderId());
@@ -147,14 +147,14 @@ public class PlatformControllerTest extends BaseTestCase {
         if (null == order) {
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
-        if (null == platformGame) {
+        ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(order.getChannelId(), order.getGameId());
+        if (null == channelGame) {
         }
 
         if (!"TRADE_SUCCESS".equals(params.get("trade_result"))) {
         }
         try {
-            String secretKey = platformGame.getConfigParamsList().get(0);
+            String secretKey = channelGame.getConfigParamsList().get(0);
             params.remove("sign");
 
             String authSign = Sign.encode(getSourceFromMap(params) + "&key=" + secretKey);
@@ -162,14 +162,14 @@ public class PlatformControllerTest extends BaseTestCase {
             String authSign2 = Sign.encode(getSourceFromMap(params) + "&key=" + secretKey);
             if (StringUtils.equalsIgnoreCase(authSign, sign)) {
                 if (order.getAmount() > Double.valueOf((String) params.get("price")) * 100) {
-                    PlatformStatsLogger.info(PlatformStatsLogger.LETV, "order amount error");
+                    ChannelStatsLogger.info(ChannelStatsLogger.LETV, "order amount error");
                     orderService.payFail(order.getOrderId(), "order amount error");
                 }
                 orderService.paySuccess(order.getOrderId());
             } else {
             }
         } catch (Exception e) {
-            PlatformStatsLogger.error(PlatformStatsLogger.LETV, params.toString(), "verifyLetv error :" + e);
+            ChannelStatsLogger.error(ChannelStatsLogger.LETV, params.toString(), "verifyLetv error :" + e);
         }
     }
 
@@ -204,12 +204,12 @@ public class PlatformControllerTest extends BaseTestCase {
 
         if (StringUtils.isBlank(session.getZdappId()) || StringUtils.isBlank(session.getPlatformId()) || StringUtils.isBlank(session.getCode())) {
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getZdappId()));
-        if (platformGame == null) {
+        ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getZdappId()));
+        if (channelGame == null) {
         }
-        String client_id = platformGame.getConfigParamsList().get(0);
-        String client_secret = platformGame.getConfigParamsList().get(1);
-        String verifyUrl = platformGame.getConfigParamsList().get(2);
+        String client_id = channelGame.getConfigParamsList().get(0);
+        String client_secret = channelGame.getConfigParamsList().get(1);
+        String verifyUrl = channelGame.getConfigParamsList().get(2);
         Map<String, String> params = new HashMap<String, String>();
         params.put("grant_type", "authorization_code");
         params.put("code", session.getCode());
@@ -241,7 +241,7 @@ public class PlatformControllerTest extends BaseTestCase {
         params.put("sign_type", "md5");
         params.put("sign", "cf9ae9a7dddbf9dbccc07a0dadb6a21e");
 
-        String result = HttpUtils.post("http://rsservice2.y6.cn/platform/qihoo", params);
+        String result = HttpUtils.post("http://rsservice2.y6.cn/channel/qihoo", params);
         System.out.println(result);
 
 		/*app_key=4a40b253ac4bd1268324b64f1fa36b06
@@ -285,7 +285,7 @@ public class PlatformControllerTest extends BaseTestCase {
         params.put("areaId", "1");
         params.put("roleId", "111111");
 
-        String result = HttpUtils.post("http://rsservice2.y6.cn/platform/kaiuc", params);
+        String result = HttpUtils.post("http://rsservice2.y6.cn/channel/kaiuc", params);
         assertEquals("success", result);
     }
 
@@ -320,7 +320,7 @@ public class PlatformControllerTest extends BaseTestCase {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("data", content);
 
-        HttpUtils.post("http://zdsdktest.zhidian3g.cn/platform/07073", params);
+        HttpUtils.post("http://zdsdktest.zhidian3g.cn/channel/07073", params);
     }
 
     @Test
@@ -339,7 +339,7 @@ public class PlatformControllerTest extends BaseTestCase {
         params.put("amount1", "6");
         params.put("amount2", "0");
 
-        String result = HttpUtils.post("http://rsservice.y6.cn/platform/sougou", params);
+        String result = HttpUtils.post("http://rsservice.y6.cn/channel/sougou", params);
         System.out.println(result);
     }
 
@@ -362,7 +362,7 @@ public class PlatformControllerTest extends BaseTestCase {
         params.put("signtype", signtype);
         params.put("sign", sign);
 
-        System.out.println(HttpUtils.post("http://rsservice.y6.cn/platform/kupai", params));
+        System.out.println(HttpUtils.post("http://rsservice.y6.cn/channel/kupai", params));
     }
 
     @Test
@@ -398,7 +398,7 @@ public class PlatformControllerTest extends BaseTestCase {
         params.put("payTime", "2015-11-18 19:15:05");
         params.put("ext", "20151118191500791563781986812756");
 
-        String result = HttpUtils.post("http://rsservice.y6.cn/platform/paojiao", params);
+        String result = HttpUtils.post("http://rsservice.y6.cn/channel/paojiao", params);
     }
 
     @Test
@@ -431,7 +431,7 @@ public class PlatformControllerTest extends BaseTestCase {
         params.put("ch_orderid", "N1512021N2038413");
         params.put("amount", "6.00");
 
-        System.err.println(HttpUtils.doPostToJson("http://rsservice.y6.cn/platform/pengyouwan", JsonMapper.toJson(params), 100000));
+        System.err.println(HttpUtils.doPostToJson("http://rsservice.y6.cn/channel/pengyouwan", JsonMapper.toJson(params), 100000));
     }
 
     @Test
@@ -451,7 +451,7 @@ public class PlatformControllerTest extends BaseTestCase {
         params.put("money", "6");
         params.put("payNotifyUrl", "sdfsdfsdf");
 
-        String url = "http://zdsdktest.zhidian3g.cn/platform/qbao/pay/sign";
+        String url = "http://zdsdktest.zhidian3g.cn/channel/qbao/pay/sign";
         String result = HttpUtils.doPost(url, params);
         System.out.println(result);
 

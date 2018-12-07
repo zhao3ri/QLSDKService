@@ -4,7 +4,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.qinglan.sdk.server.domain.basic.PlatformGame;
+import com.qinglan.sdk.server.domain.basic.ChannelGameEntity;
 import com.qinglan.sdk.server.presentation.basic.dto.*;
 
 public interface AccountService {
@@ -21,7 +21,7 @@ public interface AccountService {
 
     Map<String, Object> roleCreate(RoleCreatePattern params);
 
-    Map<String, Object> orderGenerate(OrderGeneratePattern params);
+    Map<String, Object> orderGenerate(OrderGenerateRequest params);
 
     Map<String, Object> loginSuccess(LoginSuccessPattern params);
 
@@ -31,11 +31,11 @@ public interface AccountService {
 
     Map<String, Object> validateSession(ValidateSessionPattern params);
 
-    Map<String, Object> selforderGenerate(OrderGeneratePattern params);
+    Map<String, Object> selforderGenerate(OrderGenerateRequest params);
 
     String payNotify(HttpServletRequest request);
 
     String orderSuccessNotify(HttpServletRequest request);
 
-    boolean checkPlatformBalance(int money, PlatformGame platformGame);
+    boolean checkPlatformBalance(int money, ChannelGameEntity channelGame);
 }

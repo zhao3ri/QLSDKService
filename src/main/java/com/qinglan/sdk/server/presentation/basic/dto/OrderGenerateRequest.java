@@ -7,7 +7,7 @@ import com.qinglan.sdk.server.common.StringUtil;
 import lombok.ToString;
 
 @ToString(callSuper = true)
-public class OrderGeneratePattern extends BaseDto implements Serializable {
+public class OrderGenerateRequest extends BaseDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private String ip;
@@ -17,7 +17,7 @@ public class OrderGeneratePattern extends BaseDto implements Serializable {
     private String zoneId;
     private String roleId;
     private String roleName;
-    private String cpOrderId;
+    private String channelOrderId;
     private String extInfo;
     private Integer amount;
     private String notifyUrl;
@@ -29,6 +29,9 @@ public class OrderGeneratePattern extends BaseDto implements Serializable {
     private Integer selfpay = 0;
     private String loginTime;
     private Integer payType = 1;
+    private String goodsId;
+    private String goodsName;
+    private int goodsCount;
 
     public void setUid(String uid) {
         this.uid = uid;
@@ -54,12 +57,12 @@ public class OrderGeneratePattern extends BaseDto implements Serializable {
         this.roleName = roleName;
     }
 
-    public String getCpOrderId() {
-        return cpOrderId;
+    public String getChannelOrderId() {
+        return channelOrderId;
     }
 
-    public void setCpOrderId(String cpOrderId) {
-        this.cpOrderId = cpOrderId;
+    public void setChannelOrderId(String channelOrderId) {
+        this.channelOrderId = channelOrderId;
     }
 
     public String getExtInfo() {
@@ -199,13 +202,37 @@ public class OrderGeneratePattern extends BaseDto implements Serializable {
         this.gold = gold;
     }
 
+    public String getGoodsId() {
+        return goodsId;
+    }
+
+    public void setGoodsId(String goodsId) {
+        this.goodsId = goodsId;
+    }
+
+    public String getGoodsName() {
+        return goodsName;
+    }
+
+    public void setGoodsName(String goodsName) {
+        this.goodsName = goodsName;
+    }
+
+    public int getGoodsCount() {
+        return goodsCount;
+    }
+
+    public void setGoodsCount(int goodsCount) {
+        this.goodsCount = goodsCount;
+    }
+
     public boolean isEmpty() {
         if (null == getGameId()) return true;
         if (null == getChannelId()) return true;
         if (null == getUid() || getUid().trim().isEmpty()) return true;
         if (null == getZoneId() || getZoneId().trim().isEmpty()) return true;
         if (null == getRoleId() || getRoleId().trim().isEmpty()) return true;
-        if (null == getCpOrderId() || getCpOrderId().trim().isEmpty()) return true;
+//        if (null == getChannelOrderId() || getChannelOrderId().trim().isEmpty()) return true;
         if (null == getAmount()) return true;
         if (null == getNotifyUrl() || getNotifyUrl().trim().isEmpty()) return true;
         if (null == getFixed()) return true;

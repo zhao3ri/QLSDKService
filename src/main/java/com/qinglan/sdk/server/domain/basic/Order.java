@@ -45,7 +45,7 @@ public class Order implements Serializable {
     private String zoneId;
     private String roleId;
     private String roleName;
-    private String cpOrderId;
+    private String channelOrderId;
     private String extInfo;
     private int amount;
     private String notifyUrl;
@@ -55,6 +55,9 @@ public class Order implements Serializable {
     private String orderId;
     private int gold;
     private int selfpay = 0;
+    private String goodsId;
+    private String goodsName;
+    private int goodsCount;
 
     public long getId() {
         return id;
@@ -120,12 +123,12 @@ public class Order implements Serializable {
         this.orderId = orderId == null ? null : orderId.trim();
     }
 
-    public String getCpOrderId() {
-        return cpOrderId;
+    public String getChannelOrderId() {
+        return channelOrderId;
     }
 
-    public void setCpOrderId(String cpOrderId) {
-        this.cpOrderId = cpOrderId == null ? null : cpOrderId.trim();
+    public void setChannelOrderId(String channelOrderId) {
+        this.channelOrderId = channelOrderId == null ? null : channelOrderId.trim();
     }
 
     public String getExtInfo() {
@@ -234,5 +237,29 @@ public class Order implements Serializable {
 
     public void setSelfpay(int selfpay) {
         this.selfpay = selfpay;
+    }
+
+    public String getGoodsId() {
+        return goodsId;
+    }
+
+    public void setGoodsId(String goodsId) {
+        this.goodsId = goodsId;
+    }
+
+    public String getGoodsName() {
+        return goodsName;
+    }
+
+    public void setGoodsName(String goodsName) {
+        this.goodsName = goodsName;
+    }
+
+    public int getGoodsCount() {
+        return goodsCount;
+    }
+
+    public void setGoodsCount(int goodsCount) {
+        this.goodsCount = goodsCount;
     }
 }

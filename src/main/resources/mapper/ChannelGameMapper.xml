@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.qinglan.sdk.server.domain.basic.PlatformGame">
-    <resultMap id="BaseResultMap" type="com.qinglan.sdk.server.domain.basic.PlatformGame">
+<mapper namespace="com.qinglan.sdk.server.domain.basic.ChannelGameEntity">
+    <resultMap id="BaseResultMap" type="com.qinglan.sdk.server.domain.basic.ChannelGameEntity">
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="channelId" property="channelId" jdbcType="INTEGER"/>
         <result column="gameId" property="gameId" jdbcType="BIGINT"/>
@@ -19,10 +19,10 @@
     id, channelId, gameId, configParams, createTime,status,registStatus,discount,appKey,appID,secretKey,privateKey,publicKey
   </sql>
 
-    <select id="getByPlatformAndGameId" resultMap="BaseResultMap" parameterType="java.util.Map">
+    <select id="getByChannelAndGameId" resultMap="BaseResultMap" parameterType="java.util.Map">
         select
         <include refid="Base_Column_List"/>
-        from b_platform_game
+        from b_channel_game
         where channelId = #{channelId,jdbcType=INTEGER} AND gameId = #{gameId,jdbcType=BIGINT}
     </select>
 </mapper>

@@ -111,7 +111,7 @@ public class LoggerStatisServiceTest extends BaseTestCase{
 	
 	@Test
 	public void orderGenerateLogger() throws InterruptedException{
-//		OrderGeneratePattern orderGenerate=new OrderGeneratePattern();
+//		OrderGenerateRequest orderGenerate=new OrderGenerateRequest();
 //		orderGenerate.setAppID(1L);
 //		orderGenerate.setUid("10000");
 //		orderGenerate.setChannelId(1);
@@ -119,7 +119,7 @@ public class LoggerStatisServiceTest extends BaseTestCase{
 //		orderGenerate.setClientType(1);
 //		orderGenerate.setRoleId("1");
 //		orderGenerate.setZoneId("1");
-//		orderGenerate.setCpOrderId(RandomTool.getOrderId());
+//		orderGenerate.setChannelOrderId(RandomTool.getOrderId());
 //		orderGenerate.setExtInfo("test");
 //		orderGenerate.setAmount(10);
 //		orderGenerate.setNotifyUrl("http://sdk.com.cn");

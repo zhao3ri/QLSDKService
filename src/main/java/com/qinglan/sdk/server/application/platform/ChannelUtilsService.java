@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.qinglan.sdk.server.domain.basic.Order;
 
-public interface PlatformUtilsService {
+public interface ChannelUtilsService {
 
 	//xiaomi util
 	public String getRequestUrlXiaomi(Map<String,String> params, String baseUrl,String secretKey) throws Exception;

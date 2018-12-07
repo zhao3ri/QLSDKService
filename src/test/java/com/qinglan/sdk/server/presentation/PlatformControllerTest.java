@@ -10,6 +10,7 @@ import java.util.*;
 
 import javax.annotation.Resource;
 
+import com.qinglan.sdk.server.application.platform.ChannelUtilsService;
 import com.qinglan.sdk.server.platform.qq.JSONException;
 import com.qinglan.sdk.server.application.platform.log.PlatformStatsLogger;
 import com.qinglan.sdk.server.presentation.platform.dto.WdjPayCallback;
@@ -39,8 +40,7 @@ import com.qinglan.sdk.server.common.MD5;
 import com.qinglan.sdk.server.common.Sign;
 import com.qinglan.sdk.server.release.BaseTestCase;
 import com.qinglan.sdk.server.application.basic.OrderService;
-import com.qinglan.sdk.server.application.platform.PlatformService;
-import com.qinglan.sdk.server.application.platform.PlatformUtilsService;
+import com.qinglan.sdk.server.application.platform.ChannelService;
 import com.qinglan.sdk.server.BasicRepository;
 import com.qinglan.sdk.server.domain.basic.Order;
 import com.qinglan.sdk.server.domain.basic.PlatformGame;
@@ -63,9 +63,9 @@ public class PlatformControllerTest extends BaseTestCase {
     private OrderService orderService;
 
     @Resource
-    private PlatformUtilsService platformUtilsService;
+    private ChannelUtilsService channelUtilsService;
     @Resource
-    private PlatformService platformService;
+    private ChannelService channelService;
 
     @Test
     @SuppressWarnings("unchecked")
@@ -111,10 +111,10 @@ public class PlatformControllerTest extends BaseTestCase {
         Order order = basicRepository.getOrderByOrderId(mmYPayResult.getProductDesc());
         if (null == order) {
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (null == platformGame) {
         }
-        if (platformUtilsService.verifyMmy(mmYPayResult.getTradeSign(), platformGame.getConfigParamsList().get(0), mmYPayResult.getOrderID())) {
+        if (channelUtilsService.verifyMmy(mmYPayResult.getTradeSign(), platformGame.getConfigParamsList().get(0), mmYPayResult.getOrderID())) {
             if ("success".equals(mmYPayResult.getTradeState())) {
                 if (order.getAmount() <= Double.valueOf(mmYPayResult.getProductPrice()) * 100) {
                     orderService.paySuccess(order.getOrderId());
@@ -147,7 +147,7 @@ public class PlatformControllerTest extends BaseTestCase {
         if (null == order) {
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (null == platformGame) {
         }
 
@@ -265,7 +265,7 @@ public class PlatformControllerTest extends BaseTestCase {
         String sign = "5f7e09e085258f973bb5f7de54906713";
         content = new String(Base64.decode(content));
 
-        String validSign = platformUtilsService.muzhiMd5(content + "&key=" + "zty_150");
+        String validSign = channelUtilsService.muzhiMd5(content + "&key=" + "zty_150");
 
         System.out.println(content);
         System.out.println(validSign);
@@ -352,7 +352,7 @@ public class PlatformControllerTest extends BaseTestCase {
 		String data = "{\"appid\":\"5000002408\",\"appuserid\":\"黎承宣\",\"cporderid\":\"20151121175443741650209755119610\",\"cpprivate\":\"no\",\"currency\":\"RMB\",\"feetype\":0,\"money\":6.00,\"paytype\":401,\"result\":0,\"transid\":\"32081511211753483025\",\"transtime\":\"2015-11-21 17:54:05\",\"transtype\":0,\"waresid\":1}";
 		String sign = "SDNJ+HsD8gb/tY37sj3u6idYAgal+kq2e+6y98uTYPyw5+YhVq8wAmqhTPE2t0cZYLp1I48QW6Nqv+bflOTrzxb8YRP5GtYAXnILrXEPfu+nCXlCK/HLXN2Mfhn5kE3jT6S8GrgvDBuhjbcRR/EoX4VyCAsbRcKA8jJf/vGFhGU=";
 		String key = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCYTQcs9iRQMBCRaPKzbLDwdHzi7PxS/nDvXR+v/RbJuefE9GLHHfac5NZvMWaisvs2gqnWR2pOKihch3HILiT/gpwJdSSAjK4QZJscG2pHe/b7ch5PCsOTymmp09J2zW2h6CKrgU0tio9SgQhA1CX0ni2H6Xek2dNgeldYwDSGdQIDAQAB";
-		System.out.println(platformUtilsService.verifyKupai(data, sign, key));*/
+		System.out.println(channelUtilsService.verifyKupai(data, sign, key));*/
         String transdata = "{\"appid\":\"5000002408\",\"appuserid\":\"黎承宣\",\"cporderid\":\"20151122200056467747830115289925\",\"cpprivate\":\"no\",\"currency\":\"RMB\",\"feetype\":0,\"money\":6.00,\"paytype\":401,\"result\":0,\"transid\":\"32011511222000566552\",\"transtime\":\"2015-11-22 20:00:14\",\"transtype\":0,\"waresid\":1}";
         String signtype = "RSA";
         String sign = "NRlR+0kuYLdVIVvVz1dMjoRsnX50ocOHxnqskdXo9MI75OINYZ+s4bwtJgN/Sl7dBLd76LOVviOHz2dQmY4tYjt2o7zYsUp/PMXnvvNMU03f1VR6OQf8lCCdVnw7hT2gvuBKJpXace5lZKseYQGejFc8LVy7EGTq4udI9f1HGt8=";
@@ -370,14 +370,14 @@ public class PlatformControllerTest extends BaseTestCase {
         String sign = "fU7WHh6tZczBCm69LjcFmHLLNbF6XSF4/BG5hpHQYNppmtLKPjj/qrq0I8McuC7L8hJdy8AFfK3bv2QXsm5sbiSRMwHhmgVa9cQpk17o PdiGfr 4yQfrcJlL/kdmf6kyY7VRpUfVD7CCzpbCiSQaeiD s8kp47TEw0yi9Pgcsg=";
         String content = "{\"exOrderNo\":\"20151103173129661872585860026086\",\"payOrderNo\":\"10031511031731003705\",\"appId\":\"20151019172257048954\",\"amount\":100,\"payType\":1,\"transTime\":\"2015-11-03 17:31:50\",\"counts\":1,\"payPoint\":\"2203\",\"result\":0}";
         String key = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCcd4UcY1KRWwy5POoF4+GTqKCkTE6dU9W8z+lOmfn4zRkS1/mioXsKN1Qj9sAoUNZGD8VPgCR9KDE9LV3G8TFwgUX50nb/8TfZ3ypqGMm7k/m2OzrTUzHNtbh1ytKx/i6TedIkf7Qs0iuTwDkVuMqc6UTQPyFi6reyDsGd8I4H6QIDAQAB";
-        System.out.println(platformUtilsService.verifyAtet(content, sign.replace(" ", "+"), key));
+        System.out.println(channelUtilsService.verifyAtet(content, sign.replace(" ", "+"), key));
     }
 
     @Test
     public void testVivoPaySign() {
         String data = "{\"zdappId\":\"151110191986\",\"platformId\":\"1018\",\"cpOrderNumber\":\"20151118094814642913686750422000\",\"cpId\":\"20150403171244382610\",\"appId\":\"285f886432c87f3698b3779cdff7faa7\",\"orderTitle\":\"20钻石\",\"orderDesc\":\"货币\",\"cpExtInfo\":\"normal notes\"}";
         VivoPaySign vivoPaySign = JsonMapper.toObject(data, VivoPaySign.class);
-        String result = platformService.vivoPaySign(vivoPaySign);
+        String result = channelService.vivoPaySign(vivoPaySign);
         System.out.println("============================");
         System.err.println(result);
     }
@@ -464,7 +464,7 @@ public class PlatformControllerTest extends BaseTestCase {
         session.setZdAppId("151110191986");
         session.setPlatformId("1095");
         session.setSid("8a42aqjJDqx9Bc4IkE8jK5X2XgOdEs7582feBbVHQ6FMZNJY5sHYL1bz%2F%2FEShSRPoX3zQ554RtTNOBep%2Biif6oxX");
-        String result = platformService.verifyYunxiaotanSession(session);
+        String result = channelService.verifyYunxiaotanSession(session);
         System.out.println("-----------");
         System.out.println(result);
         System.out.println("-----------");

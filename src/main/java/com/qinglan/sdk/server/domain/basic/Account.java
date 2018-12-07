@@ -9,7 +9,7 @@ import lombok.ToString;
 public class Account implements Serializable {
     private Long id;
 
-    private Integer platformId;
+    private Integer channelId;
 
     private String uid;
 
@@ -20,8 +20,8 @@ public class Account implements Serializable {
     public Account() {
     }
 
-    public Account(Integer platformId, String uid) {
-        this.platformId = platformId;
+    public Account(Integer channelId, String uid) {
+        this.channelId = channelId;
         this.uid = uid;
         this.createTime = new Date();
     }
@@ -34,12 +34,12 @@ public class Account implements Serializable {
         this.id = id;
     }
 
-    public Integer getPlatformId() {
-        return platformId;
+    public Integer getChannelId() {
+        return channelId;
     }
 
-    public void setPlatformId(Integer platformId) {
-        this.platformId = platformId;
+    public void setChannelId(Integer channelId) {
+        this.channelId = channelId;
     }
 
     public String getUid() {

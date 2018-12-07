@@ -32,7 +32,7 @@ public class GameServiceImpl implements GameService{
 	@Override
 	public boolean notifyGame(Order order, Game game) throws Exception{
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("platformId", order.getPlatformId());
+		params.put("platformId", order.getChannelId());
 		params.put("uid", order.getUid());
 		params.put("zoneId", order.getZoneId());
 		params.put("roleId", order.getRoleId());

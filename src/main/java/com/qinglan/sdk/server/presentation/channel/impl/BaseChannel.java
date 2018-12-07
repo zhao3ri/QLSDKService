@@ -1,6 +1,8 @@
 package com.qinglan.sdk.server.presentation.channel.impl;
 
 import com.qinglan.sdk.server.BasicRepository;
+import com.qinglan.sdk.server.application.basic.OrderService;
+import com.qinglan.sdk.server.domain.basic.Order;
 import com.qinglan.sdk.server.domain.basic.Platform;
 import com.qinglan.sdk.server.domain.basic.PlatformGame;
 import com.qinglan.sdk.server.presentation.channel.IChannel;
@@ -33,5 +35,12 @@ public abstract class BaseChannel implements IChannel {
     protected void checkInit() {
         if (!isInit)
             throw new RuntimeException("Please must be init before using");
+    }
+
+    protected Order getOrder(OrderService service, String orderId, String channelOrderId) {
+        Order order = service.getOrderByOrderId(orderId);
+        if (order != null)
+            order.setCpOrderId(channelOrderId);
+        return order;
     }
 }

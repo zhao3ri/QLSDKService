@@ -23,6 +23,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 
+import com.qinglan.sdk.server.application.platform.ChannelUtilsService;
 import com.qinglan.sdk.server.platform.utils.Base64;
 import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
@@ -35,13 +36,12 @@ import com.qinglan.sdk.server.common.HmacSHA1Encryption;
 import com.qinglan.sdk.server.common.MD5;
 import com.qinglan.sdk.server.common.RSAUtil;
 import com.qinglan.sdk.server.common.StringUtil;
-import com.qinglan.sdk.server.application.platform.PlatformUtilsService;
 import com.qinglan.sdk.server.domain.basic.Order;
 
 @Service
-public class PlatformUtilServiceImpl implements PlatformUtilsService{
+public class ChannelUtilServiceImpl implements ChannelUtilsService {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(PlatformUtilServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ChannelUtilServiceImpl.class);
 	
 	/**
 	 * 小米 获取Url

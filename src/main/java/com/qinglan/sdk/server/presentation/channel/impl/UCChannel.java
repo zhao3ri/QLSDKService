@@ -33,7 +33,8 @@ public class UCChannel extends BaseChannel {
     public static final String PARAM_CALLBACK_INFO = "callbackInfo";
     public static final String PARAM_NOTIFY_URL = "notifyUrl";
     public static final String PARAM_AMOUNT = "amount";
-    public static final String PARAM_CP_ORDER_ID = "cpOrderId";
+    public static final String PARAM_ORDER_ID = "cpOrderId";
+    public static final String PARAM_CHANNEL_ORDER_ID = "orderId";
     public static final String PARAM_ACCOUNT_ID = "accountId";
 
     /**
@@ -88,7 +89,7 @@ public class UCChannel extends BaseChannel {
             signMap.put(PARAM_CALLBACK_INFO, ((OrderRequest) request).getCpExtInfo());
             signMap.put(PARAM_NOTIFY_URL, ((OrderRequest) request).getNotifyUrl());
             signMap.put(PARAM_AMOUNT, ((OrderRequest) request).getAmount().toString());
-            signMap.put(PARAM_CP_ORDER_ID, ((OrderRequest) request).getOrderId());
+            signMap.put(PARAM_ORDER_ID, ((OrderRequest) request).getOrderId());
             signMap.put(PARAM_ACCOUNT_ID, ((OrderRequest) request).getUid());
             String sign = Sign.aliSign(signMap, appKey);
             return sign;
@@ -136,14 +137,15 @@ public class UCChannel extends BaseChannel {
                 return UC_PAY_RESULT_FAILED;
             }
             //note穿透 OrderId
-            Order order = service.getOrderByOrderId(data.get(PARAM_CP_ORDER_ID).toString());
+            Order order = getOrder(service, String.valueOf(data.get(PARAM_ORDER_ID).toString())
+                    , String.valueOf(data.get(PARAM_CHANNEL_ORDER_ID)));
             if (order == null) {
                 return UC_PAY_RESULT_FAILED;
             }
             if (basicRepository == null) {
                 return UC_PAY_RESULT_FAILED;
             }
-            platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+            platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
             String apiKey = platformGame.getAppKey();
             String sign = Sign.signParamsByMD5(data, apiKey);
             if (sign.equals(payResult.get(REQUEST_KEY_SIGN).toString())) {

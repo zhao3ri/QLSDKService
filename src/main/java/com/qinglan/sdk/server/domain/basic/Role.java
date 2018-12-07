@@ -10,7 +10,7 @@ public class Role implements Serializable {
 	private Long id;
 	private Integer clientType;
 	private Long gameId;
-	private Integer platformId;
+	private Integer channelId;
 	private String zoneId;
 	private String roleId;
 	private String roleName;
@@ -28,10 +28,10 @@ public class Role implements Serializable {
 		
 	}
 	
-	public Role(Integer clientType, Long gameId, Integer platformId, String zoneId, String roleId, String roleName) {
+	public Role(Integer clientType, Long gameId, Integer channelId, String zoneId, String roleId, String roleName) {
 		this.clientType = clientType;
 		this.gameId = gameId;
-		this.platformId = platformId;
+		this.channelId = channelId;
 		this.zoneId = zoneId;
 		this.roleId = roleId;
 		this.roleName = roleName;
@@ -55,11 +55,11 @@ public class Role implements Serializable {
 	public void setGameId(Long gameId) {
 		this.gameId = gameId;
 	}
-	public Integer getPlatformId() {
-		return platformId;
+	public Integer getChannelId() {
+		return channelId;
 	}
-	public void setPlatformId(Integer platformId) {
-		this.platformId = platformId;
+	public void setChannelId(Integer channelId) {
+		this.channelId = channelId;
 	}
 	public String getZoneId() {
 		return zoneId;

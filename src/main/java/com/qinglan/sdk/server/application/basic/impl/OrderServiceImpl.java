@@ -49,13 +49,13 @@ public class OrderServiceImpl implements OrderService {
     private Order assembledOrder(OrderGeneratePattern params) {
         Order order = new Order();
         order.setGameId(params.getGameId());
-        order.setPlatformId(params.getPlatformId());
+        order.setChannelId(params.getChannelId());
         order.setUid(params.getUid());
         order.setZoneId(params.getZoneId());
         order.setRoleId(params.getRoleId());
         order.setRoleName(params.getRoleName());
 
-        if (Constants.QBAO_PLATFORM_ID == params.getPlatformId()) {
+        if (Constants.QBAO_PLATFORM_ID == params.getChannelId()) {
             order.setOrderId(RandomTool.getOrderId(3));
         } else {
             order.setOrderId(RandomTool.getOrderId());
@@ -120,8 +120,8 @@ public class OrderServiceImpl implements OrderService {
         /**
          * 扣减渠道对应金额
          */
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
-        logger.info("appId:" + platformGame.getGameId() + " platformid:" + platformGame.getPlatformId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
+        logger.info("appId:" + platformGame.getGameId() + " platformid:" + platformGame.getChannelId());
         int updateBalance = -1;
         int i = 0;
         while (i < 3) {
@@ -152,7 +152,7 @@ public class OrderServiceImpl implements OrderService {
      * @return 0 ：余额不足 2：扣款失败  1：成功
      */
     public int updatePlatformBalance(int money, PlatformGame platformGame) {
-        Platform platform = basicRepository.getPlatform(platformGame.getPlatformId());
+        Platform platform = basicRepository.getPlatform(platformGame.getChannelId());
         logger.info("pre Money:" + money + " discount:" + platformGame.getDiscount());
         money = money * platformGame.getDiscount() / 100;
         logger.info("after Money:" + money + " discount:" + platformGame.getDiscount());
@@ -177,7 +177,7 @@ public class OrderServiceImpl implements OrderService {
     private OrderGeneratePattern changeOrder(Order order) {
         OrderGeneratePattern params = new OrderGeneratePattern();
         params.setGameId(order.getGameId());
-        params.setPlatformId(order.getPlatformId());
+        params.setChannelId(order.getChannelId());
         params.setUid(order.getUid());
         params.setZoneId(order.getZoneId());
         params.setRoleId(order.getRoleId());

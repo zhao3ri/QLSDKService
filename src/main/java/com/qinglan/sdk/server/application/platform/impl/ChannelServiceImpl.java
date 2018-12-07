@@ -4,10 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.lenovo.pay.sign.CpTransSyncSignValid;
 import com.lenovo.pay.sign.JsonUtil;
+import com.qinglan.sdk.server.application.platform.ChannelUtilsService;
 import com.qinglan.sdk.server.common.*;
 import com.qinglan.sdk.server.platform.qq.JSONException;
 import com.qinglan.sdk.server.presentation.channel.IChannel;
-import com.qinglan.sdk.server.presentation.channel.entity.UCPayResult;
 import com.qinglan.sdk.server.presentation.channel.entity.UCVerifyRequest;
 import com.qinglan.sdk.server.presentation.channel.impl.UCChannel;
 import com.qinglan.sdk.server.presentation.platform.dto.*;
@@ -32,8 +32,7 @@ import com.qinglan.sdk.server.platform.xiao7.VerifyXiao7;
 import com.qinglan.sdk.server.Constants;
 import com.qinglan.sdk.server.application.basic.OrderService;
 import com.qinglan.sdk.server.application.basic.redis.RedisUtil;
-import com.qinglan.sdk.server.application.platform.PlatformService;
-import com.qinglan.sdk.server.application.platform.PlatformUtilsService;
+import com.qinglan.sdk.server.application.platform.ChannelService;
 import com.qinglan.sdk.server.application.platform.log.PlatformStatsLogger;
 import com.qinglan.sdk.server.BasicRepository;
 import com.qinglan.sdk.server.domain.basic.Order;
@@ -72,15 +71,15 @@ import java.util.Map.Entry;
 import static com.qinglan.sdk.server.ChannelConstants.UC_PAY_RESULT_FAILED;
 
 @Service
-public class PlatformServiceImpl implements PlatformService {
+public class ChannelServiceImpl implements ChannelService {
 
-    private static final Logger logger = LoggerFactory.getLogger(PlatformServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(ChannelServiceImpl.class);
     @Resource
     private BasicRepository basicRepository;
     @Resource
     private OrderService orderService;
     @Resource
-    private PlatformUtilsService platformUtilsService;
+    private ChannelUtilsService channelUtilsService;
     @Resource
     private RedisUtil redisUtil;
 
@@ -111,7 +110,7 @@ public class PlatformServiceImpl implements PlatformService {
                 map.put("tradeNo", zhidian.getTradeNo());
                 return JsonMapper.toJson(map);
             }
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
             if (platformGame == null) {
                 map.put("statusCode", 2);
                 map.put("errorMsg", "orderId无效");
@@ -161,7 +160,7 @@ public class PlatformServiceImpl implements PlatformService {
         channel.init(basicRepository, ucSession.getGameId(), ucSession.getPlatformId());
         String result = channel.verifySession(ucSession.getSid(), ucSession.getAppID());
         return result;
-//        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(ucSession.getPlatformId()), Long.valueOf(ucSession.getGameId()));
+//        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(Integer.valueOf(ucSession.getChannelId()), Long.valueOf(ucSession.getGameId()));
 //        if (platformGame == null) return "";
 //        String apiKey = platformGame.getConfigParamsList().get(0);
 //        String toUrl = platformGame.getConfigParamsList().get(1);
@@ -190,7 +189,7 @@ public class PlatformServiceImpl implements PlatformService {
             String result = channel.returnPayResult(request, orderService);
             return result;
 //
-//            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+//            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
 //            if (platformGame == null) return UC_PAY_RESULT_FAILED;
 //            String apiKey = platformGame.getConfigParamsList().get(0);
 //            Map<String, Object> map = new HashMap<String, Object>();
@@ -243,7 +242,7 @@ public class PlatformServiceImpl implements PlatformService {
         params.put("session", xiaomiSession.getSession());
 
         try {
-            return HttpUtils.get(platformUtilsService.getRequestUrlXiaomi(params, verifySessionUrl, secretKey), 10000);
+            return HttpUtils.get(channelUtilsService.getRequestUrlXiaomi(params, verifySessionUrl, secretKey), 10000);
         } catch (Exception e) {
             logger.error("xiaomi verifyXiaomiSession error", e);
         }
@@ -262,15 +261,15 @@ public class PlatformServiceImpl implements PlatformService {
             jsonMap.put("errcode", 1506);
             return JsonMapper.toJson(jsonMap);
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             jsonMap.put("errcode", 3515);
             return JsonMapper.toJson(jsonMap);
         }
         String secretKey = platformGame.getConfigParamsList().get(0);
         try {
-            Map<String, String> signParams = platformUtilsService.getSignParamsXiaomi(request.getQueryString());
-            String tmpSign = platformUtilsService.getSignXiaomi(signParams, secretKey);
+            Map<String, String> signParams = channelUtilsService.getSignParamsXiaomi(request.getQueryString());
+            String tmpSign = channelUtilsService.getSignXiaomi(signParams, secretKey);
             String sign = request.getParameter("signature");
             if (tmpSign.equals(sign)) {
                 if ("TRADE_SUCCESS".equals(request.getParameter("orderStatus"))) {
@@ -339,12 +338,12 @@ public class PlatformServiceImpl implements PlatformService {
             Order order = orderService.getOrderByOrderId(params.get("app_order_id"));
             if (order == null) return "not my order";
 
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
             if (platformGame == null) return "verify failed";
 
             String appkey = platformGame.getConfigParamsList().get(0);
             String appsecret = platformGame.getConfigParamsList().get(1);
-            if (!platformUtilsService.isValidRequestQihoo(params, appkey, appsecret)) {
+            if (!channelUtilsService.isValidRequestQihoo(params, appkey, appsecret)) {
                 return "invalid request";
             }
             //判断是否成功
@@ -414,7 +413,7 @@ public class PlatformServiceImpl implements PlatformService {
                 jsonMap.put("ResultMsg", "参数错误");
                 return JsonMapper.toJson(jsonMap);
             }
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
             if (platformGame == null) {
                 jsonMap.put("ResultCode", 4);
                 jsonMap.put("ResultMsg", "参数错误");
@@ -509,7 +508,7 @@ public class PlatformServiceImpl implements PlatformService {
             if (order == null) {
                 return "error";
             }
-            platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+            platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
             if (platformGame == null) {
                 return "error";
             }
@@ -575,12 +574,12 @@ public class PlatformServiceImpl implements PlatformService {
             if (null == order) {
                 return "fail";
             }
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
             if (platformGame == null) {
                 return "fail";
             }
             String publicKey = platformGame.getConfigParamsList().get(2);
-            if (platformUtilsService.vaildWdjSign(content, sign, publicKey)) {
+            if (channelUtilsService.vaildWdjSign(content, sign, publicKey)) {
                 if (callback.getMoney() >= order.getAmount()) {
                     orderService.paySuccess(order.getOrderId());
                 } else {
@@ -619,7 +618,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "failure";
         }
         PlatformGame platformGame = basicRepository.getByPlatformAndGameId(
-                order.getPlatformId(), order.getGameId());
+                order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "failure";
         }
@@ -695,7 +694,7 @@ public class PlatformServiceImpl implements PlatformService {
             if (order == null) {
                 return "ERR_100";
             }
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
             if (platformGame == null) {
                 return "ERR_100";
             }
@@ -777,12 +776,12 @@ public class PlatformServiceImpl implements PlatformService {
             if (null == order) {
                 return "FAILURE";
             }
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
             if (platformGame == null) {
                 return "FAILURE";
             }
             String publicKey = platformGame.getConfigParamsList().get(2);
-            if (platformUtilsService.verifyKupai(transdata, sign, publicKey)) {
+            if (channelUtilsService.verifyKupai(transdata, sign, publicKey)) {
                 if (callback.getResult() == null || callback.getResult() == 1) {
                     orderService.payFail(order.getOrderId(), "callback notify order payfail");
                     return "SUCCESS";
@@ -866,13 +865,13 @@ public class PlatformServiceImpl implements PlatformService {
             if (null == order) {
                 return String.format(format, "FAIL", "can not find order : orderNO: " + partnerOrder);
             }
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
             if (null == platformGame) {
                 return String.format(format, "FAIL", "this is an invalid order");
             }
             String key = platformGame.getConfigParamsList().get(0);
 
-            if (platformUtilsService.validOppoSign(request, key)) {
+            if (channelUtilsService.validOppoSign(request, key)) {
                 if (Integer.valueOf(request.getParameter("price")) >= order.getAmount()) {
                     orderService.paySuccess(order.getOrderId());
                 } else {
@@ -928,7 +927,7 @@ public class PlatformServiceImpl implements PlatformService {
             result.put("ErrorDesc", "商户订单号不存在");
             return JsonMapper.toJson(result);
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             result.put("ErrorCode", "0");
             result.put("ErrorDesc", "平台游戏未关联！");
@@ -979,7 +978,7 @@ public class PlatformServiceImpl implements PlatformService {
         params.put("id", apiKey);
         params.put("ts", String.valueOf(System.currentTimeMillis() / 1000));
         params.put("nonce", UUID.randomUUID());
-        params.put("mac", platformUtilsService.getGioneeMac(host, port, secretKey, params.get("ts").toString(), params.get("nonce").toString(), method, url));
+        params.put("mac", channelUtilsService.getGioneeMac(host, port, secretKey, params.get("ts").toString(), params.get("nonce").toString(), method, url));
         params.put("AmigoToken", session.getAmigoToken());
         try {
             return HttpUtils.postToHttps(verifySessionUrl, params);
@@ -1001,8 +1000,8 @@ public class PlatformServiceImpl implements PlatformService {
         if (null == order) {
             return "";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
-        Platform platform = basicRepository.getPlatform(order.getPlatformId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
+        Platform platform = basicRepository.getPlatform(order.getChannelId());
         if (platformGame == null || platform == null) {
             return "";
         }
@@ -1024,7 +1023,7 @@ public class PlatformServiceImpl implements PlatformService {
             params.put("subject", goodsName);
             params.put("submit_time", DateUtils.format(new Date(), DateUtils.yyyyMMddHHmmss).toString());
             params.put("total_fee", format.format((double) order.getAmount() / 100));
-            params.put("sign", platformUtilsService.getOrderCreateSign(params, privateKey));
+            params.put("sign", channelUtilsService.getOrderCreateSign(params, privateKey));
 
             String result = HttpUtils.post(orderCreateUrl, JsonMapper.toJson(params));
             logger.debug("gionee order create result : " + result);
@@ -1046,7 +1045,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "fail";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "fail";
         }
@@ -1061,7 +1060,7 @@ public class PlatformServiceImpl implements PlatformService {
         params.put("submit_time", request.getParameter("submit_time"));
         params.put("user_id", request.getParameter("user_id"));
         try {
-            if (platformUtilsService.validGioneeSign(params, publicKey, sign)) {
+            if (channelUtilsService.validGioneeSign(params, publicKey, sign)) {
                 if (order.getAmount() > Double.valueOf(request.getParameter("deal_price")) * 100) {
                     PlatformStatsLogger.info(PlatformStatsLogger.GIONEE, "order amount error");
                     orderService.payFail(order.getOrderId(), "order amount error");
@@ -1106,8 +1105,8 @@ public class PlatformServiceImpl implements PlatformService {
         if (order == null) {
             return "";
         }
-        Platform platform = basicRepository.getPlatform(order.getPlatformId());
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        Platform platform = basicRepository.getPlatform(order.getChannelId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
 
         String cpKey = platformGame.getConfigParamsList().get(0);
         String signUrl = platformGame.getConfigParamsList().get(2);
@@ -1149,7 +1148,7 @@ public class PlatformServiceImpl implements PlatformService {
             if (null == order) {
                 return "400";
             }
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
             if (platformGame == null) {
                 return "400";
             }
@@ -1210,13 +1209,13 @@ public class PlatformServiceImpl implements PlatformService {
         if (null == order) {
             return "FAIL";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "FAIL";
         }
         String appKey = platformGame.getConfigParamsList().get(0);
         try {
-            if (platformUtilsService.validAppchinaSign(transdata, sign, appKey)) {
+            if (channelUtilsService.validAppchinaSign(transdata, sign, appKey)) {
                 if (0 == back.getResult()) {
                     if (order.getAmount() > Integer.valueOf(back.getMoney())) {
                         PlatformStatsLogger.info(PlatformStatsLogger.APPCHINA, "order amount error");
@@ -1276,7 +1275,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "fail";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "fail";
         }
@@ -1370,8 +1369,8 @@ public class PlatformServiceImpl implements PlatformService {
                 return JsonMapper.toJson(map);
             }
 
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
-            Platform platform = basicRepository.getPlatform(order.getPlatformId());
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
+            Platform platform = basicRepository.getPlatform(order.getChannelId());
             if (platformGame == null || platform == null) {
                 map.put("status", "failed");
                 map.put("desc", "订单信息有误");
@@ -1455,7 +1454,7 @@ public class PlatformServiceImpl implements PlatformService {
                     return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><response><ErrorCode>0</ErrorCode><ErrorDesc>找不到订单!</ErrorDesc></response>";
                 }
 
-                PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+                PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
                 if (platformGame == null) {
                     return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><response><ErrorCode>0</ErrorCode><ErrorDesc>订单信息有误!</ErrorDesc></response>";
                 }
@@ -1492,7 +1491,7 @@ public class PlatformServiceImpl implements PlatformService {
         PlatformGame platform = basicRepository.getByPlatformAndGameId(Integer.valueOf(platformId), Long.valueOf(zdappId));
         String privateKey = platform.getConfigParamsList().get(1);
 
-        result.put("data", platformUtilsService.signHTCPayContent(content, privateKey));
+        result.put("data", channelUtilsService.signHTCPayContent(content, privateKey));
         return JsonMapper.toJson(result);
     }
 
@@ -1509,7 +1508,7 @@ public class PlatformServiceImpl implements PlatformService {
         PlatformGame platform = basicRepository.getByPlatformAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getZdappId()));
         String publicKey = platform.getConfigParamsList().get(0);
         try {
-            boolean flag = platformUtilsService.verifyHTC(session.getContent(), session.getSign(), publicKey);
+            boolean flag = channelUtilsService.verifyHTC(session.getContent(), session.getSign(), publicKey);
             result.put("flag", String.valueOf(flag));
             result.put("msg", flag ? "success" : "签名校验错误！");
             return JsonMapper.toJson(result);
@@ -1545,13 +1544,13 @@ public class PlatformServiceImpl implements PlatformService {
                 return "fail";
             }
 
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
             if (null == platformGame) {
                 return "fail";
             }
 
             String publicKey = platformGame.getConfigParamsList().get(0);
-            if (platformUtilsService.verifyHTC(orderInfo, sign, publicKey)) {
+            if (channelUtilsService.verifyHTC(orderInfo, sign, publicKey)) {
                 if (order.getAmount() > Integer.valueOf(back.getReal_amount())) {
                     PlatformStatsLogger.info(PlatformStatsLogger.HTC, "order amount error");
                     orderService.payFail(order.getOrderId(), "order amount error");
@@ -1656,7 +1655,7 @@ public class PlatformServiceImpl implements PlatformService {
                 result.put("message", "未找到该订单！");
                 return JsonMapper.toJson(result);
             }
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
             if (null == platformGame) {
                 result.put("code", "120013");
                 result.put("message", "订单信息有误！");
@@ -1704,7 +1703,7 @@ public class PlatformServiceImpl implements PlatformService {
                 return "failed";
             }
 
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
             if (null == platformGame) {
                 return "failed";
             }
@@ -1775,7 +1774,7 @@ public class PlatformServiceImpl implements PlatformService {
                 return "can not find this order";
             }
 
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
             if (null == platformGame) {
                 return "this is an unvalid order : platformGame isnull";
             }
@@ -1887,7 +1886,7 @@ public class PlatformServiceImpl implements PlatformService {
                 return "FAILURE";
             }
 
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
             if (null == platformGame) {
                 return "FAILURE";
             }
@@ -1938,7 +1937,7 @@ public class PlatformServiceImpl implements PlatformService {
             return JsonMapper.toJson(result);
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (null == platformGame) {
             result.put("error_code", "1");
             result.put("error_message", "订单信息有误！");
@@ -1988,7 +1987,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "failure";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (null == platformGame) {
             return "failure";
         }
@@ -2034,7 +2033,7 @@ public class PlatformServiceImpl implements PlatformService {
         if (null == order) {
             return "FAIL";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (null == platformGame) {
             return "FAIL";
         }
@@ -2081,7 +2080,7 @@ public class PlatformServiceImpl implements PlatformService {
         if (null == order) {
             return "-2";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (null == platformGame) {
             return "-2";
         }
@@ -2126,11 +2125,11 @@ public class PlatformServiceImpl implements PlatformService {
             if (null == order) {
                 return "fail";
             }
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
             if (null == platformGame) {
                 return "fail";
             }
-            if (platformUtilsService.verifyMmy(mmYPayResult.getTradeSign(), platformGame.getConfigParamsList().get(0), mmYPayResult.getOrderID())) {
+            if (channelUtilsService.verifyMmy(mmYPayResult.getTradeSign(), platformGame.getConfigParamsList().get(0), mmYPayResult.getOrderID())) {
                 if ("success".equals(mmYPayResult.getTradeState())) {
                     if (order.getAmount() <= Double.valueOf(mmYPayResult.getProductPrice()) * 100) {
                         orderService.paySuccess(order.getOrderId());
@@ -2193,21 +2192,21 @@ public class PlatformServiceImpl implements PlatformService {
         String sign = request.getParameter("sign");
         Order order = basicRepository.getOrderByOrderId(cp_order_id);
         if (null == order) {
-            return platformUtilsService.playSmsXml(order, cp_order_id, correlator, false);
+            return channelUtilsService.playSmsXml(order, cp_order_id, correlator, false);
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
-            return platformUtilsService.playSmsXml(order, cp_order_id, correlator, false);
+            return channelUtilsService.playSmsXml(order, cp_order_id, correlator, false);
         }
         try {
             String signMD5 = Sign.encode(cp_order_id, correlator, order_time, method, platformGame.getConfigParamsList().get(1));
             if (StringUtils.equalsIgnoreCase(signMD5, sign)) {
-                return platformUtilsService.playSmsXml(order, cp_order_id, correlator, true);
+                return channelUtilsService.playSmsXml(order, cp_order_id, correlator, true);
             }
         } catch (Exception e) {
             PlatformStatsLogger.error("playSms", params.toString(), "verifyPlaySms error :" + e);
         }
-        return platformUtilsService.playSmsXml(order, cp_order_id, correlator, false);
+        return channelUtilsService.playSmsXml(order, cp_order_id, correlator, false);
     }
 
     @Override
@@ -2225,11 +2224,11 @@ public class PlatformServiceImpl implements PlatformService {
 
         Order order = basicRepository.getOrderByOrderId(cp_order_id);
         if (null == order) {
-            return platformUtilsService.playXml(cp_order_id, false);
+            return channelUtilsService.playXml(cp_order_id, false);
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
-            return platformUtilsService.playXml(cp_order_id, false);
+            return channelUtilsService.playXml(cp_order_id, false);
         }
         try {
             String signMD5 = Sign.encode(cp_order_id, correlator, result_code, fee, pay_type, method, platformGame.getConfigParamsList().get(1));
@@ -2237,18 +2236,18 @@ public class PlatformServiceImpl implements PlatformService {
                 if ("00".equals(result_code)) {
                     if (order.getAmount() <= Double.valueOf(fee) * 100) {
                         orderService.paySuccess(order.getOrderId());
-                        return platformUtilsService.playXml(cp_order_id, true);
+                        return channelUtilsService.playXml(cp_order_id, true);
                     }
                     orderService.payFail(order.getOrderId(), "order amount error");
-                    return platformUtilsService.playXml(cp_order_id, true);
+                    return channelUtilsService.playXml(cp_order_id, true);
                 }
                 orderService.payFail(order.getOrderId(), "pay state callback fail ");
-                return platformUtilsService.playXml(cp_order_id, true);
+                return channelUtilsService.playXml(cp_order_id, true);
             }
         } catch (Exception e) {
             PlatformStatsLogger.error(PlatformStatsLogger.PLAY, params.toString(), "verifyPlay error :" + e);
         }
-        return platformUtilsService.playXml(cp_order_id, false);
+        return channelUtilsService.playXml(cp_order_id, false);
     }
 
     @Override
@@ -2307,7 +2306,7 @@ public class PlatformServiceImpl implements PlatformService {
         if (null == order) {
             return "fail";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (null == platformGame) {
             return "fail";
         }
@@ -2386,7 +2385,7 @@ public class PlatformServiceImpl implements PlatformService {
         if (null == order) {
             return "fail";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (null == platformGame) {
             return "fail";
         }
@@ -2433,7 +2432,7 @@ public class PlatformServiceImpl implements PlatformService {
             if (null == order) {
                 return "FAILURE";
             }
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
             if (platformGame == null) {
                 return "FAILURE";
             }
@@ -2515,7 +2514,7 @@ public class PlatformServiceImpl implements PlatformService {
         if (null == order) {
             return "failed";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "failed";
         }
@@ -2621,7 +2620,7 @@ public class PlatformServiceImpl implements PlatformService {
                 result.put("result", "3");
                 return JsonMapper.toJson(result);
             }
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
             if (platformGame == null) {
                 result.put("result", "3");
                 return JsonMapper.toJson(result);
@@ -2631,7 +2630,7 @@ public class PlatformServiceImpl implements PlatformService {
 
             sign = (String) params.get("sign");
 
-            if (platformUtilsService.verifyHuawei(params, publicKey)) {
+            if (channelUtilsService.verifyHuawei(params, publicKey)) {
                 logger.debug("verify huawei valid sign success");
                 if (order.getAmount() > Double.valueOf(params.get("amount")) * 100) {
                     PlatformStatsLogger.info(PlatformStatsLogger.HUAWEI, "order amount error");
@@ -2670,7 +2669,7 @@ public class PlatformServiceImpl implements PlatformService {
             return JsonMapper.toJson(result);
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             result.put("code", "1");
             return JsonMapper.toJson(result);
@@ -2699,7 +2698,7 @@ public class PlatformServiceImpl implements PlatformService {
         }
         try {
             result.put("code", "0");
-            result.put("sign", platformUtilsService.huaweiPaySign(content.toString(), platformGame.getConfigParamsList().get(4)));
+            result.put("sign", channelUtilsService.huaweiPaySign(content.toString(), platformGame.getConfigParamsList().get(4)));
             return JsonMapper.toJson(result);
         } catch (Exception e) {
             PlatformStatsLogger.error(PlatformStatsLogger.HUAWEI, params.toString(), "huaweiPaySign error :" + e);
@@ -2759,7 +2758,7 @@ public class PlatformServiceImpl implements PlatformService {
             return JsonMapper.toJson(result);
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             result.put("status", "1");
             result.put("code", "other_error");
@@ -2876,7 +2875,7 @@ public class PlatformServiceImpl implements PlatformService {
             return JsonMapper.toJson(result);
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             result.put("state", "0");
             result.put("data", "");
@@ -2930,7 +2929,7 @@ public class PlatformServiceImpl implements PlatformService {
 
         String key = platformGame.getConfigParamsList().get(0);
         try {
-            String validSign = platformUtilsService.muzhiMd5(session.getUsename() + key);
+            String validSign = channelUtilsService.muzhiMd5(session.getUsename() + key);
 
             result.put("code", StringUtils.equals(session.getSign(), validSign) ? "0" : "1");
             result.put("msg", StringUtils.equals(session.getSign(), validSign) ? "success" : "签名校验失败");
@@ -2962,13 +2961,13 @@ public class PlatformServiceImpl implements PlatformService {
             return "failed";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "failed";
         }
         try {
             String key = platformGame.getConfigParamsList().get(0);
-            String validSign = platformUtilsService.muzhiMd5(content + "&key=" + key);
+            String validSign = channelUtilsService.muzhiMd5(content + "&key=" + key);
             if (StringUtils.equals(sign, validSign)) {
                 logger.debug("verify muzhi valid sign success");
 
@@ -3037,7 +3036,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "can not find order";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "order info error";
         }
@@ -3129,7 +3128,7 @@ public class PlatformServiceImpl implements PlatformService {
             return JsonMapper.toJson(result);
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             result.put("code", "1004");
             result.put("msg", "订单信息有误");
@@ -3239,7 +3238,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "error";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "error";
         }
@@ -3325,7 +3324,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "-1";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "-1";
         }
@@ -3400,7 +3399,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "-1";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "-1";
         }
@@ -3479,7 +3478,7 @@ public class PlatformServiceImpl implements PlatformService {
             return JsonMapper.toJson(result);
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (null == platformGame) {
             result.put("code", "2");
             result.put("msg", "订单信息有误");
@@ -3489,7 +3488,7 @@ public class PlatformServiceImpl implements PlatformService {
         String appkey = platformGame.getConfigParamsList().get(0);
         String serverName = platformGame.getConfigParamsList().get(1);
         int gameCoinRatio = Integer.valueOf(platformGame.getConfigParamsList().get(2));
-        logger.debug(String.format("-------------------------------appid=%s,platform=%d,gameCoinRation=%d,amount=%d", platformGame.getGameId(), platformGame.getPlatformId(), gameCoinRatio, order.getAmount()));
+        logger.debug(String.format("-------------------------------appid=%s,platform=%d,gameCoinRation=%d,amount=%d", platformGame.getGameId(), platformGame.getChannelId(), gameCoinRatio, order.getAmount()));
         OpenApiV3 sdk = new OpenApiV3(appid, appkey);
         sdk.setServerName(serverName);
 
@@ -3632,7 +3631,7 @@ public class PlatformServiceImpl implements PlatformService {
             return JsonMapper.toJson(result);
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (null == platformGame) {
             result.put("code", "2");
             result.put("msg", "订单信息有误");
@@ -3642,7 +3641,7 @@ public class PlatformServiceImpl implements PlatformService {
         String appkey = platformGame.getConfigParamsList().get(0);
         String serverName = platformGame.getConfigParamsList().get(1);
         int gameCoinRatio = Integer.valueOf(platformGame.getConfigParamsList().get(2));
-        logger.debug(String.format("-------------------------------appid=%s,platform=%d,gameCoinRation=%d,amount=%d", platformGame.getGameId(), platformGame.getPlatformId(), gameCoinRatio, order.getAmount()));
+        logger.debug(String.format("-------------------------------appid=%s,platform=%d,gameCoinRation=%d,amount=%d", platformGame.getGameId(), platformGame.getChannelId(), gameCoinRatio, order.getAmount()));
         MsOpenApiV3 sdk = new MsOpenApiV3(appid, appkey);
         sdk.setServerName(serverName);
 
@@ -3773,7 +3772,7 @@ public class PlatformServiceImpl implements PlatformService {
                 return "-1";
             }
 
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
             if (platformGame == null) {
                 return "-1";
             }
@@ -3825,7 +3824,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "fail";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "fail";
         }
@@ -3918,7 +3917,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "error";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "error";
         }
@@ -4002,7 +4001,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "fail";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (null == platformGame) {
             return "fail";
         }
@@ -4073,14 +4072,14 @@ public class PlatformServiceImpl implements PlatformService {
         if (null == order) {
             return "fail";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "fail";
         }
 
         String publicKey = platformGame.getConfigParamsList("\\|").get(0);
 
-        if (platformUtilsService.verifyAtet(transdata, sign.replace(" ", "+"), publicKey)) {
+        if (channelUtilsService.verifyAtet(transdata, sign.replace(" ", "+"), publicKey)) {
             logger.debug("verify atet valid sign success");
             if (back.getResult() == 1) {
                 orderService.payFail(order.getOrderId(), "callback notify order payfail");
@@ -4119,7 +4118,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "0|order unfind";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "0|wrong order";
         }
@@ -4189,7 +4188,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "error";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "error";
         }
@@ -4291,7 +4290,7 @@ public class PlatformServiceImpl implements PlatformService {
                 return JsonMapper.toJson(result);
             }
 
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
             if (platformGame == null) {
                 result.put("ack", "103");
                 result.put("msg", "a wrong order");
@@ -4382,7 +4381,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "can not find order";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (null == platformGame) {
             return "order info error";
         }
@@ -4464,7 +4463,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "\"FAILURE\"";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (null == platformGame) {
             return "\"FAILURE\"";
         }
@@ -4511,7 +4510,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "-1";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (null == platformGame) {
             return "-1";
         }
@@ -4600,7 +4599,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "fail";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (null == platformGame) {
             return "fail";
         }
@@ -4682,7 +4681,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "FAIL";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (null == platformGame) {
             return "FAIL";
         }
@@ -4730,7 +4729,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "FAIL";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (null == platformGame) {
             return "FAIL";
         }
@@ -4821,7 +4820,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "error";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "error";
         }
@@ -4913,7 +4912,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "fail";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (null == platformGame) {
             return "fail";
         }
@@ -4956,7 +4955,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "error";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "error";
         }
@@ -5065,7 +5064,7 @@ public class PlatformServiceImpl implements PlatformService {
                 return JsonMapper.toJson(map);
             }
 
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
             if (platformGame == null) {
                 map.put("statusCode", 2);
                 map.put("errorMsg", "orderId无效");
@@ -5157,7 +5156,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "error";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "error";
         }
@@ -5251,7 +5250,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "error";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "error";
         }
@@ -5308,7 +5307,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "error";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             logger.info("--------");
             return "error";
@@ -5408,7 +5407,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "error";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "error";
         }
@@ -5503,7 +5502,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "error";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "error";
         }
@@ -5593,7 +5592,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "error";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "error";
         }
@@ -5672,7 +5671,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "error";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "error";
         }
@@ -5755,7 +5754,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "error";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "error";
         }
@@ -5878,7 +5877,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "error";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "error";
         }
@@ -5931,7 +5930,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "0";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "0";
         }
@@ -5989,7 +5988,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "error";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "error";
         }
@@ -6081,7 +6080,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "error";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "error";
         }
@@ -6166,7 +6165,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "error";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "error";
         }
@@ -6252,7 +6251,7 @@ public class PlatformServiceImpl implements PlatformService {
         try {
             sBuilder.append(URLEncoder.encode(payNotifyUrl, "utf-8"));
             result.put("code", "0");
-            result.put("msg", platformUtilsService.qbaoPaySign(sBuilder.toString(), platformGame.getConfigParamsList("\\|").get(0)));
+            result.put("msg", channelUtilsService.qbaoPaySign(sBuilder.toString(), platformGame.getConfigParamsList("\\|").get(0)));
             result.put("payCode", payCode);
             return JsonMapper.toJson(result);
 
@@ -6292,7 +6291,7 @@ public class PlatformServiceImpl implements PlatformService {
             return JsonMapper.toJson(result);
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             result.put("isSuccess", false);
             return JsonMapper.toJson(result);
@@ -6302,7 +6301,7 @@ public class PlatformServiceImpl implements PlatformService {
         String content = String.format(format, responseCode, StringUtils.isBlank(errorCode) ? "null" : errorCode, sdkflowId, bizCode);
         logger.debug("content: {}, signCode: {}", content, signCode);
         try {
-            boolean valid = platformUtilsService.verifyQbao(content, signCode, platformGame.getConfigParamsList("\\|").get(1));
+            boolean valid = channelUtilsService.verifyQbao(content, signCode, platformGame.getConfigParamsList("\\|").get(1));
             if (valid) {
                 logger.debug("verify qbao valid sign success");
                 if (StringUtils.equals("1000", responseCode)) {
@@ -6372,7 +6371,7 @@ public class PlatformServiceImpl implements PlatformService {
         try {
             sBuilder.append(URLEncoder.encode(payNotifyUrl, "utf-8"));
             result.put("code", "0");
-            result.put("msg", platformUtilsService.qbaoPaySign(sBuilder.toString(), platformGame.getConfigParamsList("\\|").get(0)));
+            result.put("msg", channelUtilsService.qbaoPaySign(sBuilder.toString(), platformGame.getConfigParamsList("\\|").get(0)));
             result.put("payCode", payCode);
             return JsonMapper.toJson(result);
 
@@ -6411,7 +6410,7 @@ public class PlatformServiceImpl implements PlatformService {
             return JsonMapper.toJson(result);
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             result.put("isSuccess", false);
             return JsonMapper.toJson(result);
@@ -6421,7 +6420,7 @@ public class PlatformServiceImpl implements PlatformService {
         String content = String.format(format, responseCode, StringUtils.isBlank(errorCode) ? "\"\"" : errorCode, sdkflowId, orderNo);
         logger.debug("content: {}, signCode: {}", content, signCode);
         try {
-            boolean valid = platformUtilsService.verifyQbao(content, signCode, platformGame.getConfigParamsList("\\|").get(1));
+            boolean valid = channelUtilsService.verifyQbao(content, signCode, platformGame.getConfigParamsList("\\|").get(1));
             if (valid) {
                 logger.debug("verify bingquBaowan valid sign success");
                 if (StringUtils.equals("1000", responseCode)) {
@@ -6509,7 +6508,7 @@ public class PlatformServiceImpl implements PlatformService {
                 return "error not find order";
             }
 
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
             if (platformGame == null) {
                 return "error not find platformGame";
             }
@@ -6578,7 +6577,7 @@ public class PlatformServiceImpl implements PlatformService {
             return JsonMapper.toJson(result);
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             result.put("code", "-3");
             result.put("msg", "非法订单");
@@ -6676,7 +6675,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "error";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "error";
         }
@@ -6797,7 +6796,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "error";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "error";
         }
@@ -6848,7 +6847,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "error";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "error";
         }
@@ -6952,7 +6951,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "error";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "error";
         }
@@ -7014,7 +7013,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "error";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "error";
         }
@@ -7070,7 +7069,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "error";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "error";
         }
@@ -7150,7 +7149,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "error";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "error";
         }
@@ -7209,7 +7208,7 @@ public class PlatformServiceImpl implements PlatformService {
             return "error";
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "error";
         }
@@ -7259,7 +7258,7 @@ public class PlatformServiceImpl implements PlatformService {
                 return "error";
             }
 
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
             if (platformGame == null) {
                 return "error";
             }
@@ -7424,7 +7423,7 @@ public class PlatformServiceImpl implements PlatformService {
         if (order == null) {
             return "error";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "error";
         }
@@ -7469,7 +7468,7 @@ public class PlatformServiceImpl implements PlatformService {
         if (order == null) {
             return "error";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "error";
         }
@@ -7513,7 +7512,7 @@ public class PlatformServiceImpl implements PlatformService {
         if (order == null) {
             return "fail";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         String appKey = platformGame.getConfigParamsList("\\|").get(0).trim();
         if (platformGame == null) {
             return "fail";
@@ -7595,7 +7594,7 @@ public class PlatformServiceImpl implements PlatformService {
         if (order == null) {
             return "error";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "error";
         }
@@ -7904,7 +7903,7 @@ public class PlatformServiceImpl implements PlatformService {
         if (order == null) {
             return "error order not Fund";
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             resultMap.put("result", "1");
             resultMap.put("result_desc", "游戏平台没有关联");
@@ -8013,7 +8012,7 @@ public class PlatformServiceImpl implements PlatformService {
             if (order == null) {
                 return "error order not Fund param:" + HttpUtils.getRequestParams(request).toString();
             }
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
             if (platformGame == null) {
                 resultMap.put("result", "1");
                 resultMap.put("result_desc", "游戏平台没有关联");
@@ -8116,7 +8115,7 @@ public class PlatformServiceImpl implements PlatformService {
         if (order == null) {
             return "error order not Fund param:" + HttpUtils.getRequestParams(request).toString();
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             resultMap.put("code", "0100");
             resultMap.put("desc", "游戏平台没有关联");
@@ -8245,7 +8244,7 @@ public class PlatformServiceImpl implements PlatformService {
             if (order == null) {
                 return "error order not Fund param:" + HttpUtils.getRequestParams(request).toString();
             }
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
             if (platformGame == null) {
                 return "Not Fund Game";
             }
@@ -8395,7 +8394,7 @@ public class PlatformServiceImpl implements PlatformService {
             if (order == null) {
                 return "error order not Fund param:" + HttpUtils.getRequestParams(request).toString();
             }
-            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+            PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
             if (platformGame == null) {
                 return "Not Fund Game";
             }
@@ -8484,7 +8483,7 @@ public class PlatformServiceImpl implements PlatformService {
         if (order == null) {
             return "error order not Fund param:" + HttpUtils.getRequestParams(request).toString();
         }
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
         if (platformGame == null) {
             return "Not Fund Game";
         }

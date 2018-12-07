@@ -159,7 +159,7 @@ public class BasicRepositoryImpl implements BasicRepository {
                     user.setGameId(behaviorUser.getGameId());
                     user.setClientType(behaviorUser.getClientType());
                     user.setUid(behaviorUser.getUid());
-                    user.setPlatformId(behaviorUser.getPlatformId());
+                    user.setChannelId(behaviorUser.getChannelId());
                     user.setZoneId(behaviorUser.getZoneId());
                     result.add(user);
                 }
@@ -196,7 +196,7 @@ public class BasicRepositoryImpl implements BasicRepository {
             result.setGameId(behaviorUser.getGameId());
             result.setClientType(behaviorUser.getClientType());
             result.setUid(behaviorUser.getUid());
-            result.setPlatformId(behaviorUser.getPlatformId());
+            result.setChannelId(behaviorUser.getChannelId());
             result.setZoneId(behaviorUser.getZoneId());
             if (StringUtils.isNotEmpty(behaviorUser.getRoleData())) {
                 result.setRoleData(behaviorUser.getRoleData());
@@ -210,7 +210,7 @@ public class BasicRepositoryImpl implements BasicRepository {
         BehaviorUserRedis behaviorUserRedis = new BehaviorUserRedis();
         behaviorUserRedis.setGameId(behaviorUser.getGameId());
         behaviorUserRedis.setClientType(behaviorUser.getClientType());
-        behaviorUserRedis.setPlatformId(behaviorUser.getPlatformId());
+        behaviorUserRedis.setChannelId(behaviorUser.getChannelId());
         behaviorUserRedis.setZoneId(behaviorUser.getZoneId());
         behaviorUserRedis.setData(behaviorUser.getData());
         behaviorUserRedis.setUid(behaviorUser.getUid());
@@ -236,7 +236,7 @@ public class BasicRepositoryImpl implements BasicRepository {
         BehaviorUser behaviorUser = new BehaviorUser();
         behaviorUser.setGameId(redis.getGameId());
         behaviorUser.setClientType(redis.getClientType());
-        behaviorUser.setPlatformId(redis.getPlatformId());
+        behaviorUser.setChannelId(redis.getChannelId());
         behaviorUser.setZoneId(redis.getZoneId());
         behaviorUser.setData(redis.getData());
         behaviorUser.setUid(redis.getUid());
@@ -264,13 +264,13 @@ public class BasicRepositoryImpl implements BasicRepository {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(PARAM_OS, behaviorUser.getClientType());
         params.put(PARAM_UID, behaviorUser.getUid());
-        params.put(PARAM_PLATFORM_ID, behaviorUser.getPlatformId());
+        params.put(PARAM_PLATFORM_ID, behaviorUser.getChannelId());
         params.put(PARAM_ZONE_ID, behaviorUser.getZoneId());
         params.put(PARAM_GAME_ID, behaviorUser.getGameId());
         params.put(PARAM_DATA, data);
         params.put(PARAM_ROLE_DATA, behaviorUser.getRoleData());
         BehaviorUserRedis redis = toRedis(behaviorUser);
-        redisUtil.setKeyValue("userBehavior_" + behaviorUser.getClientType() + "_" + behaviorUser.getUid() + "_" + behaviorUser.getPlatformId() + "_" + behaviorUser.getGameId() + "_" + behaviorUser.getZoneId(), JsonMapper.toJson(redis));
+        redisUtil.setKeyValue("userBehavior_" + behaviorUser.getClientType() + "_" + behaviorUser.getUid() + "_" + behaviorUser.getChannelId() + "_" + behaviorUser.getGameId() + "_" + behaviorUser.getZoneId(), JsonMapper.toJson(redis));
         mybatisRepository.insert(BehaviorUser.class, "insert", params);
     }
 
@@ -280,13 +280,13 @@ public class BasicRepositoryImpl implements BasicRepository {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(PARAM_OS, behaviorUser.getClientType());
         params.put(PARAM_UID, behaviorUser.getUid());
-        params.put(PARAM_PLATFORM_ID, behaviorUser.getPlatformId());
+        params.put(PARAM_PLATFORM_ID, behaviorUser.getChannelId());
         params.put(PARAM_ZONE_ID, behaviorUser.getZoneId());
         params.put(PARAM_GAME_ID, behaviorUser.getGameId());
         params.put(PARAM_DATA, data);
         params.put(PARAM_ROLE_DATA, behaviorUser.getRoleData());
         BehaviorUserRedis redis = toRedis(behaviorUser);
-        redisUtil.setKeyValue("userBehavior_" + behaviorUser.getClientType() + "_" + behaviorUser.getUid() + "_" + behaviorUser.getPlatformId() + "_" + behaviorUser.getGameId() + "_" + behaviorUser.getZoneId(), JsonMapper.toJson(redis));
+        redisUtil.setKeyValue("userBehavior_" + behaviorUser.getClientType() + "_" + behaviorUser.getUid() + "_" + behaviorUser.getChannelId() + "_" + behaviorUser.getGameId() + "_" + behaviorUser.getZoneId(), JsonMapper.toJson(redis));
         return mybatisRepository.update(BehaviorUser.class, "update", params);
     }
 
@@ -315,7 +315,7 @@ public class BasicRepositoryImpl implements BasicRepository {
         data.setGameId(behaviorDevice.getGameId());
         data.setClientType(behaviorDevice.getClientType());
         data.setDevice(behaviorDevice.getDevice());
-        data.setPlatforms(JsonMapper.toJson(behaviorDevice.getPlatformIds()));
+        data.setChannels(JsonMapper.toJson(behaviorDevice.getChannelIds()));
         mybatisRepository.update(BehaviorDevice.class, "update", data);
     }
 
@@ -345,7 +345,7 @@ public class BasicRepositoryImpl implements BasicRepository {
         data.setGameId(behaviorDevice.getGameId());
         data.setClientType(behaviorDevice.getClientType());
         data.setDevice(behaviorDevice.getDevice());
-        data.setLoginPlatforms(JsonMapper.toJson(behaviorDevice.getLoginPlatformIds()));
+        data.setLoginChannels(JsonMapper.toJson(behaviorDevice.getLoginChannelIds()));
         mybatisRepository.update(BehaviorDevice.class, "update", data);
     }
 
@@ -470,7 +470,7 @@ public class BasicRepositoryImpl implements BasicRepository {
     public String updateBehaviorUserRole(BehaviorUser behaviorUser, RoleTrace roleTrace) {
         List<RoleTrace> roleData = new ArrayList<RoleTrace>();
         boolean flag = true;
-        behaviorUser = getUserBehavior(behaviorUser.getClientType(), behaviorUser.getUid(), behaviorUser.getPlatformId(), behaviorUser.getGameId(), behaviorUser.getZoneId());
+        behaviorUser = getUserBehavior(behaviorUser.getClientType(), behaviorUser.getUid(), behaviorUser.getChannelId(), behaviorUser.getGameId(), behaviorUser.getZoneId());
         if (behaviorUser != null && StringUtils.isNotEmpty(behaviorUser.getRoleData())) {
             List<RoleTrace> roleTraceList = JsonMapper.stringToList(behaviorUser.getRoleData(), RoleTrace.class);
             if (!CollectionUtils.isEmpty(roleTraceList)) {
@@ -504,7 +504,7 @@ public class BasicRepositoryImpl implements BasicRepository {
                 behaviorUser.setClientType(clientType);
                 behaviorUser.setUid(uid);
                 behaviorUser.setZoneId(zoneId);
-                behaviorUser.setPlatformId(platformId);
+                behaviorUser.setChannelId(platformId);
                 insertUserBehavior(behaviorUser);
             }
             return zoneTrace;

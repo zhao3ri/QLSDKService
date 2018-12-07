@@ -45,7 +45,7 @@ public class AccountServiceTest  extends BaseTestCase{
 		String deviceId = UUID.randomUUID().toString().substring(0, 12);
 		InitialPattern initial = new InitialPattern();
 		initial.setGameId(23L);
-		initial.setPlatformId(15);
+		initial.setChannelId(15);
 		initial.setDeviceId(deviceId);
 		initial.setClientType(1);
 		initial.setManufacturer("samsung");
@@ -75,7 +75,7 @@ public class AccountServiceTest  extends BaseTestCase{
 		LoginPattern login = new LoginPattern();
 		login.setGameId(Long.parseLong("151110191986"));
 		login.setUid("c0e8ef9ed18edfc9553182f266bd6b0c");
-		login.setPlatformId(1001);
+		login.setChannelId(1001);
 		login.setDeviceId("370436628004248");
 		login.setClientType(1);
 		login.setRoleId("22");
@@ -99,7 +99,7 @@ public class AccountServiceTest  extends BaseTestCase{
 		HeartbeatPattern heartbeat = new HeartbeatPattern();
 		heartbeat.setGameId(23L);
 		heartbeat.setUid("12345678");
-		heartbeat.setPlatformId(15);
+		heartbeat.setChannelId(15);
 		heartbeat.setDeviceId("66b9a79d-fbd");
 		heartbeat.setClientType(1);
 		heartbeat.setRoleId("1");
@@ -113,7 +113,7 @@ public class AccountServiceTest  extends BaseTestCase{
 		LogoutPattern logout = new LogoutPattern();
 		logout.setGameId(23L);
 		logout.setUid("12345678");
-		logout.setPlatformId(15);
+		logout.setChannelId(15);
 		logout.setDeviceId("66b9a79d-fbd");
 		logout.setClientType(1);
 		logout.setRoleId("1");
@@ -126,7 +126,7 @@ public class AccountServiceTest  extends BaseTestCase{
 		QuitPattern quit = new QuitPattern();
 		quit.setGameId(23L);
 		quit.setUid("12345678");
-		quit.setPlatformId(15);
+		quit.setChannelId(15);
 		quit.setDeviceId("66b9a79d-fbd");
 		quit.setClientType(1);
 		quit.setRoleId("1");
@@ -139,7 +139,7 @@ public class AccountServiceTest  extends BaseTestCase{
 		RoleCreatePattern roleEstablish = new RoleCreatePattern();
 		roleEstablish.setGameId(23L);
 		roleEstablish.setUid("12345678");
-		roleEstablish.setPlatformId(15);
+		roleEstablish.setChannelId(15);
 		roleEstablish.setDeviceId("66b9a79d-fbd");
 		roleEstablish.setClientType(1);
 		roleEstablish.setRoleId("1");
@@ -155,7 +155,7 @@ public class AccountServiceTest  extends BaseTestCase{
 		OrderGeneratePattern orderGenerate = new OrderGeneratePattern();
 		orderGenerate.setGameId(23L);
 		orderGenerate.setUid("12345678");
-		orderGenerate.setPlatformId(15);
+		orderGenerate.setChannelId(15);
 		orderGenerate.setDeviceId("66b9a79d-fbd");
 		orderGenerate.setClientType(1);
 		orderGenerate.setRoleId("1");
@@ -174,7 +174,7 @@ public class AccountServiceTest  extends BaseTestCase{
 		OrderGeneratePattern orderGenerate = new OrderGeneratePattern();
 		orderGenerate.setGameId(23L);
 		orderGenerate.setUid("12345678");
-		orderGenerate.setPlatformId(15);
+		orderGenerate.setChannelId(15);
 		orderGenerate.setDeviceId("66b9a79d-fbd");
 		orderGenerate.setClientType(1);
 		orderGenerate.setRoleId("1");

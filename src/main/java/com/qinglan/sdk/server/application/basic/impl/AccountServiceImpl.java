@@ -49,7 +49,7 @@ public class AccountServiceImpl implements AccountService {
             return result;
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(params.getPlatformId(), params.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(params.getChannelId(), params.getGameId());
         if (platformGame.getRegistStatus().equals(GAME_CHANNEL_CODE_REGISTE_STATUS_DISABLE)) {
             result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_STOP_REGIST);
             return result;
@@ -72,7 +72,7 @@ public class AccountServiceImpl implements AccountService {
         result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SUCCESS);
         result.put(RESPONSE_KEY_LOGIN_TIME, System.currentTimeMillis());
 
-        Account account = basicRepository.getRoleCreateTime(params.getGameId(), params.getPlatformId(), params.getZoneId(), params.getRoleId(), params.getRoleName());
+        Account account = basicRepository.getRoleCreateTime(params.getGameId(), params.getChannelId(), params.getZoneId(), params.getRoleId(), params.getRoleName());
         if (account != null && account.getCreateTime() != null) {
             result.put(RESPONSE_KEY_CREATE_TIME, account.getCreateTime().getTime());
         } else {
@@ -147,7 +147,7 @@ public class AccountServiceImpl implements AccountService {
      * @return 0 ：余额不足 2：扣款失败  1：成功
      */
     public boolean checkPlatformBalance(int money, PlatformGame platformGame) {
-        Platform platform = basicRepository.getPlatform(platformGame.getPlatformId());
+        Platform platform = basicRepository.getPlatform(platformGame.getChannelId());
         money = money * platformGame.getDiscount() / 100;
         if (money > platform.getBalance()) {
             return false;
@@ -316,7 +316,7 @@ public class AccountServiceImpl implements AccountService {
             return result;
         }
         //联运渠道是否正常
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(params.getPlatformId(), params.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(params.getChannelId(), params.getGameId());
         if (platformGame.getStatus().equals(CHANNEL_STATUS_NORMAL)) {
             result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_CHANEL_SELF_PAY);
             return result;
@@ -328,7 +328,7 @@ public class AccountServiceImpl implements AccountService {
             return result;
         }
 
-        Platform platform = basicRepository.getPlatform(params.getPlatformId());
+        Platform platform = basicRepository.getPlatform(params.getChannelId());
         String notifyUrl = params.getNotifyUrl();//支付回调地址
         if (StringUtil.isNullOrEmpty(notifyUrl)) {
             notifyUrl = platform.getPlatformCallbackUrl();
@@ -348,9 +348,9 @@ public class AccountServiceImpl implements AccountService {
         result.put(Constants.RESPONSE_KEY_NOTIFY_URL, notifyUrl);
 
         //如果是07073、乐嗨嗨平台则返回加密后的订单号
-        if (params.getPlatformId() == Constants.LESHAN_PLATFORM_ID || params.getPlatformId() == Constants.LEHIHI_PLATFORM_ID) {
+        if (params.getChannelId() == Constants.LESHAN_PLATFORM_ID || params.getChannelId() == Constants.LEHIHI_PLATFORM_ID) {
             result.put(Constants.RESPONSE_KEY_ORDER_ID, DES.encryptAndBase64(orderId, Constants.BASE64_ORDERID_KEY));
-        } else if (params.getPlatformId() == ChannelConstants.CHANNEL_ID_UC) {
+        } else if (params.getChannelId() == ChannelConstants.CHANNEL_ID_UC) {
             //UC需要返回参数签名
             UCChannel channel = new UCChannel();
             channel.init(platform, platformGame);
@@ -371,7 +371,7 @@ public class AccountServiceImpl implements AccountService {
             return result;
         }
         String token = UUID.randomUUID().toString();
-        String key = params.getPlatformId() + "_" + params.getGameId() + "_" + token;
+        String key = params.getChannelId() + "_" + params.getGameId() + "_" + token;
         redisUtil.setKeyValue(key, params.getExtend(), 120);
         result.put("token", token);
         return result;
@@ -387,7 +387,7 @@ public class AccountServiceImpl implements AccountService {
             result.put("msg", "param errro");
             return result;
         }
-        String key = params.getPlatformId() + "_" + params.getGameId() + "_" + params.getSessionId();
+        String key = params.getChannelId() + "_" + params.getGameId() + "_" + params.getSessionId();
         logger.info("key:{}", key);
         String userid = redisUtil.getValue(key);
         logger.info("userid:{}", userid);
@@ -397,7 +397,7 @@ public class AccountServiceImpl implements AccountService {
             return result;
         }
         result.put("userid", userid);
-        if (params.getPlatformId() == 38 && params.getGameId().longValue() == Long.parseLong("180830054479")) {
+        if (params.getChannelId() == 38 && params.getGameId().longValue() == Long.parseLong("180830054479")) {
             result.put("userid", getUUWdqkUserid(userid));
         }
         return result;
@@ -406,7 +406,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Map<String, Object> queryOrder(QueryOrderRequest request) {
         Map<String, Object> result = new HashMap<>();
-        Order order = basicRepository.getOrderStatus(request.getOrderId(), request.getGameId(), request.getPlatformId());
+        Order order = basicRepository.getOrderStatus(request.getOrderId(), request.getGameId(), request.getChannelId());
         result.put(RESPONSE_KEY_ORDER_STATUS, order.getStatus());
         result.put(RESPONSE_KEY_ORDER_NOTIFY_STATUS, order.getNotifyStatus());
         result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SUCCESS);
@@ -422,7 +422,7 @@ public class AccountServiceImpl implements AccountService {
             return result;
         }
         String token = UUID.randomUUID().toString();
-        String key = params.getPlatformId() + "_" + params.getGameId() + "_" + token;
+        String key = params.getChannelId() + "_" + params.getGameId() + "_" + token;
         String uid = redisUtil.getValue(key);
         result.put("uid", uid);
         if (uid != null) {
@@ -443,9 +443,9 @@ public class AccountServiceImpl implements AccountService {
             return false;
         }
 
-        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(params.getPlatformId(), params.getGameId());
+        PlatformGame platformGame = basicRepository.getByPlatformAndGameId(params.getChannelId(), params.getGameId());
         if (null == platformGame) {
-            logger.debug("{}", "平台和游戏没有关联 appid" + params.getGameId() + " platfromId" + params.getPlatformId());
+            logger.debug("{}", "平台和游戏没有关联 appid" + params.getGameId() + " platfromId" + params.getChannelId());
             return false;
         }
         logger.info("params success");

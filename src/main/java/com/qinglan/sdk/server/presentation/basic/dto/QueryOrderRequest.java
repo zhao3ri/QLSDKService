@@ -13,6 +13,6 @@ public class QueryOrderRequest extends BaseDto {
 
     @Override
     public boolean isEmpty() {
-        return getPlatformId() == 0 || getGameId() == 0 || orderId == null || orderId.isEmpty();
+        return getChannelId() == 0 || getGameId() == 0 || orderId == null || orderId.isEmpty();
     }
 }

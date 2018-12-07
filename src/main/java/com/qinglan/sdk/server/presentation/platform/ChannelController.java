@@ -1,7 +1,7 @@
 package com.qinglan.sdk.server.presentation.platform;
 
-import com.qinglan.sdk.server.application.platform.PlatformService;
-import com.qinglan.sdk.server.application.platform.PlatformServicePartTwo;
+import com.qinglan.sdk.server.application.platform.ChannelService;
+import com.qinglan.sdk.server.application.platform.ChannelServicePartTwo;
 import com.qinglan.sdk.server.domain.platform.YaoyueCallback;
 import com.qinglan.sdk.server.domain.platform.YouleCallback;
 import com.qinglan.sdk.server.presentation.channel.entity.UCVerifyRequest;
@@ -17,14 +17,14 @@ import javax.servlet.http.HttpServletRequest;
 
 @Controller
 @RequestMapping("/platform")
-public class PlatformController {
-	private static final Logger logger = LoggerFactory.getLogger(PlatformController.class);
+public class ChannelController {
+	private static final Logger logger = LoggerFactory.getLogger(ChannelController.class);
 
 	@Resource
-	private PlatformService platformService;
+	private ChannelService channelService;
 
 	@Resource
-	private PlatformServicePartTwo platformServicePartTwo;
+	private ChannelServicePartTwo channelServicePartTwo;
 	/**
 	 * yaoyue 支付结果回调
 	 *
@@ -34,7 +34,7 @@ public class PlatformController {
 	@RequestMapping(value = "/yaoyue/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String zhidian(YaoyueCallback zhidian) {
-		return platformService.verifyYaoyue(zhidian);
+		return channelService.verifyYaoyue(zhidian);
 	}
 
 	/**
@@ -47,7 +47,7 @@ public class PlatformController {
 	@ResponseBody
 	public String ucGameSession(UCVerifyRequest ucGameSession) {
 		logger.debug(ucGameSession.toString());
-		return platformService.verifyUcSession(ucGameSession);
+		return channelService.verifyUcSession(ucGameSession);
 	}
 
 	/**
@@ -59,7 +59,7 @@ public class PlatformController {
 	@RequestMapping("/ucgame/pay/return")
 	@ResponseBody
 	public String ucPayResult(HttpServletRequest request) {
-		return platformService.ucPayReturn(request);
+		return channelService.ucPayReturn(request);
 	}
 
 	/**
@@ -70,7 +70,7 @@ public class PlatformController {
 	@ResponseBody
 	public String xiaomiSession(XiaomiSession xiaomiSession) {
 		logger.debug(xiaomiSession.toString());
-		return platformService.verifyXiaomiSession(xiaomiSession);
+		return channelService.verifyXiaomiSession(xiaomiSession);
 	}
 
 	/**
@@ -82,7 +82,7 @@ public class PlatformController {
 	@RequestMapping("/xiaomi/pay")
 	@ResponseBody
 	public String xiaomi(HttpServletRequest request) {
-		return platformService.verifyXiaomi(request);
+		return channelService.verifyXiaomi(request);
 	}
 
 
@@ -96,7 +96,7 @@ public class PlatformController {
 	@ResponseBody
 	public String qihooSession(QihooSession qihooSession) {
 		logger.debug(qihooSession.toString());
-		return platformService.verifyQihooSession(qihooSession);
+		return channelService.verifyQihooSession(qihooSession);
 	}
 
 	/**
@@ -108,7 +108,7 @@ public class PlatformController {
 	@RequestMapping("/qihoo/pay")
 	@ResponseBody
 	public String qihoo(HttpServletRequest request) {
-		return platformService.verifyQihoo(request);
+		return channelService.verifyQihoo(request);
 	}
 
 
@@ -122,7 +122,7 @@ public class PlatformController {
 	@ResponseBody
 	public String baiduSession(BaiduSession baiduSession) {
 		logger.debug(baiduSession.toString());
-		return platformService.verifyBaiduSession(baiduSession);
+		return channelService.verifyBaiduSession(baiduSession);
 	}
 
 	/**
@@ -134,7 +134,7 @@ public class PlatformController {
 	@RequestMapping(value = "/baidu/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String baidu(HttpServletRequest request) {
-		return platformService.verifyBaidu(request);
+		return channelService.verifyBaidu(request);
 	}
 
 	/**
@@ -147,7 +147,7 @@ public class PlatformController {
 	@ResponseBody
 	public String anzhiSession(AnzhiSession anzhiSession) {
 		logger.debug(anzhiSession.toString());
-		return platformService.verifyAnzhiSession(anzhiSession);
+		return channelService.verifyAnzhiSession(anzhiSession);
 	}
 
 	/**
@@ -159,7 +159,7 @@ public class PlatformController {
 	@RequestMapping(value = "/anzhi/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String anzhi(HttpServletRequest request) {
-		return platformService.verifyAnzhi(request);
+		return channelService.verifyAnzhi(request);
 	}
 
 	/**
@@ -172,7 +172,7 @@ public class PlatformController {
 	@ResponseBody
 	public String verifyWdjSession(WdjSession session) {
 		logger.debug(session.toString());
-		return platformService.verifyWdjSession(session);
+		return channelService.verifyWdjSession(session);
 	}
 
 	/**
@@ -184,7 +184,7 @@ public class PlatformController {
 	@RequestMapping(value = "/wdj/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackWdj(HttpServletRequest request) {
-		return platformService.verifyWdj(request);
+		return channelService.verifyWdj(request);
 	}
 
 	/**
@@ -196,7 +196,7 @@ public class PlatformController {
 	@RequestMapping(value = "/downjoy/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackDownjoy(HttpServletRequest request) {
-		return platformService.verifyDownjoy(request);
+		return channelService.verifyDownjoy(request);
 	}
 
 	/**
@@ -209,7 +209,7 @@ public class PlatformController {
 	@ResponseBody
 	public String sougouSession(SougouSession sougouSession) {
 		logger.debug(sougouSession.toString());
-		return platformService.verifySougouSession(sougouSession);
+		return channelService.verifySougouSession(sougouSession);
 	}
 
 	/**
@@ -221,7 +221,7 @@ public class PlatformController {
 	@RequestMapping(value = "/sougou/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String sougou(HttpServletRequest request) {
-		return platformService.verifySougou(request);
+		return channelService.verifySougou(request);
 	}
 
 	/**
@@ -234,7 +234,7 @@ public class PlatformController {
 	@ResponseBody
 	public String verifyKupaiSession(KupaiSession session) {
 		logger.debug(session.toString());
-		return platformService.verifyKupaiSession(session);
+		return channelService.verifyKupaiSession(session);
 	}
 
 	/**
@@ -246,7 +246,7 @@ public class PlatformController {
 	@RequestMapping(value = "/kupai/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackKupai(HttpServletRequest request) {
-		return platformService.verifyKupai(request);
+		return channelService.verifyKupai(request);
 	}
 
 	/**
@@ -259,7 +259,7 @@ public class PlatformController {
 	@ResponseBody
 	public String verifyOppoSession(OppoSession session) {
 		logger.debug(session.toString());
-		return platformService.verifyOppoSession(session);
+		return channelService.verifyOppoSession(session);
 	}
 
 	/**
@@ -272,7 +272,7 @@ public class PlatformController {
 	@ResponseBody
 	public String rechargeCallBackOppo(HttpServletRequest request) {
 		logger.debug(request.getParameterMap().toString());
-		return platformService.verifyOppo(request);
+		return channelService.verifyOppo(request);
 	}
 
 	/**
@@ -285,7 +285,7 @@ public class PlatformController {
 	@ResponseBody
 	public String verifyGioneeSession(GioneeSession session) {
 		logger.debug(session.toString());
-		return platformService.verifyGioneeSession(session);
+		return channelService.verifyGioneeSession(session);
 	}
 
 	/**
@@ -296,7 +296,7 @@ public class PlatformController {
 	@RequestMapping(value = "/gionee/order/create", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String gioneeOrderCreate(HttpServletRequest request) {
-		return platformService.gioneeOrderCreate(request);
+		return channelService.gioneeOrderCreate(request);
 	}
 
 	/**
@@ -308,7 +308,7 @@ public class PlatformController {
 	@RequestMapping(value = "/gionee/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackGionee(HttpServletRequest request) {
-		return platformService.verifyGionee(request);
+		return channelService.verifyGionee(request);
 	}
 
 
@@ -322,7 +322,7 @@ public class PlatformController {
 	@ResponseBody
 	public String verify91Session(Varify91Session session) {
 		logger.debug(session.toString());
-		return platformService.verify91Session(session);
+		return channelService.verify91Session(session);
 	}
 
 	/**
@@ -335,7 +335,7 @@ public class PlatformController {
 	@ResponseBody
 	public String rechargeCallBack91(HttpServletRequest request) {
 		logger.debug(request.getParameterMap().toString());
-		return platformService.verify91(request);
+		return channelService.verify91(request);
 	}
 
 	/**
@@ -348,7 +348,7 @@ public class PlatformController {
 	@ResponseBody
 	public String verifyVivoSession(VivoSession session) {
 		logger.debug(session.toString());
-		return platformService.verifyVivoSession(session);
+		return channelService.verifyVivoSession(session);
 	}
 
 	/**
@@ -360,7 +360,7 @@ public class PlatformController {
 	@RequestMapping(value = "/vivo/pay/sign", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String vivoPaySign(VivoPaySign vivoPaySign) {
-		return platformService.vivoPaySign(vivoPaySign);
+		return channelService.vivoPaySign(vivoPaySign);
 	}
 
 	/**
@@ -372,7 +372,7 @@ public class PlatformController {
 	@RequestMapping(value = "/vivo/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackVivo(HttpServletRequest request) {
-		return platformService.verifyVivo(request);
+		return channelService.verifyVivo(request);
 	}
 
 	/**
@@ -385,7 +385,7 @@ public class PlatformController {
 	@ResponseBody
 	public String verifyAppchinaSession(AppchinaSession session) {
 		logger.debug(session.toString());
-		return platformService.verifyAppchinaSession(session);
+		return channelService.verifyAppchinaSession(session);
 	}
 
 	/**
@@ -397,7 +397,7 @@ public class PlatformController {
 	@RequestMapping(value = "/appchina/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackAppchina(HttpServletRequest request) {
-		return platformService.verifyAppchina(request);
+		return channelService.verifyAppchina(request);
 	}
 
 	/**
@@ -410,7 +410,7 @@ public class PlatformController {
 	@ResponseBody
 	public String verifyOuwanSession(OuwanSession session) {
 		logger.debug(session.toString());
-		return platformService.verifyOuwanSession(session);
+		return channelService.verifyOuwanSession(session);
 	}
 
 	/**
@@ -422,7 +422,7 @@ public class PlatformController {
 	@RequestMapping(value = "/ouwan/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackOuwan(HttpServletRequest request) {
-		return platformService.verifyOuwan(request);
+		return channelService.verifyOuwan(request);
 	}
 
 	/**
@@ -434,7 +434,7 @@ public class PlatformController {
 	@RequestMapping(value = "/youku/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyYoukuSession(YoukuSession session) {
-		return platformService.verifyYoukuSession(session);
+		return channelService.verifyYoukuSession(session);
 	}
 
 	/**
@@ -446,7 +446,7 @@ public class PlatformController {
 	@RequestMapping(value = "/youku", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackYouku(HttpServletRequest request) {
-		return platformService.verifyYouku(request);
+		return channelService.verifyYouku(request);
 	}
 
 	/**
@@ -458,7 +458,7 @@ public class PlatformController {
 	@RequestMapping(value = "/jifeng/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyJifengSession(JifengSession session) {
-		return platformService.verifyJifengSession(session);
+		return channelService.verifyJifengSession(session);
 	}
 
 	/**
@@ -470,7 +470,7 @@ public class PlatformController {
 	@RequestMapping(value = "/jifeng/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackJifeng(HttpServletRequest request) {
-		return platformService.verifyJifeng(request);
+		return channelService.verifyJifeng(request);
 	}
 
 	/**
@@ -481,7 +481,7 @@ public class PlatformController {
 	@RequestMapping(value = "/htc/pay/sign", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String HTCPaySign(HttpServletRequest request) {
-		return platformService.signHTCPayContent(request);
+		return channelService.signHTCPayContent(request);
 	}
 
 	/**
@@ -492,7 +492,7 @@ public class PlatformController {
 	@RequestMapping(value = "/htc/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyHtcSession(HTCSession session) {
-		return platformService.verifyHTCSession(session);
+		return channelService.verifyHTCSession(session);
 	}
 
 	/**
@@ -504,7 +504,7 @@ public class PlatformController {
 	@RequestMapping(value = "/htc/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackHTC(HttpServletRequest request) {
-		return platformService.verifyHTC(request);
+		return channelService.verifyHTC(request);
 	}
 
 	/**
@@ -515,7 +515,7 @@ public class PlatformController {
 	@RequestMapping(value = "/meizu/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyMeizuSession(MeizuSession session) {
-		return platformService.verifyMeizuSession(session);
+		return channelService.verifyMeizuSession(session);
 	}
 
 	/**
@@ -526,7 +526,7 @@ public class PlatformController {
 	@RequestMapping(value = "/meizu/pay/sign", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String meizuPaySign(HttpServletRequest request) {
-		return platformService.meizuPaySign(request);
+		return channelService.meizuPaySign(request);
 	}
 
 	/**
@@ -538,7 +538,7 @@ public class PlatformController {
 	@RequestMapping(value = "/meizu/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackMeizu(HttpServletRequest request) {
-		return platformService.verifyMeizu(request);
+		return channelService.verifyMeizu(request);
 	}
 
 	/**
@@ -550,7 +550,7 @@ public class PlatformController {
 	@RequestMapping(value = "/nduo/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackNduo(HttpServletRequest request) {
-		return platformService.verifyNduo(request);
+		return channelService.verifyNduo(request);
 	}
 
 	/**
@@ -561,7 +561,7 @@ public class PlatformController {
 	@RequestMapping(value = "/yl/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyYoulongSession(YoulongSession session) {
-		return platformService.verifyYoulongSession(session);
+		return channelService.verifyYoulongSession(session);
 	}
 
 	/**
@@ -573,7 +573,7 @@ public class PlatformController {
 	@RequestMapping(value = "/yl/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackYoulong(HttpServletRequest request) {
-		return platformService.verifyYoulong(request);
+		return channelService.verifyYoulong(request);
 	}
 
 	/**
@@ -584,7 +584,7 @@ public class PlatformController {
 	@RequestMapping(value = "/lenovo/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyLenovoSession(LenovoSession session) {
-		return platformService.verifyLenovoSession(session);
+		return channelService.verifyLenovoSession(session);
 	}
 
 	/**
@@ -596,7 +596,7 @@ public class PlatformController {
 	@RequestMapping(value = "/lenovo/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackLenovo(HttpServletRequest request) {
-		return platformService.verifyLenovo(request);
+		return channelService.verifyLenovo(request);
 	}
 
 	/**
@@ -608,7 +608,7 @@ public class PlatformController {
 	@RequestMapping(value = "/kudong/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackKudong(HttpServletRequest request) {
-		return platformService.verifyKudong(request);
+		return channelService.verifyKudong(request);
 	}
 
 	/**
@@ -620,7 +620,7 @@ public class PlatformController {
 	@RequestMapping(value = "/letv/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackLetv(HttpServletRequest request) {
-		return platformService.verifyLetv(request);
+		return channelService.verifyLetv(request);
 	}
 
 	/**
@@ -632,7 +632,7 @@ public class PlatformController {
 	@RequestMapping(value = "/19meng/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBack19meng(HttpServletRequest request) {
-		return platformService.verify19meng(request);
+		return channelService.verify19meng(request);
 	}
 
 	/**
@@ -644,7 +644,7 @@ public class PlatformController {
 	@RequestMapping(value = "/kuwo/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackKuwo(HttpServletRequest request) {
-		return platformService.verifyKuwo(request);
+		return channelService.verifyKuwo(request);
 	}
 
 	/**
@@ -656,7 +656,7 @@ public class PlatformController {
 	@RequestMapping(value = "/mumayi/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackMumayi(HttpServletRequest request) {
-		return platformService.verifyMumayi(request);
+		return channelService.verifyMumayi(request);
 	}
 
 	/**
@@ -667,7 +667,7 @@ public class PlatformController {
 	@RequestMapping(value = "/play/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyPlaySession(PlaySession session) {
-		return platformService.verifyPlaySession(session);
+		return channelService.verifyPlaySession(session);
 	}
 
 	/**
@@ -679,7 +679,7 @@ public class PlatformController {
 	@RequestMapping(value = "/playSms/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargePalySms(HttpServletRequest request) {
-		return platformService.verifyPlaySms(request);
+		return channelService.verifyPlaySms(request);
 	}
 
 	/**
@@ -691,7 +691,7 @@ public class PlatformController {
 	@RequestMapping(value = "/play/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackPaly(HttpServletRequest request) {
-		return platformService.verifyPlay(request);
+		return channelService.verifyPlay(request);
 	}
 
 	/**
@@ -702,7 +702,7 @@ public class PlatformController {
 	@RequestMapping(value = "/jiudu/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyJiuduSession(JiuduSession session) {
-		return platformService.verifyJiuduSession(session);
+		return channelService.verifyJiuduSession(session);
 	}
 
 	/**
@@ -714,7 +714,7 @@ public class PlatformController {
 	@RequestMapping(value = "/jiudu/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackJiudu(HttpServletRequest request) {
-		return platformService.verifyJiudu(request);
+		return channelService.verifyJiudu(request);
 	}
 
 	/**
@@ -725,7 +725,7 @@ public class PlatformController {
 	@RequestMapping(value = "/paojiao/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyPaojiaoSession(PaojiaoSession session) {
-		return platformService.verifyPaojiaoSession(session);
+		return channelService.verifyPaojiaoSession(session);
 	}
 
 	/**
@@ -737,7 +737,7 @@ public class PlatformController {
 	@RequestMapping(value = "/paojiao/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackPaojiao(HttpServletRequest request) {
-		return platformService.verifyPaojiao(request);
+		return channelService.verifyPaojiao(request);
 	}
 
 	/**
@@ -749,7 +749,7 @@ public class PlatformController {
 	@RequestMapping(value = "/qixiazi/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackQixiazi(HttpServletRequest request) {
-		return platformService.verifyQixiazi(request);
+		return channelService.verifyQixiazi(request);
 	}
 
 	/**
@@ -760,7 +760,7 @@ public class PlatformController {
 	@RequestMapping(value = "/kuaiyong/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyKuaiyongSession(KuaiyongSession session) {
-		return platformService.verifyKuaiyongSession(session);
+		return channelService.verifyKuaiyongSession(session);
 	}
 
 	/**
@@ -772,7 +772,7 @@ public class PlatformController {
 	@RequestMapping(value = "/kuaiyong/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackKuaiyong(HttpServletRequest request) {
-		return platformService.verifyKuaiyong(request);
+		return channelService.verifyKuaiyong(request);
 	}
 
 	/**
@@ -783,7 +783,7 @@ public class PlatformController {
 	@RequestMapping(value = "/huawei/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyHuaweiSession(HuaweiSession session) {
-		return platformService.verifyHuaweiSession(session);
+		return channelService.verifyHuaweiSession(session);
 	}
 
 	/**
@@ -796,7 +796,7 @@ public class PlatformController {
 	@ResponseBody
 	public String hauweiPaySign(HttpServletRequest request) {
 
-		return platformService.huaweiPaySign(request);
+		return channelService.huaweiPaySign(request);
 	}
 
 	/**
@@ -808,7 +808,7 @@ public class PlatformController {
 	@RequestMapping(value = "/huawei/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackHuawei(HttpServletRequest request) {
-		return platformService.verifyHuawei(request);
+		return channelService.verifyHuawei(request);
 	}
 
 	/**
@@ -819,7 +819,7 @@ public class PlatformController {
 	@RequestMapping(value = "/4399/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyFtnnSession(FtnnSession session) {
-		return platformService.verifyFtnnSession(session);
+		return channelService.verifyFtnnSession(session);
 	}
 
 	/**
@@ -831,7 +831,7 @@ public class PlatformController {
 	@RequestMapping(value = "/4399/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackFtnn(HttpServletRequest request) {
-		return platformService.verifyFtnn(request);
+		return channelService.verifyFtnn(request);
 	}
 
 	/**
@@ -842,7 +842,7 @@ public class PlatformController {
 	@RequestMapping(value = "/37/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyTsnnSession(TsSession session) {
-		return platformService.verifyTsSession(session);
+		return channelService.verifyTsSession(session);
 	}
 
 	/**
@@ -854,7 +854,7 @@ public class PlatformController {
 	@RequestMapping(value = "/37/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackTs(HttpServletRequest request) {
-		return platformService.verifyTs(request);
+		return channelService.verifyTs(request);
 	}
 
 	/**
@@ -865,7 +865,7 @@ public class PlatformController {
 	@RequestMapping(value = "/muzhi/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyMuzhiSession(MuzhiSession session) {
-		return platformService.verifyMuzhiSession(session);
+		return channelService.verifyMuzhiSession(session);
 	}
 
 	/**
@@ -877,7 +877,7 @@ public class PlatformController {
 	@RequestMapping(value = "/muzhi/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackMuzhi(HttpServletRequest request) {
-		return platformService.verifyMuzhi(request);
+		return channelService.verifyMuzhi(request);
 	}
 
 	/**
@@ -888,7 +888,7 @@ public class PlatformController {
 	@RequestMapping(value = "/muzhiwan/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyMuzhiwanSession(MuzhiwanSession session) {
-		return platformService.verifyMuzhiwanSession(session);
+		return channelService.verifyMuzhiwanSession(session);
 	}
 
 	/**
@@ -900,7 +900,7 @@ public class PlatformController {
 	@RequestMapping(value = "/muzhiwan", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackMuzhiwan(HttpServletRequest request) {
-		return platformService.verifyMuzhiwan(request);
+		return channelService.verifyMuzhiwan(request);
 	}
 
 	/**
@@ -911,7 +911,7 @@ public class PlatformController {
 	@RequestMapping(value = "/kaopu/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyKaopuSession(KaopuSession session) {
-		return platformService.verifyKaopuSession(session);
+		return channelService.verifyKaopuSession(session);
 	}
 
 	/**
@@ -923,7 +923,7 @@ public class PlatformController {
 	@RequestMapping(value = "/kaopu/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackKaopu(HttpServletRequest request) {
-		return platformService.verifyKaopu(request);
+		return channelService.verifyKaopu(request);
 	}
 
 	/**
@@ -934,7 +934,7 @@ public class PlatformController {
 	@RequestMapping(value = "/gametanzi/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyGametanziSession(GametanziSession session) {
-		return platformService.verifyGametanziSession(session);
+		return channelService.verifyGametanziSession(session);
 	}
 
 	/**
@@ -945,7 +945,7 @@ public class PlatformController {
 	@RequestMapping(value = "/gametanzi/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackGametanzi(HttpServletRequest request) {
-		return platformService.verifyGametanzi(request);
+		return channelService.verifyGametanzi(request);
 	}
 
 	/**
@@ -956,7 +956,7 @@ public class PlatformController {
 	@RequestMapping(value = "/weidong/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyWeidongSession(WeidongSession session) {
-		return platformService.verifyWeidongSession(session);
+		return channelService.verifyWeidongSession(session);
 	}
 
 	/**
@@ -968,7 +968,7 @@ public class PlatformController {
 	@RequestMapping(value = "/weidong/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackWeidong(HttpServletRequest request) {
-		return platformService.verifyWeidong(request);
+		return channelService.verifyWeidong(request);
 	}
 
 	/**
@@ -979,7 +979,7 @@ public class PlatformController {
 	@RequestMapping(value = "/edg/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyEdgSession(EdgSession session) {
-		return platformService.verifyEdgSession(session);
+		return channelService.verifyEdgSession(session);
 	}
 
 	/**
@@ -991,7 +991,7 @@ public class PlatformController {
 	@RequestMapping(value = "/edg/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackEdg(HttpServletRequest request) {
-		return platformService.verifyEdg(request);
+		return channelService.verifyEdg(request);
 	}
 
 	/**
@@ -1004,7 +1004,7 @@ public class PlatformController {
 	@ResponseBody
 	public String rechargeCallBackTencent(HttpServletRequest request) {
 
-		return platformService.verifyTencent(request);
+		return channelService.verifyTencent(request);
 	}
 
 	/**
@@ -1017,7 +1017,7 @@ public class PlatformController {
 	@ResponseBody
 	public String rechargeCallBackTencent2(HttpServletRequest request) {
 
-		return platformService.verifyTencent2(request);
+		return channelService.verifyTencent2(request);
 	}
 
 	/**
@@ -1028,7 +1028,7 @@ public class PlatformController {
 	@RequestMapping(value = "/uucun/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyUucunSession(UucunSession session) {
-		return platformService.verifyUucunSession(session);
+		return channelService.verifyUucunSession(session);
 	}
 
 	/**
@@ -1040,7 +1040,7 @@ public class PlatformController {
 	@RequestMapping(value = "/uucun/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackUucun(HttpServletRequest request) {
-		return platformService.verifyUucun(request);
+		return channelService.verifyUucun(request);
 	}
 
 	/**
@@ -1052,7 +1052,7 @@ public class PlatformController {
 	@RequestMapping(value = "/kaiuc/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackKaiuc(HttpServletRequest request) {
-		return platformService.verifyKaiuc(request);
+		return channelService.verifyKaiuc(request);
 	}
 
 	/**
@@ -1063,7 +1063,7 @@ public class PlatformController {
 	@RequestMapping(value = "/liebao/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyLiebaoSession(LiebaoSession session) {
-		return platformService.verifyLiebaoSession(session);
+		return channelService.verifyLiebaoSession(session);
 	}
 
 	/**
@@ -1075,7 +1075,7 @@ public class PlatformController {
 	@RequestMapping(value = "/liebao/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackLiebao(HttpServletRequest request) {
-		return platformService.verifyLiebao(request);
+		return channelService.verifyLiebao(request);
 	}
 
 	/**
@@ -1086,7 +1086,7 @@ public class PlatformController {
 	@RequestMapping(value = "/07073/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyLeshanSession(LeshanSession session) {
-		return platformService.verifyLeshanSession(session);
+		return channelService.verifyLeshanSession(session);
 	}
 
 	/**
@@ -1098,7 +1098,7 @@ public class PlatformController {
 	@RequestMapping(value = "/07073/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackLeshan(HttpServletRequest request) {
-		return platformService.verifyLeshan(request);
+		return channelService.verifyLeshan(request);
 	}
 
 	/**
@@ -1110,7 +1110,7 @@ public class PlatformController {
 	@RequestMapping(value = "/atet/paypoint", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String atetPaypoing(HttpServletRequest request) {
-		return platformService.atetPaypoing(request);
+		return channelService.atetPaypoing(request);
 	}
 
 	/**
@@ -1122,7 +1122,7 @@ public class PlatformController {
 	@RequestMapping(value = "/atet/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackAtet(HttpServletRequest request) {
-		return platformService.verifyAtet(request);
+		return channelService.verifyAtet(request);
 	}
 
 	/**
@@ -1134,7 +1134,7 @@ public class PlatformController {
 	@RequestMapping(value = "/2yl/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackShenqi(HttpServletRequest request) {
-		return platformService.verifyShenqi(request);
+		return channelService.verifyShenqi(request);
 	}
 
 	/**
@@ -1146,7 +1146,7 @@ public class PlatformController {
 	@ResponseBody
 	public String verifyHaimaSession(HaimaSession session) {
 		logger.debug(session.toString());
-		return platformService.verifyHaimaSession(session);
+		return channelService.verifyHaimaSession(session);
 	}
 
 	/**
@@ -1158,7 +1158,7 @@ public class PlatformController {
 	@RequestMapping(value = "/haima/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackHaima(HttpServletRequest request) {
-		return platformService.verifyHaima(request);
+		return channelService.verifyHaima(request);
 	}
 
 	/**
@@ -1170,7 +1170,7 @@ public class PlatformController {
 	@RequestMapping(value = "/pengyouwan/paypoint", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String pengyouwanPaypoing(HttpServletRequest request) {
-		return platformService.pengyouwanPaypoing(request);
+		return channelService.pengyouwanPaypoing(request);
 	}
 
 	/**
@@ -1182,7 +1182,7 @@ public class PlatformController {
 	@RequestMapping(value = "/pengyouwan", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackPengyouwan(HttpServletRequest request) {
-		return platformService.verifyPengyouwan(request);
+		return channelService.verifyPengyouwan(request);
 	}
 
 	/**
@@ -1195,7 +1195,7 @@ public class PlatformController {
 	@ResponseBody
 	public String verify3899Session(TennSession session) {
 		logger.debug(session.toString());
-		return platformService.verify3899Session(session);
+		return channelService.verify3899Session(session);
 	}
 
 	/**
@@ -1207,7 +1207,7 @@ public class PlatformController {
 	@RequestMapping(value = "/3899/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBack3899(HttpServletRequest request) {
-		return platformService.verify3899(request);
+		return channelService.verify3899(request);
 	}
 
 	/**
@@ -1220,7 +1220,7 @@ public class PlatformController {
 	@ResponseBody
 	public String verifyLiulianSession(LiulianSession session) {
 		logger.debug(session.toString());
-		return platformService.verifyLiulianSession(session);
+		return channelService.verifyLiulianSession(session);
 	}
 
 	/**
@@ -1232,7 +1232,7 @@ public class PlatformController {
 	@RequestMapping(value = "/liulian/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackLiulian(HttpServletRequest request) {
-		return platformService.verifyLiulian(request);
+		return channelService.verifyLiulian(request);
 	}
 
 	/**
@@ -1244,7 +1244,7 @@ public class PlatformController {
 	@RequestMapping(value = "/xunlei/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackXunlei(HttpServletRequest request) {
-		return platformService.verifyXunlei(request);
+		return channelService.verifyXunlei(request);
 	}
 
 	/**
@@ -1256,7 +1256,7 @@ public class PlatformController {
 	@ResponseBody
 	public String verifyGuopanSession(GuopanSession session) {
 		logger.debug(session.toString());
-		return platformService.verifyGuopanSession(session);
+		return channelService.verifyGuopanSession(session);
 	}
 
 	/**
@@ -1268,7 +1268,7 @@ public class PlatformController {
 	@RequestMapping(value = "/guopan/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackGuopan(HttpServletRequest request) {
-		return platformService.verifyGuopan(request);
+		return channelService.verifyGuopan(request);
 	}
 
 	/**
@@ -1280,7 +1280,7 @@ public class PlatformController {
 	@ResponseBody
 	public String verifyQxfySession(QxfySession session) {
 		logger.debug(session.toString());
-		return platformService.verifyQxfySession(session);
+		return channelService.verifyQxfySession(session);
 	}
 
 	/**
@@ -1292,7 +1292,7 @@ public class PlatformController {
 	@RequestMapping(value = "/qxfy/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackQxfy(HttpServletRequest request) {
-		return platformService.verifyQxfy(request);
+		return channelService.verifyQxfy(request);
 	}
 
 	/**
@@ -1304,7 +1304,7 @@ public class PlatformController {
 	@RequestMapping(value = "/19game/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBack19game(HttpServletRequest request) {
-		return platformService.verify19game(request);
+		return channelService.verify19game(request);
 	}
 
 	/**
@@ -1316,7 +1316,7 @@ public class PlatformController {
 	@ResponseBody
 	public String verifyLongxiangSession(LongxiangSession session) {
 		logger.debug(session.toString());
-		return platformService.verifyLongxiangSession(session);
+		return channelService.verifyLongxiangSession(session);
 	}
 
 	/**
@@ -1328,7 +1328,7 @@ public class PlatformController {
 	@RequestMapping(value = "/longxiang/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackLongxiang(HttpServletRequest request) {
-		return platformService.verifyLongxiang(request);
+		return channelService.verifyLongxiang(request);
 	}
 
 	/**
@@ -1340,7 +1340,7 @@ public class PlatformController {
 	@ResponseBody
 	public String verifyLehihiSession(LehihiSession session) {
 		logger.debug(session.toString());
-		return platformService.verifyLehihiSession(session);
+		return channelService.verifyLehihiSession(session);
 	}
 
 	/**
@@ -1352,7 +1352,7 @@ public class PlatformController {
 	@RequestMapping(value = "/lehihi/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackLehihi(HttpServletRequest request) {
-		return platformService.verifyLehihi(request);
+		return channelService.verifyLehihi(request);
 	}
 
 
@@ -1365,7 +1365,7 @@ public class PlatformController {
 	@RequestMapping(value = "/koudai", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackKoudai(HttpServletRequest request) {
-		return platformService.verifyKoudai(request);
+		return channelService.verifyKoudai(request);
 	}
 
 	/**
@@ -1377,7 +1377,7 @@ public class PlatformController {
 	@ResponseBody
 	public String verifyYouleSession(YouleSession session) {
 		logger.debug(session.toString());
-		return platformService.verifyYouleSession(session);
+		return channelService.verifyYouleSession(session);
 	}
 
 	/**
@@ -1388,7 +1388,7 @@ public class PlatformController {
 	@RequestMapping(value = "/youle/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackYoule(YouleCallback callback) {
-		return platformService.verifyYoule(callback);
+		return channelService.verifyYoule(callback);
 	}
 
 	/**
@@ -1400,7 +1400,7 @@ public class PlatformController {
 	@ResponseBody
 	public String verifyQiutuSession(QiutuSession session) {
 		logger.debug(session.toString());
-		return platformService.verifyQiutuSession(session);
+		return channelService.verifyQiutuSession(session);
 	}
 
 	/**
@@ -1412,7 +1412,7 @@ public class PlatformController {
 	@RequestMapping(value = "/qiutu/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackQiutu(HttpServletRequest request) {
-		return platformService.verifyQiutu(request);
+		return channelService.verifyQiutu(request);
 	}
 
 	/**
@@ -1424,7 +1424,7 @@ public class PlatformController {
 	@ResponseBody
 	public String verifyYuewanSession(YuewanSession session) {
 		logger.debug(session.toString());
-		return platformService.verifyYuewanSession(session);
+		return channelService.verifyYuewanSession(session);
 	}
 
 	/**
@@ -1436,7 +1436,7 @@ public class PlatformController {
 	@RequestMapping(value = "/yuewan/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackYuewan(HttpServletRequest request) {
-		return platformService.verifyYuewan(request);
+		return channelService.verifyYuewan(request);
 	}
 
 	/**
@@ -1449,7 +1449,7 @@ public class PlatformController {
 	@ResponseBody
 	public String rechargeCallBackWsx(HttpServletRequest request) {
 		logger.info("rechargeCallBackWsx----------------");
-		return platformService.verifyWsx(request);
+		return channelService.verifyWsx(request);
 	}
     /**
      * Iveryone session验证
@@ -1460,7 +1460,7 @@ public class PlatformController {
     @ResponseBody
     public String verifyiVeryoneSession(IveryoneSession session) {
         logger.debug(session.toString());
-        return platformService.verifyIveryoneSession(session);
+        return channelService.verifyIveryoneSession(session);
     }
 
     /**
@@ -1472,7 +1472,7 @@ public class PlatformController {
     @RequestMapping(value = "/iveryone/pay", produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String rechargeCallBackIveryone(HttpServletRequest request) {
-        return platformService.verifyIveryone(request);
+        return channelService.verifyIveryone(request);
     }
 
 
@@ -1485,7 +1485,7 @@ public class PlatformController {
 	@ResponseBody
 	public String verifyDyhdSession(DyhdSession session) {
 		logger.debug(session.toString());
-		return platformService.verifyDyhdSession(session);
+		return channelService.verifyDyhdSession(session);
 	}
 
 	/**
@@ -1497,7 +1497,7 @@ public class PlatformController {
 	@RequestMapping(value = "/dyhd/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackDyhd(HttpServletRequest request) {
-		return platformService.verifyDyhd(request);
+		return channelService.verifyDyhd(request);
 	}
 
 	/**
@@ -1509,7 +1509,7 @@ public class PlatformController {
 	@ResponseBody
 	public String verifyQiqileSession(QiqileSession session) {
 		logger.debug(session.toString());
-		return platformService.verifyQiqileSession(session);
+		return channelService.verifyQiqileSession(session);
 	}
 
 	/**
@@ -1521,7 +1521,7 @@ public class PlatformController {
 	@RequestMapping(value = "/qiqile/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackQiqile(HttpServletRequest request) {
-		return platformService.verifyQiqile(request);
+		return channelService.verifyQiqile(request);
 	}
 
 	/**
@@ -1533,7 +1533,7 @@ public class PlatformController {
 	@ResponseBody
 	public String verify7723Session(SsttSession session) {
 		logger.debug(session.toString());
-		return platformService.verify7723Session(session);
+		return channelService.verify7723Session(session);
 	}
 
 	/**
@@ -1545,7 +1545,7 @@ public class PlatformController {
 	@RequestMapping(value = "/7723/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBack7723(HttpServletRequest request) {
-		return platformService.verify7723(request);
+		return channelService.verify7723(request);
 	}
 
 	/**
@@ -1557,7 +1557,7 @@ public class PlatformController {
 	@ResponseBody
 	public String verifyMogeSession(MogeSession session) {
 		logger.debug(session.toString());
-		return platformService.verifyMogeSession(session);
+		return channelService.verifyMogeSession(session);
 	}
 
 	/**
@@ -1569,7 +1569,7 @@ public class PlatformController {
 	@RequestMapping(value = "/moge/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackMoge(HttpServletRequest request) {
-		return platformService.verifyMoge(request);
+		return channelService.verifyMoge(request);
 	}
 
 	/**
@@ -1581,7 +1581,7 @@ public class PlatformController {
 	@RequestMapping(value = "/migu/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String miguLoginNotify(HttpServletRequest request) {
-		return platformService.miguLoginNotify(request);
+		return channelService.miguLoginNotify(request);
 	}
 
 	/**
@@ -1593,7 +1593,7 @@ public class PlatformController {
 	@RequestMapping(value = "/migu/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackMigu(HttpServletRequest request) {
-		return platformService.verifyMigu(request);
+		return channelService.verifyMigu(request);
 	}
 
 	/**
@@ -1605,7 +1605,7 @@ public class PlatformController {
 	@ResponseBody
 	public String verifyTuuSession(TuuSession session) {
 		logger.debug(session.toString());
-		return platformService.verifyTuuSession(session);
+		return channelService.verifyTuuSession(session);
 	}
 
 	/**
@@ -1617,7 +1617,7 @@ public class PlatformController {
 	@RequestMapping(value = "/tuu/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackTuu(HttpServletRequest request) {
-		return platformService.verifyTuu(request);
+		return channelService.verifyTuu(request);
 	}
 
 	/**
@@ -1629,7 +1629,7 @@ public class PlatformController {
 	@RequestMapping(value = "/moyoyo/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackMoyoyo(HttpServletRequest request) {
-		return platformService.verifyMoyoyo(request);
+		return channelService.verifyMoyoyo(request);
 	}
 
 	/**
@@ -1641,7 +1641,7 @@ public class PlatformController {
 	@RequestMapping(value = "/damai/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackDamai(HttpServletRequest request) {
-		return platformService.verifyDamai(request);
+		return channelService.verifyDamai(request);
 	}
 
 	/**
@@ -1653,7 +1653,7 @@ public class PlatformController {
 	@ResponseBody
 	public String verifyShuowanSession(ShuowanSession session) {
 		logger.debug(session.toString());
-		return platformService.verifyShuowanSession(session);
+		return channelService.verifyShuowanSession(session);
 	}
 
 	/**
@@ -1665,7 +1665,7 @@ public class PlatformController {
 	@RequestMapping(value = "/shuowan/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackShuowan(HttpServletRequest request) {
-		return platformService.verifyShuowan(request);
+		return channelService.verifyShuowan(request);
 	}
 
 	/**
@@ -1677,7 +1677,7 @@ public class PlatformController {
 	@ResponseBody
 	public String verifyFirstappSession(FirstappSession session) {
 		logger.debug(session.toString());
-		return platformService.verifyFirstappSession(session);
+		return channelService.verifyFirstappSession(session);
 	}
 
 	/**
@@ -1689,7 +1689,7 @@ public class PlatformController {
 	@RequestMapping(value = "/firstapp/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackFirstapp(HttpServletRequest request) {
-		return platformService.verifyFirstapp(request);
+		return channelService.verifyFirstapp(request);
 	}
 
 	/**
@@ -1701,7 +1701,7 @@ public class PlatformController {
 	@RequestMapping(value = "/qbao/login", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String qbaoLogin(HttpServletRequest request) {
-		return platformService.qbaoLogin(request);
+		return channelService.qbaoLogin(request);
 	}
 
 	/**
@@ -1713,7 +1713,7 @@ public class PlatformController {
 	@RequestMapping(value = "/qbao/pay/sign", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String qbaoPaySign(HttpServletRequest request) {
-		return platformService.qbaoPaySign(request);
+		return channelService.qbaoPaySign(request);
 	}
 
 	/**
@@ -1725,7 +1725,7 @@ public class PlatformController {
 	@RequestMapping(value = "/qbao/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackQbao(HttpServletRequest request) {
-		return platformService.rechargeCallBackQbao(request);
+		return channelService.rechargeCallBackQbao(request);
 	}
 
 	/**
@@ -1737,7 +1737,7 @@ public class PlatformController {
 	@RequestMapping(value = "/bingqu/login", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String bingquLogin(HttpServletRequest request) {
-		return platformService.bingquBaowanLogin(request);
+		return channelService.bingquBaowanLogin(request);
 	}
 
 	/**
@@ -1749,7 +1749,7 @@ public class PlatformController {
 	@RequestMapping(value = "/bingqu/pay/sign", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String bingquPaySign(HttpServletRequest request) {
-		return platformService.bingquBaowanPaySign(request);
+		return channelService.bingquBaowanPaySign(request);
 	}
 
 	/**
@@ -1761,7 +1761,7 @@ public class PlatformController {
 	@RequestMapping(value = "/bingqu/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackBingqu(HttpServletRequest request) {
-		return platformService.rechargeCallBackbingquBaowan(request);
+		return channelService.rechargeCallBackbingquBaowan(request);
 	}
 
 	/**
@@ -1773,7 +1773,7 @@ public class PlatformController {
 	@RequestMapping(value = "/baowan/login", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String baowanLogin(HttpServletRequest request) {
-		return platformService.bingquBaowanLogin(request);
+		return channelService.bingquBaowanLogin(request);
 	}
 
 	/**
@@ -1785,7 +1785,7 @@ public class PlatformController {
 	@RequestMapping(value = "/baowan/pay/sign", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String baowanPaySign(HttpServletRequest request) {
-		return platformService.bingquBaowanPaySign(request);
+		return channelService.bingquBaowanPaySign(request);
 	}
 
 	/**
@@ -1797,7 +1797,7 @@ public class PlatformController {
 	@RequestMapping(value = "/baowan/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackBaowan(HttpServletRequest request) {
-		return platformService.rechargeCallBackbingquBaowan(request);
+		return channelService.rechargeCallBackbingquBaowan(request);
 	}
 
 	/**
@@ -1809,7 +1809,7 @@ public class PlatformController {
 	@RequestMapping(value = "/qipa/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackQipa(HttpServletRequest request) {
-		return platformService.rechargeCallBackQipa(request);
+		return channelService.rechargeCallBackQipa(request);
 	}
 
 	/**
@@ -1821,7 +1821,7 @@ public class PlatformController {
 	@ResponseBody
 	public String verifyAipuSession(AipuSession session) {
 		logger.debug(session.toString());
-		return platformService.verifyAipuSession(session);
+		return channelService.verifyAipuSession(session);
 	}
 
 	/**
@@ -1833,7 +1833,7 @@ public class PlatformController {
 	@RequestMapping(value = "/aipu/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackAipu(HttpServletRequest request) {
-		return platformService.verifyAipu(request);
+		return channelService.verifyAipu(request);
 	}
 
 
@@ -1845,7 +1845,7 @@ public class PlatformController {
 	@RequestMapping(value = "/shunwang/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyShunwangSession(HttpServletRequest request) {
-		return platformService.verifyShunwangSession(request);
+		return channelService.verifyShunwangSession(request);
 	}
 
 	/**
@@ -1857,7 +1857,7 @@ public class PlatformController {
 	@RequestMapping(value = "/shunwang/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackShunwang(HttpServletRequest request) {
-		return platformService.verifyShunwang(request);
+		return channelService.verifyShunwang(request);
 	}
 
 
@@ -1870,7 +1870,7 @@ public class PlatformController {
 	@RequestMapping(value = "/zhuoyi/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeCallBackZhouyi(HttpServletRequest request) {
-		return platformService.verifyZhuoyi(request);
+		return channelService.verifyZhuoyi(request);
 	}
 
 	/**
@@ -1882,7 +1882,7 @@ public class PlatformController {
 	@RequestMapping(value = "/yxt/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyYunXiaoTanSession(YunxiaotanSession session) {
-		return platformService.verifyYunxiaotanSession(session);
+		return channelService.verifyYunxiaotanSession(session);
 	}
 
 	/**
@@ -1894,7 +1894,7 @@ public class PlatformController {
 	@RequestMapping(value = "/yxt/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyYunxiaoTan(HttpServletRequest request) {
-		return platformService.verifyYunxiaotan(request);
+		return channelService.verifyYunxiaotan(request);
 	}
 
 	/**
@@ -1906,7 +1906,7 @@ public class PlatformController {
 	@RequestMapping(value = "/gzpd/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyGuangzhoupeidui(HttpServletRequest request) {
-		return platformService.verifyGuangzhoupeidui(request);
+		return channelService.verifyGuangzhoupeidui(request);
 	}
 
 	/**
@@ -1918,7 +1918,7 @@ public class PlatformController {
 	@RequestMapping(value = "/dyoo/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyDianyoo(HttpServletRequest request) {
-		return platformService.verifyDianyoo(request);
+		return channelService.verifyDianyoo(request);
 	}
 
 	/**
@@ -1930,25 +1930,25 @@ public class PlatformController {
 	@RequestMapping(value = "/chongchong/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifychongchongSession(ChongchongSession request) {
-		return platformService.verifyhongchongSession(request);
+		return channelService.verifyhongchongSession(request);
 	}
 
 	@RequestMapping(value = "/chongchong/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyChongChong(HttpServletRequest request) {
-		return platformService.verifyChongchong(request);
+		return channelService.verifyChongchong(request);
 	}
 
 	@RequestMapping(value = "/qishi/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyQishi(HttpServletRequest request) {
-		return platformService.verifyQishi(request);
+		return channelService.verifyQishi(request);
 	}
 
 	@RequestMapping(value = "/tt/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyTt(HttpServletRequest request) {
-		return platformService.verifyTt(request);
+		return channelService.verifyTt(request);
 	}
 
 	/**
@@ -1959,7 +1959,7 @@ public class PlatformController {
 	@RequestMapping(value = "/tt/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyTtSession(TtSession ttSession) {
-		return platformService.verifyTtSession(ttSession);
+		return channelService.verifyTtSession(ttSession);
 	}
 
 	/**
@@ -1970,13 +1970,13 @@ public class PlatformController {
 	@RequestMapping(value = "/tt/recharge", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String rechargeTt(HttpServletRequest request) {
-		return platformService.rechargeTt(request);
+		return channelService.rechargeTt(request);
 	}
 
 	@RequestMapping(value = "/yeshen/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyYeshen(HttpServletRequest request) {
-		platformService.verifyYeshen(request);
+		channelService.verifyYeshen(request);
 		return "";
 	}
 
@@ -1989,7 +1989,7 @@ public class PlatformController {
 	@RequestMapping(value = "/lewan/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyLewanSession(LewanSession request) {
-		return platformService.verifyLewanSession(request);
+		return channelService.verifyLewanSession(request);
 	}
 
 	/**
@@ -2001,7 +2001,7 @@ public class PlatformController {
 	@RequestMapping(value = "/lewan/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyLewan(HttpServletRequest request) {
-		return platformService.verifyLewan(request);
+		return channelService.verifyLewan(request);
 	}
 
 	/**
@@ -2013,7 +2013,7 @@ public class PlatformController {
 	@RequestMapping(value = "/wanke/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyWanke(HttpServletRequest request) {
-		return platformService.verifyWanke(request);
+		return channelService.verifyWanke(request);
 	}
 
 	/**
@@ -2025,7 +2025,7 @@ public class PlatformController {
 	@RequestMapping(value = "/daomeng/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyDaomen(HttpServletRequest request) {
-		return platformService.verifyDaomen(request);
+		return channelService.verifyDaomen(request);
 	}
 
 	/**
@@ -2037,7 +2037,7 @@ public class PlatformController {
 	@RequestMapping(value = "/wxdl/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyWuxiandongli(HttpServletRequest request) {
-		return platformService.verifyWuxiandongli(request);
+		return channelService.verifyWuxiandongli(request);
 	}
 
 	/**
@@ -2049,7 +2049,7 @@ public class PlatformController {
 	@RequestMapping(value = "/wxdl/paycode", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String getWuxiandongliPaycode(HttpServletRequest request) {
-		return platformService.getWuxiandongliPaycode(request);
+		return channelService.getWuxiandongliPaycode(request);
 	}
 
 	/**
@@ -2062,7 +2062,7 @@ public class PlatformController {
 	@ResponseBody
 	public String verifyXiao7Session(Xiao7Session request) {
 //	    logger.info("xiaoqi   "+ HttpUtils.getRequestParams(request).toString());
-		return platformService.verifyXiao7Session(request);
+		return channelService.verifyXiao7Session(request);
 	}
 
 	/**
@@ -2074,7 +2074,7 @@ public class PlatformController {
 	@RequestMapping(value = "/xiao7/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyXiao7(HttpServletRequest request) {
-		return platformService.verifyXiao7(request);
+		return channelService.verifyXiao7(request);
 	}
 
 	/**
@@ -2086,7 +2086,7 @@ public class PlatformController {
 	@RequestMapping(value = "/quicksdk/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyQuickSession(QuickSdkSession request) {
-		return platformService.verifyQuickSession(request);
+		return channelService.verifyQuickSession(request);
 	}
 
 	/**
@@ -2098,7 +2098,7 @@ public class PlatformController {
 	@RequestMapping(value = "/quicksdk/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyQuicksdk(HttpServletRequest request) {
-		return platformService.verifyQuick(request);
+		return channelService.verifyQuick(request);
 	}
 
 	/**
@@ -2110,7 +2110,7 @@ public class PlatformController {
 	@RequestMapping(value = "/yijiesdk/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyYijieSession(YijieSdkSession request) {
-		return platformService.verifyYijieSession(request);
+		return channelService.verifyYijieSession(request);
 	}
 
 	/**
@@ -2122,7 +2122,7 @@ public class PlatformController {
 	@RequestMapping(value = "/yijiesdk/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyYijiesdk(HttpServletRequest request) {
-		return platformService.verifyYijie(request);
+		return channelService.verifyYijie(request);
 	}
 
 	/**
@@ -2134,7 +2134,7 @@ public class PlatformController {
 	@RequestMapping(value = "/kuaifa/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyKuaifaSession(KuaifaSession request) {
-		return platformService.verifyKuaifaSession(request);
+		return channelService.verifyKuaifaSession(request);
 	}
 
 	/**
@@ -2146,7 +2146,7 @@ public class PlatformController {
 	@RequestMapping(value = "/kuaifa/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyKuaifa(HttpServletRequest request) {
-		return platformService.verifyKuaifa(request);
+		return channelService.verifyKuaifa(request);
 	}
 
 	/**
@@ -2158,7 +2158,7 @@ public class PlatformController {
 	@RequestMapping(value = "/ftx/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyFtxSession(FtxSession request) {
-		return platformService.verifyFtxSession(request);
+		return channelService.verifyFtxSession(request);
 	}
 
 	/**
@@ -2170,7 +2170,7 @@ public class PlatformController {
 	@RequestMapping(value = "/ftx/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyFtx(HttpServletRequest request) {
-		return platformService.verifyFtx(request);
+		return channelService.verifyFtx(request);
 	}
 
 	/**
@@ -2182,14 +2182,14 @@ public class PlatformController {
 	@RequestMapping(value = "/yihuan/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyYihuanSession(YihuanSession request) {
-		return platformService.verifyYihuanSession(request);
+		return channelService.verifyYihuanSession(request);
 	}
 
 
 	@RequestMapping(value = "/yihuan/paycode", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String getYihuanCode(HttpServletRequest request){
-		return platformService.getYihuanPayCode(request);
+		return channelService.getYihuanPayCode(request);
 	}
 	/**
 	 * 易幻充值验证
@@ -2200,7 +2200,7 @@ public class PlatformController {
 	@RequestMapping(value = "/yihuan/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyYihuan(HttpServletRequest request) {
-		return  platformService.verifyYihuan(request);
+		return  channelService.verifyYihuan(request);
 	}
 
 	/**
@@ -2212,7 +2212,7 @@ public class PlatformController {
 	@RequestMapping(value = "/hongshouzhi/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyHongshouzhiSession(HongshouzhiSession request) {
-		return platformService.verifyHongshouzhiSession(request);
+		return channelService.verifyHongshouzhiSession(request);
 	}
 
 	/**
@@ -2224,7 +2224,7 @@ public class PlatformController {
 	@RequestMapping(value = "/hongshouzhi/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyHongshouzhi(HttpServletRequest request) {
-		return  platformService.verifyHongshouzhi(request);
+		return  channelService.verifyHongshouzhi(request);
 	}
 
 	/**
@@ -2236,7 +2236,7 @@ public class PlatformController {
 	@RequestMapping(value = "/hongshouzhi/role", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String submitHongshouzhiRole(HongShouZhiRole role) {
-		return  platformService.submitHongshouzhiRole(role);
+		return  channelService.submitHongshouzhiRole(role);
 	}
 
 	/**
@@ -2248,7 +2248,7 @@ public class PlatformController {
 	@RequestMapping(value = "/fansdk/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyFanSdkSession(FansdkSession request) {
-		return platformService.verifyFansdkSession(request);
+		return channelService.verifyFansdkSession(request);
 	}
 
 	/**
@@ -2260,7 +2260,7 @@ public class PlatformController {
 	@RequestMapping(value = "/fansdk/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyFansdk(HttpServletRequest request) {
-		return  platformService.verifyFansdk(request);
+		return  channelService.verifyFansdk(request);
 	}
 
 
@@ -2273,7 +2273,7 @@ public class PlatformController {
 	@RequestMapping(value = "/niguang/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyNiguangSession(NiguangSession request) {
-		return platformService.verifyNiguangSession(request);
+		return channelService.verifyNiguangSession(request);
 	}
 
 	/**
@@ -2285,7 +2285,7 @@ public class PlatformController {
 	@RequestMapping(value = "/niguang/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyNiguangsdk(HttpServletRequest request) {
-		return  platformService.verifyNiguangsdk(request);
+		return  channelService.verifyNiguangsdk(request);
 	}
 
 	/**
@@ -2297,7 +2297,7 @@ public class PlatformController {
 	@RequestMapping(value = "/aochuang/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyNiguangSession(AoChuangSession request) {
-		return platformServicePartTwo.verifyAoChuangSession(request);
+		return channelServicePartTwo.verifyAoChuangSession(request);
 	}
 
 	/**
@@ -2309,7 +2309,7 @@ public class PlatformController {
 	@RequestMapping(value = "/aochuang/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyAoChuangsdk(HttpServletRequest request) {
-		return  platformServicePartTwo.verifyAoChuangsdk(request);
+		return  channelServicePartTwo.verifyAoChuangsdk(request);
 	}
 
 	/**
@@ -2321,7 +2321,7 @@ public class PlatformController {
 	@RequestMapping(value = "/papayou/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyPaPaYou(HttpServletRequest request) {
-		return  platformServicePartTwo.verifyPaPaYou(request);
+		return  channelServicePartTwo.verifyPaPaYou(request);
 	}
 
 
@@ -2334,7 +2334,7 @@ public class PlatformController {
 	@RequestMapping(value = "/taoshouyou/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyTaoShouYouSession(TaoShouYouSession request) {
-		return platformServicePartTwo.verifyTaoShouYouSession(request);
+		return channelServicePartTwo.verifyTaoShouYouSession(request);
 	}
 
 	/**
@@ -2346,7 +2346,7 @@ public class PlatformController {
 	@RequestMapping(value = "/taoshouyou/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyTaoShouYousdk(HttpServletRequest request) {
-		return  platformServicePartTwo.verifyTaoShouYousdk(request);
+		return  channelServicePartTwo.verifyTaoShouYousdk(request);
 	}
 
 	/**
@@ -2358,7 +2358,7 @@ public class PlatformController {
 	@RequestMapping(value = "/mangguowan/session", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyMangGuoWanSession(MangGuoWanSession request) {
-		return platformServicePartTwo.verifyMangGuoWanSession(request);
+		return channelServicePartTwo.verifyMangGuoWanSession(request);
 	}
 
 	/**
@@ -2370,7 +2370,7 @@ public class PlatformController {
 	@RequestMapping(value = "/mangguowan/pay", produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String verifyMangGuoWansdk(HttpServletRequest request) {
-		return  platformServicePartTwo.verifyMangGuoWansdk(request);
+		return  channelServicePartTwo.verifyMangGuoWansdk(request);
 	}
 
 }

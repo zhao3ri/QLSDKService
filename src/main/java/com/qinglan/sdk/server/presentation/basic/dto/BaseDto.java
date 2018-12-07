@@ -6,7 +6,7 @@ import lombok.ToString;
 public abstract class BaseDto {
 	
 	private Long gameId;
-	private Integer platformId;
+	private Integer channelId;
 
 	public abstract boolean isEmpty();
 
@@ -18,11 +18,11 @@ public abstract class BaseDto {
 		this.gameId = gameId;
 	}
 
-	public Integer getPlatformId() {
-		return platformId;
+	public Integer getChannelId() {
+		return channelId;
 	}
 
-	public void setPlatformId(Integer platformId) {
-		this.platformId = platformId;
+	public void setChannelId(Integer channelId) {
+		this.channelId = channelId;
 	}
 }

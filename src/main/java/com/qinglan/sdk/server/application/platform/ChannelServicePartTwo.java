@@ -15,7 +15,7 @@ import java.io.IOException;
 /**
  * Created by engine on 2016/10/21.
  */
-public interface PlatformServicePartTwo {
+public interface ChannelServicePartTwo {
 
     String signOrderHuawei(HMSPaySignRequest request);
 

@@ -43,7 +43,7 @@ public class BasicRepositoryTest extends BaseTestCase {
 		BehaviorDevice device = basicRepository.getByUniqueKey(clientType, appId, deviceId);
 		logger.debug("result: {}", JsonMapper.toJson(device));
 		
-		device.addPlatformId(1001);
+		device.addChannelId(1001);
 		basicRepository.updateDevicePlatform(device);
 		
 		device = basicRepository.getByUniqueKey(clientType, appId, deviceId);

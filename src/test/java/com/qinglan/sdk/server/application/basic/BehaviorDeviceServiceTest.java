@@ -13,7 +13,7 @@ public class BehaviorDeviceServiceTest  extends BaseTestCase{
 	public void initialBehaviorDeviceTest(){
 		InitialPattern initial=new InitialPattern();
 		initial.setGameId(1L);
-		initial.setPlatformId(1);
+		initial.setChannelId(1);
 		initial.setDeviceId("923456789");
 		initial.setClientType(1);
 		initial.setManufacturer("1");
@@ -27,7 +27,7 @@ public class BehaviorDeviceServiceTest  extends BaseTestCase{
 	public void loginBehaviorDeviceTest(){
 //		LoginPattern login =new LoginPattern();
 //		login.setAppID("1");
-//		login.setPlatformId("2");
+//		login.setChannelId("2");
 //		login.setDeviceId("923456789");
 //		login.setClientType("1");
 //		login.setRoleId("22222");

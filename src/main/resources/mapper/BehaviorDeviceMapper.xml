@@ -6,14 +6,14 @@
         <result column="device" property="device" jdbcType="VARCHAR"/>
         <result column="appID" property="appID" jdbcType="BIGINT"/>
         <result column="clientType" property="clientType" jdbcType="TINYINT"/>
-        <result column="platforms" property="platforms" jdbcType="VARCHAR"/>
-        <result column="loginPlatforms" property="loginPlatforms" jdbcType="VARCHAR"/>
+        <result column="channels" property="channels" jdbcType="VARCHAR"/>
+        <result column="loginChannels" property="loginChannels" jdbcType="VARCHAR"/>
         <result column="loginZones" property="loginZones" jdbcType="VARCHAR"/>
         <result column="roleZones" property="roleZones" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-    id, device, gameId, clientType, platforms, loginPlatforms, loginZones, roleZones
+    id, device, gameId, clientType, channels, loginChannels, loginZones, roleZones
   </sql>
 
     <select id="findByUnique" resultMap="BaseResultMap" parameterType="java.util.Map">
@@ -26,21 +26,21 @@
 
     <insert id="insert" parameterType="com.qinglan.sdk.server.domain.basic.BehaviorDevice">
     insert into b_behavior_device (device, gameId,
-      clientType, platforms, loginPlatforms, loginZones, 
+      clientType, channels, loginChannels, loginZones,
       roleZones)
     values (#{device,jdbcType=VARCHAR}, #{gameId,jdbcType=BIGINT},
-      #{clientType,jdbcType=TINYINT}, #{platforms,jdbcType=VARCHAR},#{loginPlatforms,jdbcType=VARCHAR}, #{loginZones,jdbcType=VARCHAR}, 
+      #{clientType,jdbcType=TINYINT}, #{channels,jdbcType=VARCHAR},#{loginChannels,jdbcType=VARCHAR}, #{loginZones,jdbcType=VARCHAR},
       #{roleZones,jdbcType=VARCHAR})
   </insert>
 
     <update id="update" parameterType="com.qinglan.sdk.server.domain.basic.BehaviorDevice">
         update b_behavior_device
         <set>
-            <if test="platforms != null">
-                platforms = #{platforms,jdbcType=VARCHAR},
+            <if test="channels != null">
+                channels = #{channels,jdbcType=VARCHAR},
             </if>
-            <if test="loginPlatforms != null">
-                loginPlatforms = #{loginPlatforms,jdbcType=VARCHAR},
+            <if test="loginChannels != null">
+                loginChannels = #{loginChannels,jdbcType=VARCHAR},
             </if>
             <if test="loginZones != null">
                 loginZones = #{loginZones,jdbcType=VARCHAR},

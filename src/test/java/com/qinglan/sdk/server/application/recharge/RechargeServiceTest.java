@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 
 import javax.annotation.Resource;
 
+import com.qinglan.sdk.server.application.platform.ChannelUtilsService;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -21,7 +22,6 @@ import com.qinglan.sdk.server.common.RandomTool;
 import com.qinglan.sdk.server.common.Sign;
 import com.qinglan.sdk.server.release.BaseTestCase;
 import com.qinglan.sdk.server.application.basic.OrderService;
-import com.qinglan.sdk.server.application.platform.PlatformUtilsService;
 import com.qinglan.sdk.server.BasicRepository;
 import com.qinglan.sdk.server.domain.basic.Order;
 import com.qinglan.sdk.server.domain.basic.PlatformGame;
@@ -37,7 +37,7 @@ public class RechargeServiceTest  extends BaseTestCase{
 	private OrderService orderService;
 	
 	@Resource
-	private PlatformUtilsService platformUtilsService;
+	private ChannelUtilsService channelUtilsService;
 	
 	private static int i = 0;
 	
@@ -77,7 +77,7 @@ public class RechargeServiceTest  extends BaseTestCase{
 		String playerId = "869ECD4607314E34A2CC0F2DCE1BFB68";
 		
 		Order order = orderService.getOrderByOrderId(orderId);
-		PlatformGame platform = basicRepository.getByPlatformAndGameId(order.getPlatformId(), order.getGameId());
+		PlatformGame platform = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
 		
 		String notifyUrl = platform.getConfigParamsList().get(0);
 		String apiKey = platform.getConfigParamsList().get(1);
@@ -98,7 +98,7 @@ public class RechargeServiceTest  extends BaseTestCase{
 		System.out.println("params : " + params);
 		System.out.println("privateKey : " + privateKey);
 		
-		params.put("sign", platformUtilsService.getOrderCreateSign(params, privateKey));
+		params.put("sign", channelUtilsService.getOrderCreateSign(params, privateKey));
 		try {
 			String result = HttpUtils.post(orderCreateUrl, JsonMapper.toJson(params));
 			logger.debug("gionee order create result : " + result);

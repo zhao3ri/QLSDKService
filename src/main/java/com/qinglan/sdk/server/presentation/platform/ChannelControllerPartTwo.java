@@ -1,6 +1,6 @@
 package com.qinglan.sdk.server.presentation.platform;
 
-import com.qinglan.sdk.server.application.platform.PlatformServicePartTwo;
+import com.qinglan.sdk.server.application.platform.ChannelServicePartTwo;
 import com.qinglan.sdk.server.presentation.channel.entity.HMSPaySignRequest;
 import com.qinglan.sdk.server.presentation.channel.entity.HMSVerifyRequest;
 import com.qinglan.sdk.server.presentation.platform.dto.Six7Session;
@@ -22,12 +22,12 @@ import java.io.IOException;
 
 @Controller
 @RequestMapping("/platform2")
-public class PlatformControllerPartTwo {
+public class ChannelControllerPartTwo {
 
-    private static final Logger logger = LoggerFactory.getLogger(PlatformControllerPartTwo.class);
+    private static final Logger logger = LoggerFactory.getLogger(ChannelControllerPartTwo.class);
 
     @Resource
-    private PlatformServicePartTwo platformServiceTwo;
+    private ChannelServicePartTwo platformServiceTwo;
 
     @RequestMapping(value = "/hms/pay/sign", produces = "text/html;charset=UTF-8")
     @ResponseBody

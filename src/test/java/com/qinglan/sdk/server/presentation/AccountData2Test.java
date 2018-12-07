@@ -171,7 +171,7 @@ public class AccountData2Test {
 	public void quit(String deviceId,String uid,String roleId){
 		QuitPattern quitPattern=new QuitPattern();
 		quitPattern.setGameId(150212661932L);
-		quitPattern.setPlatformId(1001);
+		quitPattern.setChannelId(1001);
 		quitPattern.setDeviceId(deviceId);
 		quitPattern.setUid(uid);
 		quitPattern.setZoneId("1");
@@ -183,7 +183,7 @@ public class AccountData2Test {
 	public void logout(String deviceId,String uid,String roleId){
 		LogoutPattern logoutPattern=new LogoutPattern();
 		logoutPattern.setGameId(150212661932L);
-		logoutPattern.setPlatformId(1001);
+		logoutPattern.setChannelId(1001);
 		logoutPattern.setDeviceId(deviceId);
 		logoutPattern.setUid(uid);
 		logoutPattern.setZoneId("1");
@@ -196,7 +196,7 @@ public class AccountData2Test {
 		
 		OrderGeneratePattern orderGenerate=new OrderGeneratePattern();
 		orderGenerate.setGameId(150212661932L);
-		orderGenerate.setPlatformId(1001);
+		orderGenerate.setChannelId(1001);
 		orderGenerate.setDeviceId(deviceId);
 		orderGenerate.setUid(uid);
 		orderGenerate.setZoneId("1");
@@ -216,7 +216,7 @@ public class AccountData2Test {
 	public void heartbeat(String deviceId,String uid,String roleId){
 		HeartbeatPattern heartbeat=new HeartbeatPattern();
 		heartbeat.setGameId(150212661932L);
-		heartbeat.setPlatformId(1001);
+		heartbeat.setChannelId(1001);
 		heartbeat.setDeviceId(deviceId);
 		heartbeat.setUid(uid);
 		heartbeat.setZoneId("1");
@@ -229,7 +229,7 @@ public class AccountData2Test {
 	public void login(String deviceId,String uid,String roleId) {
 		LoginPattern loginPattern=new LoginPattern();
 		loginPattern.setGameId(150212661932L);
-		loginPattern.setPlatformId(1001);
+		loginPattern.setChannelId(1001);
 		loginPattern.setDeviceId(deviceId);
 		loginPattern.setUid(uid);
 		loginPattern.setZoneId("1");
@@ -244,7 +244,7 @@ public class AccountData2Test {
 	public void roleEstablish(String deviceId,String uid,String roleId){
 		RoleCreatePattern roleEstablish=new RoleCreatePattern();
 		roleEstablish.setGameId(150212661932L);
-		roleEstablish.setPlatformId(1001);
+		roleEstablish.setChannelId(1001);
 		roleEstablish.setDeviceId(deviceId);
 		roleEstablish.setUid(uid);
 		roleEstablish.setZoneId("1");
@@ -259,7 +259,7 @@ public class AccountData2Test {
 	public void initial(String deviceId,String imsi){
 		InitialPattern initial=new InitialPattern();
 		initial.setGameId(150212661932L);
-		initial.setPlatformId(1001);
+		initial.setChannelId(1001);
 		initial.setDeviceId(deviceId);
 		initial.setClientType(1);
 		initial.setManufacturer("samsung");

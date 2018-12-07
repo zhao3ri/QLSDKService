@@ -87,7 +87,7 @@ public class AccountControllerTest  extends BaseTestCase{
 		loginPattern.setZoneId("A_123456101");
 		loginPattern.setZoneName("1");
 		loginPattern.setGameId(150212661932L);
-		loginPattern.setPlatformId(1001);
+		loginPattern.setChannelId(1001);
 		accountService.login(loginPattern);
 	}
 

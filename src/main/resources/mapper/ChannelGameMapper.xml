@@ -3,7 +3,7 @@
 <mapper namespace="com.qinglan.sdk.server.domain.basic.PlatformGame">
     <resultMap id="BaseResultMap" type="com.qinglan.sdk.server.domain.basic.PlatformGame">
         <id column="id" property="id" jdbcType="BIGINT"/>
-        <result column="platformId" property="platformId" jdbcType="INTEGER"/>
+        <result column="channelId" property="channelId" jdbcType="INTEGER"/>
         <result column="gameId" property="gameId" jdbcType="BIGINT"/>
         <result column="configParams" property="configParams" jdbcType="VARCHAR"/>
         <result column="createTime" property="createTime" jdbcType="TIMESTAMP"/>
@@ -16,13 +16,13 @@
         <result column="publicKey" property="publicKey" jdbcType="VARCHAR"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, platformId, gameId, configParams, createTime,status,registStatus,discount,appKey,appID,secretKey,privateKey,publicKey
+    id, channelId, gameId, configParams, createTime,status,registStatus,discount,appKey,appID,secretKey,privateKey,publicKey
   </sql>
 
     <select id="getByPlatformAndGameId" resultMap="BaseResultMap" parameterType="java.util.Map">
         select
         <include refid="Base_Column_List"/>
         from b_platform_game
-        where platformId = #{platformId,jdbcType=INTEGER} AND gameId = #{gameId,jdbcType=BIGINT}
+        where channelId = #{channelId,jdbcType=INTEGER} AND gameId = #{gameId,jdbcType=BIGINT}
     </select>
 </mapper>

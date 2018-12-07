@@ -17,7 +17,7 @@
     <select id="getPlatform" resultMap="BaseResultMap" parameterType="java.lang.Integer">
         select
         <include refid="Base_Column_List"/>
-        from b_platform
+        from b_channel
         where id = #{id,jdbcType=INTEGER}
     </select>
 
@@ -27,7 +27,7 @@
     where orderId = #{orderId,jdbcType=VARCHAR} and status = 0
   </update>
     <update id="updateBalance" parameterType="java.util.Map">
-      update b_platform
+      update b_channel
       set balance=#{balance,jdbcType=INTEGER},version=#{newversion,jdbcType=INTEGER}
       where id=#{id,jdbcType=INTEGER} and version=#{version,jdbcType=INTEGER}
   </update>

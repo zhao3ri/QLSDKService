@@ -51,7 +51,7 @@ public class LogoutPattern extends BaseDto implements Serializable {
 	
 	public boolean isEmpty() {
 		if(null == getGameId()) return true;
-		if(null == getPlatformId()) return true;
+		if(null == getChannelId()) return true;
 		if(null == getUid() || getUid().trim().isEmpty()) return true;
 		if(null == getZoneId() || getZoneId().trim().isEmpty()) return true;
 		if(null == getRoleId() || getRoleId().trim().isEmpty()) return true;

@@ -28,7 +28,7 @@ public class GetUserInfoPattern extends BaseDto implements Serializable {
 		if (null == getGameId()){
 			return true ;
 		}
-		if (null == getPlatformId()){
+		if (null == getChannelId()){
 			return true ;
 		}
 		return false;

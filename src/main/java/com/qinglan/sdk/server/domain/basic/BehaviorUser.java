@@ -10,7 +10,7 @@ public class BehaviorUser implements Serializable {
 	@JsonIgnore
 	private String uid;
 	@JsonIgnore
-    private Integer platformId;
+    private Integer channelId;
 	@JsonIgnore
     private Long gameId;
 	@JsonIgnore
@@ -42,12 +42,12 @@ public class BehaviorUser implements Serializable {
 		this.uid = uid;
 	}
 
-	public Integer getPlatformId() {
-		return platformId;
+	public Integer getChannelId() {
+		return channelId;
 	}
 
-	public void setPlatformId(Integer platformId) {
-		this.platformId = platformId;
+	public void setChannelId(Integer channelId) {
+		this.channelId = channelId;
 	}
 
 	public Long getGameId() {

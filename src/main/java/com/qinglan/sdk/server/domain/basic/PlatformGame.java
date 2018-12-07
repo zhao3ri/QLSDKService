@@ -11,7 +11,7 @@ public class PlatformGame implements Serializable {
     private static final long serialVersionUID = 1L;
     private Long id;
 
-    private Integer platformId;
+    private Integer channelId;
 
     private Long gameId;
 
@@ -49,12 +49,12 @@ public class PlatformGame implements Serializable {
         this.id = id;
     }
 
-    public Integer getPlatformId() {
-        return platformId;
+    public Integer getChannelId() {
+        return channelId;
     }
 
-    public void setPlatformId(Integer platformId) {
-        this.platformId = platformId;
+    public void setChannelId(Integer channelId) {
+        this.channelId = channelId;
     }
 
     public Long getGameId() {

@@ -7,7 +7,7 @@ import java.io.Serializable;
 public class BehaviorUserRedis implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String uid;
-    private Integer platformId;
+    private Integer channelId;
     private Long gameId;
 	private Integer clientType;
 	private String zoneId;
@@ -34,12 +34,12 @@ public class BehaviorUserRedis implements Serializable {
 		this.uid = uid;
 	}
 
-	public Integer getPlatformId() {
-		return platformId;
+	public Integer getChannelId() {
+		return channelId;
 	}
 
-	public void setPlatformId(Integer platformId) {
-		this.platformId = platformId;
+	public void setChannelId(Integer channelId) {
+		this.channelId = channelId;
 	}
 
 	public Long getGameId() {

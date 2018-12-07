@@ -18,21 +18,21 @@ public class BehaviorDevice implements Serializable {
 
     private Integer clientType;
 
-    private String platforms;
+    private String channels;
 
     private String loginZones;
 
     private String roleZones;
     
-    private String loginPlatforms;
+    private String loginChannels;
     
-    private Set<Integer> platformIds;
+    private Set<Integer> channelIds;
     
     private Set<String> loginZoneIds;
     
     private Set<String> roleZoneIds;
     
-    private Set<Integer> loginPlatformIds;
+    private Set<Integer> loginChannelIds;
 
     private static final long serialVersionUID = 1L;
 
@@ -68,12 +68,12 @@ public class BehaviorDevice implements Serializable {
         this.clientType = clientType;
     }
 
-    public String getPlatforms() {
-        return platforms;
+    public String getChannels() {
+        return channels;
     }
 
-    public void setPlatforms(String platforms) {
-        this.platforms = platforms == null ? null : platforms.trim();
+    public void setChannels(String channels) {
+        this.channels = channels == null ? null : channels.trim();
     }
 
     public String getLoginZones() {
@@ -92,8 +92,8 @@ public class BehaviorDevice implements Serializable {
         this.roleZones = roleZones == null ? null : roleZones.trim();
     }
 
-	public Set<Integer> getPlatformIds() {
-		return platformIds;
+	public Set<Integer> getChannelIds() {
+		return channelIds;
 	}
 
 	public Set<String> getLoginZoneIds() {
@@ -105,45 +105,45 @@ public class BehaviorDevice implements Serializable {
 	}
 	
     
-	public String getLoginPlatforms() {
-		return loginPlatforms;
+	public String getLoginChannels() {
+		return loginChannels;
 	}
 
-	public void setLoginPlatforms(String loginPlatforms) {
-		this.loginPlatforms = loginPlatforms;
+	public void setLoginChannels(String loginChannels) {
+		this.loginChannels = loginChannels;
 	}
 
-	public Set<Integer> getLoginPlatformIds() {
-		return loginPlatformIds;
+	public Set<Integer> getLoginChannelIds() {
+		return loginChannelIds;
 	}
 
 	@SuppressWarnings("unchecked")
 	public void rebuildAttribute() {
-		platformIds = JsonMapper.toObject(platforms, Set.class);
+		channelIds = JsonMapper.toObject(channels, Set.class);
 		loginZoneIds = JsonMapper.toObject(loginZones, Set.class);
 		roleZoneIds = JsonMapper.toObject(roleZones, Set.class);
-		loginPlatformIds = JsonMapper.toObject(loginPlatforms, Set.class);
+		loginChannelIds = JsonMapper.toObject(loginChannels, Set.class);
 	}
 	
 	public void jsonAttribute() {
-		if(null == platformIds) platformIds = new HashSet<Integer>();
-		if(null == loginPlatformIds) loginPlatformIds = new HashSet<Integer>();
+		if(null == channelIds) channelIds = new HashSet<Integer>();
+		if(null == loginChannelIds) loginChannelIds = new HashSet<Integer>();
 		if(null == loginZoneIds) loginZoneIds = new HashSet<String>();
 		if(null == roleZoneIds) roleZoneIds = new HashSet<String>();
-		platforms = JsonMapper.toJson(platformIds);
-		loginPlatforms = JsonMapper.toJson(loginPlatformIds);
+		channels = JsonMapper.toJson(channelIds);
+		loginChannels = JsonMapper.toJson(loginChannelIds);
 		loginZones = JsonMapper.toJson(loginZoneIds);
 		roleZones = JsonMapper.toJson(roleZoneIds);
 	}
 	
-	public void addPlatformId(Integer platformId) {
-		if(null == platformIds) platformIds = new HashSet<Integer>();
-		platformIds.add(platformId);
+	public void addChannelId(Integer channelId) {
+		if(null == channelIds) channelIds = new HashSet<Integer>();
+		channelIds.add(channelId);
 	}
 	
-	public void addLoginPlatformId(Integer platformId) {
-		if(null == loginPlatformIds) loginPlatformIds = new HashSet<Integer>();
-		loginPlatformIds.add(platformId);
+	public void addLoginChannelId(Integer channelId) {
+		if(null == loginChannelIds) loginChannelIds = new HashSet<Integer>();
+		loginChannelIds.add(channelId);
 	}
 	
 	public void addLoginZoneId(String zoneId) {

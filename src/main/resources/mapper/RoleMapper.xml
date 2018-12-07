@@ -3,8 +3,8 @@
 <mapper namespace="com.qinglan.sdk.server.domain.basic.Role">
 
     <insert id="insert" parameterType="com.qinglan.sdk.server.domain.basic.Role">
-    insert into b_role (clientType, gameId, platformId, zoneId, roleId, roleName, createTime)
-    values (#{clientType}, #{gameId}, #{platformId}, #{zoneId}, #{roleId}, #{roleName}, #{createTime})
+    insert into b_role (clientType, gameId, channelId, zoneId, roleId, roleName, createTime)
+    values (#{clientType}, #{gameId}, #{channelId}, #{zoneId}, #{roleId}, #{roleName}, #{createTime})
   </insert>
 
 </mapper>

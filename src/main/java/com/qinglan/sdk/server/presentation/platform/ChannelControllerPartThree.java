@@ -1,6 +1,6 @@
 package com.qinglan.sdk.server.presentation.platform;
 
-import com.qinglan.sdk.server.application.platform.PlatformServicePartThree;
+import com.qinglan.sdk.server.application.platform.ChannelServicePartThree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -14,10 +14,10 @@ import javax.annotation.Resource;
 
 @Controller
 @RequestMapping("/platform3")
-public class PlatformControllerPartThree {
+public class ChannelControllerPartThree {
 
-    private static final Logger logger = LoggerFactory.getLogger(PlatformControllerPartThree.class);
+    private static final Logger logger = LoggerFactory.getLogger(ChannelControllerPartThree.class);
 
     @Resource
-    private PlatformServicePartThree platformServiceTree;
+    private ChannelServicePartThree platformServiceTree;
 }

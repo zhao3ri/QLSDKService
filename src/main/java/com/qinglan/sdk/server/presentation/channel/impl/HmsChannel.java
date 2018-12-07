@@ -4,22 +4,19 @@ import com.qinglan.sdk.server.application.basic.OrderService;
 import com.qinglan.sdk.server.common.HttpUtils;
 import com.qinglan.sdk.server.common.JsonMapper;
 import com.qinglan.sdk.server.common.StringUtil;
-import com.qinglan.sdk.server.platform.ibei.SignHelper;
+import com.qinglan.sdk.server.domain.basic.Order;
 import com.qinglan.sdk.server.presentation.channel.entity.BaseRequest;
 import com.qinglan.sdk.server.presentation.channel.entity.HMSPayResult;
 import com.qinglan.sdk.server.presentation.channel.entity.HMSPaySignRequest;
 import com.qinglan.sdk.server.presentation.channel.utils.HmsSignHelper;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static com.qinglan.sdk.server.Constants.RESPONSE_KEY_SIGN;
 import static com.qinglan.sdk.server.Constants.RESPONSE_KEY_SIGN_TYPE;
@@ -34,6 +31,8 @@ public class HmsChannel extends BaseChannel {
     private static final String REQUEST_PARAM_PLAYER_SIGN = "playerSSign";
     private static final String REQUEST_PARAM_CP_SIGN = "cpSign";
 
+    private static final String REQUEST_PARAM_CHANNEL_ORDER_ID = "orderId";//渠道订单id
+    private static final String REQUEST_PARAM_REQUEST_ID = "requestId";//订单id
     private static final String REQUEST_PARAM_EXT_RESERVED = "extReserved";
     private static final String REQUEST_PARAM_SYS_RESERVED = "sysReserved";
 
@@ -76,20 +75,27 @@ public class HmsChannel extends BaseChannel {
 
     @Override
     public String returnPayResult(HttpServletRequest request, OrderService service) {
-        Map<String, Object> map = getRequestParams(request);
+        Map<String, Object> params = getRequestParams(request);
         HMSPayResult result = new HMSPayResult();
         result.setResult(RESULT_PAY_CODE_FAIL);
-        if (null == map || map.isEmpty()) {
+        if (null == params || params.isEmpty()) {
             return JsonMapper.toJson(result);
         }
-
-        String sign = (String) map.get(RESPONSE_KEY_SIGN);
-        String signType = (String) map.get(RESPONSE_KEY_SIGN_TYPE);
-        String content = HmsSignHelper.getSignData(map);
+        Order order = getOrder(service, String.valueOf(params.get(REQUEST_PARAM_REQUEST_ID).toString())
+                , String.valueOf(params.get(REQUEST_PARAM_CHANNEL_ORDER_ID)));
+        if (order == null) {
+            return JsonMapper.toJson(result);
+        }
+        platformGame = basicRepository.getByPlatformAndGameId(order.getChannelId(), order.getGameId());
+        String sign = (String) params.get(RESPONSE_KEY_SIGN);
+        String signType = (String) params.get(RESPONSE_KEY_SIGN_TYPE);
+        String content = HmsSignHelper.getSignData(params);
         if (HmsSignHelper.doCheck(content, sign, platformGame.getPublicKey(), signType)) {
             result.setResult(RESULT_PAY_CODE_SUCCESS);
+            service.paySuccess(order.getOrderId());
         } else {
             result.setResult(RESULT_PAY_CODE_FAIL);
+            service.payFail(order.getOrderId(), "order amount error");
         }
         return JsonMapper.toJson(result);
     }

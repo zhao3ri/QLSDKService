@@ -4,7 +4,7 @@
     <resultMap id="BaseResultMap" type="com.qinglan.sdk.server.domain.basic.Order">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="gameId" jdbcType="BIGINT" property="gameId"/>
-        <result column="platformId" jdbcType="INTEGER" property="platformId"/>
+        <result column="channelId" jdbcType="INTEGER" property="channelId"/>
         <result column="uid" jdbcType="VARCHAR" property="uid"/>
         <result column="zoneId" jdbcType="VARCHAR" property="zoneId"/>
         <result column="roleId" jdbcType="VARCHAR" property="roleId"/>
@@ -27,7 +27,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-    id, gameId, platformId, uid, zoneId, roleId, orderId, cpOrderId, extInfo, amount,
+    id, gameId, channelId, uid, zoneId, roleId, orderId, cpOrderId, extInfo, amount,
     notifyUrl, fixed, deviceId, clientType, errorMsg, status, notifyStatus, createTime, 
     updateTime, gold,selfpay
   </sql>
@@ -41,18 +41,18 @@
     <select id="getOrderStatus" parameterType="java.util.Map"
             resultType="com.qinglan.sdk.server.domain.basic.Order">
     select status,notifyStatus from b_order
-    where orderId = #{orderId,jdbcType=VARCHAR} and gameId=#{gameId,jdbcType=BIGINT} and platformId=#{platformId,jdbcType=INTEGER}
+    where orderId = #{orderId,jdbcType=VARCHAR} and gameId=#{gameId,jdbcType=BIGINT} and channelId=#{channelId,jdbcType=INTEGER}
   </select>
 
     <insert id="insert" parameterType="com.qinglan.sdk.server.domain.basic.Order">
-    insert into b_order (id, gameId, platformId,
+    insert into b_order (id, gameId, channelId,
       uid, zoneId, roleId, roleName,
-      orderId, cpOrderId, extInfo,
+      orderId, channelOrderId, extInfo,
       amount, notifyUrl, fixed, 
       deviceId, clientType, errorMsg, 
       status, notifyStatus, createTime, 
       updateTime, gold,selfpay)
-    values (#{id,jdbcType=BIGINT}, #{gameId,jdbcType=BIGINT}, #{platformId,jdbcType=INTEGER},
+    values (#{id,jdbcType=BIGINT}, #{gameId,jdbcType=BIGINT}, #{channelId,jdbcType=INTEGER},
       #{uid,jdbcType=VARCHAR}, #{zoneId,jdbcType=VARCHAR}, #{roleId,jdbcType=VARCHAR}, #{roleName,jdbcType=VARCHAR}, 
       #{orderId,jdbcType=VARCHAR}, #{cpOrderId,jdbcType=VARCHAR}, #{extInfo,jdbcType=VARCHAR},
       #{amount,jdbcType=INTEGER}, #{notifyUrl,jdbcType=VARCHAR}, #{fixed,jdbcType=BIT}, 

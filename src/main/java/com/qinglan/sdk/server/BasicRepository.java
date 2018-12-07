@@ -7,14 +7,14 @@ import java.util.List;
 
 public interface BasicRepository {
     //查询创建角色时间
-    Account getRoleCreateTime(Long appId, Integer platformId, String zoneId, String roleId, String roleName);
+    Account getRoleCreateTime(Long appId, Integer channelId, String zoneId, String roleId, String roleName);
 
     /*******用户表*******/
     int saveAccount(Account account);
 
     int insertbatch(List<Account> list);
 
-    Account getAccount(int platformId, String uid);
+    Account getAccount(int channelId, String uid);
 
     /*******游戏表*******/
     Game getGameById(long id);
@@ -39,7 +39,7 @@ public interface BasicRepository {
     List<String> getNotifyOrder();
 
     /*******行为表*******/
-    List<BehaviorUser> getUserBehavior(Integer clientType, String uid, Integer platformId, Long gameId);
+    List<BehaviorUser> getUserBehavior(Integer clientType, String uid, Integer channelId, Long gameId);
 
     void insertUserBehavior(BehaviorUser behaviorUserZone);
 
@@ -57,11 +57,11 @@ public interface BasicRepository {
 
     void updateDeviceRoleZone(BehaviorDevice behaviorDevice);
 
-    GameTrace getGameTrace(Integer clientType, String uid, Integer platformId, Long gameId);
+    GameTrace getGameTrace(Integer clientType, String uid, Integer channelId, Long gameId);
 
-    ZoneTrace getZoneTrace(Integer clientType, String uid, Integer platformId, Long gameId, String zoneId);
+    ZoneTrace getZoneTrace(Integer clientType, String uid, Integer channelId, Long gameId, String zoneId);
 
-    RoleTrace getRoleTrace(Integer clientType, String uid, Integer platformId, Long gameId, String zoneId, String roleId, String roleName);
+    RoleTrace getRoleTrace(Integer clientType, String uid, Integer channelId, Long gameId, String zoneId, String roleId, String roleName);
 
     String updateBehaviorUserRole(BehaviorUser behaviorUser, RoleTrace roleTrace);
 

@@ -7,7 +7,7 @@ import com.qinglan.sdk.server.presentation.platform.dto.*;
 
 import javax.servlet.http.HttpServletRequest;
 
-public interface PlatformService {
+public interface ChannelService {
 	
 	String verifyYaoyue(YaoyueCallback zhidian);
 	

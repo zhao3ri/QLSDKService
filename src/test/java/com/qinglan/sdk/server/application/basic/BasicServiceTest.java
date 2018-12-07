@@ -30,7 +30,7 @@ public class BasicServiceTest  extends BaseTestCase{
 		for (int i = 1; i <= 100000; i++) {
 			Account account=new Account();
 			account.setUid("20150115"+i);
-			account.setPlatformId(20);
+			account.setChannelId(20);
 			account.setCreateTime(new Date());
 			list.add(account);
 			if(i%20000 == 10 && i !=10 ){
@@ -64,7 +64,7 @@ public class BasicServiceTest  extends BaseTestCase{
 	public void orderGenerateLogger(){
 //		OrderGeneratePattern params = new OrderGeneratePattern();
 //		params.setAppID(2L);
-//		params.setPlatformId(1);
+//		params.setChannelId(1);
 //		params.setUid("1");
 //		params.setZoneId("3");
 //		params.setClientType(1);
@@ -89,7 +89,7 @@ public class BasicServiceTest  extends BaseTestCase{
 	public void notifyGame() throws Exception {
 		Order order = basicRepository.getOrderByOrderId("20141225110336875419886036371916");
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("platformId", order.getPlatformId());
+		params.put("platformId", order.getChannelId());
 		params.put("uid", order.getUid());
 		params.put("zoneId", order.getZoneId());
 		params.put("roleId", order.getRoleId());

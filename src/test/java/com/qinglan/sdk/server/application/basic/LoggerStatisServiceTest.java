@@ -23,7 +23,7 @@ public class LoggerStatisServiceTest extends BaseTestCase{
 	public void initialLogger() throws InterruptedException{
 		InitialPattern initial=new InitialPattern();
 		initial.setGameId(150212661932L);
-		initial.setPlatformId(1001);
+		initial.setChannelId(1001);
 		initial.setDeviceId("865267028861887");
 		initial.setClientType(1);
 		initial.setManufacturer("samsung");
@@ -49,7 +49,7 @@ public class LoggerStatisServiceTest extends BaseTestCase{
 		LoginPattern login =new LoginPattern();
 		login.setGameId(150212661932L);
 		login.setUid("U19238709741111111111111111111111111");
-		login.setPlatformId(1001);
+		login.setChannelId(1001);
 		login.setDeviceId("865267028861887");
 		login.setClientType(1);
 		login.setRoleId("1");
@@ -66,7 +66,7 @@ public class LoggerStatisServiceTest extends BaseTestCase{
 		HeartbeatPattern heartbeat = new HeartbeatPattern();
 		heartbeat.setGameId(150212661932L);
 		heartbeat.setUid("zxbtest24");
-		heartbeat.setPlatformId(1019);
+		heartbeat.setChannelId(1019);
 		heartbeat.setDeviceId("82776301283093");
 		heartbeat.setClientType(1);
 		heartbeat.setRoleId("1");
@@ -82,7 +82,7 @@ public class LoggerStatisServiceTest extends BaseTestCase{
 		QuitPattern quit = new QuitPattern();
 		quit.setGameId(150212661932L);
 		quit.setUid("zxbtest24");
-		quit.setPlatformId(1019);
+		quit.setChannelId(1019);
 		quit.setDeviceId("82776301283093");
 		quit.setClientType(1);
 		quit.setRoleId("1");
@@ -97,7 +97,7 @@ public class LoggerStatisServiceTest extends BaseTestCase{
 		RoleCreatePattern roleEstablish = new RoleCreatePattern();
 		roleEstablish.setGameId(150212661932L);
 		roleEstablish.setUid("zxbtest24");
-		roleEstablish.setPlatformId(1019);
+		roleEstablish.setChannelId(1019);
 		roleEstablish.setDeviceId("827763012830934");
 		roleEstablish.setClientType(1);
 		roleEstablish.setRoleId("1");
@@ -114,7 +114,7 @@ public class LoggerStatisServiceTest extends BaseTestCase{
 //		OrderGeneratePattern orderGenerate=new OrderGeneratePattern();
 //		orderGenerate.setAppID(1L);
 //		orderGenerate.setUid("10000");
-//		orderGenerate.setPlatformId(1);
+//		orderGenerate.setChannelId(1);
 //		orderGenerate.setDeviceId("82776301283093");
 //		orderGenerate.setClientType(1);
 //		orderGenerate.setRoleId("1");

@@ -26,7 +26,6 @@ public class Constants {
     public static final int GAME_CHANNEL_CODE_REGISTE_STATUS_DEFAULT = 0;
     public static final int GAME_CHANNEL_CODE_REGISTE_STATUS_DISABLE = 1;
 
-
     public static final int CHANNEL_STATUS_NORMAL = 1;
 
     public static final String JIFENG_DEVELOPER_UID = "8208195";

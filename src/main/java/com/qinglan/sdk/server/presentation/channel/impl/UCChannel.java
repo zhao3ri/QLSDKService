@@ -1,7 +1,7 @@
 package com.qinglan.sdk.server.presentation.channel.impl;
 
-import com.qinglan.sdk.server.application.basic.OrderService;
-import com.qinglan.sdk.server.application.platform.log.ChannelStatsLogger;
+import com.qinglan.sdk.server.application.OrderService;
+import com.qinglan.sdk.server.application.log.ChannelStatsLogger;
 import com.qinglan.sdk.server.common.*;
 import com.qinglan.sdk.server.domain.basic.Order;
 import com.qinglan.sdk.server.presentation.channel.entity.BaseRequest;
@@ -11,9 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.type.TypeReference;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -22,20 +20,29 @@ import static com.qinglan.sdk.server.ChannelConstants.UC_PAY_RESULT_FAILED;
 import static com.qinglan.sdk.server.ChannelConstants.UC_PAY_RESULT_SUCCESS;
 
 public class UCChannel extends BaseChannel {
-    public static final String REQUEST_KEY_SID = "sid";
-    public static final String REQUEST_KEY_GAME_ID = "gameId";
-    public static final String REQUEST_KEY_ID = "id";
-    public static final String REQUEST_KEY_DATA = "data";
-    public static final String REQUEST_KEY_GAME = "game";
-    public static final String REQUEST_KEY_SIGN = "sign";
-    public static final String SIGN_PREFIX = "sid=";
+    /**
+     * 认证地址
+     */
+    public static final String VERIFY_URL = "/ucgame/session";
+    /**
+     * 支付回调地址
+     */
+    public static final String PAY_RETURN_URL = "/ucgame/pay/return";
 
-    public static final String PARAM_CALLBACK_INFO = "callbackInfo";
-    public static final String PARAM_NOTIFY_URL = "notifyUrl";
-    public static final String PARAM_AMOUNT = "amount";
-    public static final String PARAM_ORDER_ID = "cpOrderId";
-    public static final String PARAM_CHANNEL_ORDER_ID = "orderId";
-    public static final String PARAM_ACCOUNT_ID = "accountId";
+    private static final String REQUEST_KEY_SID = "sid";
+    private static final String REQUEST_KEY_GAME_ID = "gameId";
+    private static final String REQUEST_KEY_ID = "id";
+    private static final String REQUEST_KEY_DATA = "data";
+    private static final String REQUEST_KEY_GAME = "game";
+    public static final String REQUEST_KEY_SIGN = "sign";
+    private static final String SIGN_PREFIX = "sid=";
+
+    private static final String PARAM_CALLBACK_INFO = "callbackInfo";
+    private static final String PARAM_NOTIFY_URL = "notifyUrl";
+    private static final String PARAM_AMOUNT = "amount";
+    private static final String PARAM_ORDER_ID = "cpOrderId";
+    private static final String PARAM_CHANNEL_ORDER_ID = "orderId";
+    private static final String PARAM_ACCOUNT_ID = "accountId";
 
     /**
      * 第三方平台认证
@@ -53,7 +60,7 @@ public class UCChannel extends BaseChannel {
     public String verifySession(String... args) {
         checkInit();
 
-        if (null == channelGame || null == args || args.length == 0)
+        if (null == channelGame || null == channel || null == args || args.length == 0)
             return null;
         String sid = args[0];
         String appID = null;
@@ -121,7 +128,7 @@ public class UCChannel extends BaseChannel {
     public String returnPayResult(HttpServletRequest request, OrderService service) {
         checkInit();
         try {
-            String result = getResultString(request);
+            String result = getRequestString(request);
             if (StringUtils.isEmpty(result))
                 return UC_PAY_RESULT_FAILED;
             //记录日志
@@ -161,27 +168,22 @@ public class UCChannel extends BaseChannel {
 
     }
 
-    private String getResultString(HttpServletRequest request) throws IOException {
-        BufferedReader in = new BufferedReader(new InputStreamReader(request.getInputStream(), "utf-8"));
-        String ln;
-        StringBuffer stringBuffer = new StringBuffer();
-        while ((ln = in.readLine()) != null) {
-            stringBuffer.append(ln);
-            stringBuffer.append("\r\n");
-        }
-        return stringBuffer.toString();
+    @Override
+    public String queryOrder(Order order) {
+        return null;
     }
 
     private void handleOrder(Map<String, Object> payResult, Order order, OrderService service) throws Exception {
         UCPayResult ucPay = Tools.mapToObject(payResult, UCPayResult.class);
         //游戏需根据orderStatus参数的值判断是否给玩家过账虚拟货币。（S为充值成功、F为充值失败，避免假卡、无效卡充值成功）
         if ("S".equals(ucPay.getData().getOrderStatus())) {
-            if (Double.valueOf(ucPay.getData().getAmount()) * 100 >= order.getAmount()) {
-                service.paySuccess(order.getOrderId());
-            } else {
-                service.payFail(order.getOrderId(), "order amount error");
-                ChannelStatsLogger.error(ChannelStatsLogger.UC, order.getOrderId(), "order amount error");
-            }
+//            if (Double.valueOf(ucPay.getData().getAmount()) * 100 >= order.getAmount()) {
+//                service.paySuccess(order.getOrderId());
+//            } else {
+//                service.payFail(order.getOrderId(), "order amount error");
+//                ChannelStatsLogger.error(ChannelStatsLogger.UC, order.getOrderId(), "order amount error");
+//            }
+            updateOrder(order, Double.valueOf(ucPay.getData().getAmount()) * 100, service);
         } else {
             service.payFail(order.getOrderId(), ucPay.getData().getFailedDesc());
         }

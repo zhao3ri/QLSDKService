@@ -8,16 +8,13 @@ import sun.misc.BASE64Encoder;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.security.KeyFactory;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.*;
 
 import static com.qinglan.sdk.server.Constants.RESPONSE_KEY_SIGN;
 import static com.qinglan.sdk.server.Constants.RESPONSE_KEY_SIGN_TYPE;
-import static com.qinglan.sdk.server.platform.fansdk.EncryptUtils.md5;
+import static com.qinglan.sdk.server.utils.channel.fansdk.EncryptUtils.md5;
 
 
 public class Sign {

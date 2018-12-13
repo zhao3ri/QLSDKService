@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 
 import javax.annotation.Resource;
 
-import com.qinglan.sdk.server.application.platform.ChannelUtilsService;
+import com.qinglan.sdk.server.application.ChannelUtilsService;
 import com.qinglan.sdk.server.domain.basic.ChannelGameEntity;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
@@ -22,7 +22,7 @@ import com.qinglan.sdk.server.common.JsonMapper;
 import com.qinglan.sdk.server.common.RandomTool;
 import com.qinglan.sdk.server.common.Sign;
 import com.qinglan.sdk.server.release.BaseTestCase;
-import com.qinglan.sdk.server.application.basic.OrderService;
+import com.qinglan.sdk.server.application.OrderService;
 import com.qinglan.sdk.server.BasicRepository;
 import com.qinglan.sdk.server.domain.basic.Order;
 

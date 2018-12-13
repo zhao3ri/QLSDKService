@@ -10,7 +10,6 @@ import javax.annotation.Resource;
 import org.junit.Test;
 
 import com.qinglan.sdk.server.release.BaseTestCase;
-import com.qinglan.sdk.server.application.basic.kafka.KafkaProducerClient;
 
 public class KafkaTest extends BaseTestCase {
 

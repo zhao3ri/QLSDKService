@@ -25,13 +25,13 @@
 	<context:component-scan base-package="com.qinglan.sdk.server" />
 	<context:component-scan base-package="com.qinglan.sdk.server.data" />
 
-	<bean class="com.qinglan.sdk.server.application.basic.task.OrderNotifyTask" init-method="init" lazy-init="false" scope="singleton" />
+	<bean class="com.qinglan.sdk.server.application.task.OrderNotifyTask" init-method="init" lazy-init="false" scope="singleton" />
 	
-	<bean class="com.qinglan.sdk.server.application.basic.task.LoggerTask" init-method="init" lazy-init="false" scope="singleton" />
+	<bean class="com.qinglan.sdk.server.application.task.LoggerTask" init-method="init" lazy-init="false" scope="singleton" />
 	
-	<bean class="com.qinglan.sdk.server.application.basic.task.TencentPollNotifyTask" init-method="init" lazy-init="false" scope="singleton" />
+	<bean class="com.qinglan.sdk.server.application.task.TencentPollNotifyTask" init-method="init" lazy-init="false" scope="singleton" />
 
-	<bean id="kafkaProducerClient" class="com.qinglan.sdk.server.application.basic.kafka.KafkaProducerClient" init-method="init" lazy-init="false" scope="singleton" >
+	<bean id="kafkaProducerClient" class="com.qinglan.sdk.server.application.kafka.KafkaProducerClient" init-method="init" lazy-init="false" scope="singleton" >
 		<property name="brokerList" value="${kafka.metadata.broker.list}"></property>
 		<property name="defaultTopic" value="${kafka.defaultTopic}"></property>  
 	</bean> 

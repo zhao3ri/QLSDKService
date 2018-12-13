@@ -11,8 +11,8 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 
-import com.qinglan.sdk.server.presentation.basic.dto.LoginPattern;
-import com.qinglan.sdk.server.application.basic.AccountService;
+import com.qinglan.sdk.server.presentation.dto.LoginPattern;
+import com.qinglan.sdk.server.application.AccountService;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,7 @@ import com.qinglan.sdk.server.common.HttpUtils;
 import com.qinglan.sdk.server.common.JsonMapper;
 import com.qinglan.sdk.server.release.BaseTestCase;
 import com.qinglan.sdk.server.Constants;
-import com.qinglan.sdk.server.application.basic.OrderService;
+import com.qinglan.sdk.server.application.OrderService;
 import com.qinglan.sdk.server.domain.BehaviorTest;
 
 public class AccountControllerTest  extends BaseTestCase{

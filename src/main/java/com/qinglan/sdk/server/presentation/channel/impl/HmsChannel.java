@@ -1,6 +1,6 @@
 package com.qinglan.sdk.server.presentation.channel.impl;
 
-import com.qinglan.sdk.server.application.basic.OrderService;
+import com.qinglan.sdk.server.application.OrderService;
 import com.qinglan.sdk.server.common.HttpUtils;
 import com.qinglan.sdk.server.common.JsonMapper;
 import com.qinglan.sdk.server.common.StringUtil;
@@ -22,6 +22,19 @@ import static com.qinglan.sdk.server.Constants.RESPONSE_KEY_SIGN;
 import static com.qinglan.sdk.server.Constants.RESPONSE_KEY_SIGN_TYPE;
 
 public class HmsChannel extends BaseChannel {
+    /**
+     * 认证地址
+     */
+    public static final String VERIFY_URL = "/ucgame/session";
+    /**
+     * 支付回调地址
+     */
+    public static final String PAY_RETURN_URL = "/hms/pay/return";
+    /**
+     * 支付签名地址
+     */
+    public static final String PAY_SIGN_URL = "/hms/pay/sign";
+
     private static final String REQUEST_PARAM_METHOD = "method";
     private static final String REQUEST_PARAM_APPID = "appId";
     private static final String REQUEST_PARAM_CPID = "cpId";
@@ -35,7 +48,7 @@ public class HmsChannel extends BaseChannel {
     private static final String REQUEST_PARAM_REQUEST_ID = "requestId";//订单id
     private static final String REQUEST_PARAM_EXT_RESERVED = "extReserved";
     private static final String REQUEST_PARAM_SYS_RESERVED = "sysReserved";
-
+    private static final String REQUEST_PARAM_AMOUNT = "amount";
     private static final int RESULT_PAY_CODE_SUCCESS = 0;
     private static final int RESULT_PAY_CODE_FAIL = 1;
 
@@ -59,7 +72,6 @@ public class HmsChannel extends BaseChannel {
         mockRequestParams.put(REQUEST_PARAM_PLAYER_LEVEL, args[4]);
         mockRequestParams.put(REQUEST_PARAM_PLAYER_SIGN, args[5]);
         mockRequestParams.put(REQUEST_PARAM_CP_SIGN, HmsSignHelper.generateCPSign(mockRequestParams, priKey));
-
         return HttpUtils.post(verUrl, mockRequestParams);
     }
 
@@ -92,12 +104,17 @@ public class HmsChannel extends BaseChannel {
         String content = HmsSignHelper.getSignData(params);
         if (HmsSignHelper.doCheck(content, sign, channelGame.getPublicKey(), signType)) {
             result.setResult(RESULT_PAY_CODE_SUCCESS);
-            service.paySuccess(order.getOrderId());
+            updateOrder(order, Double.valueOf(String.valueOf(params.get(REQUEST_PARAM_AMOUNT))) * 100, service);
         } else {
             result.setResult(RESULT_PAY_CODE_FAIL);
-            service.payFail(order.getOrderId(), "order amount error");
+            service.payFail(order.getOrderId(), "order sign error");
         }
         return JsonMapper.toJson(result);
+    }
+
+    @Override
+    public String queryOrder(Order order) {
+        return null;
     }
 
     private Map<String, Object> getRequestParams(HttpServletRequest request) {
@@ -137,27 +154,5 @@ public class HmsChannel extends BaseChannel {
             e.printStackTrace();
         }
         return valueMap;
-    }
-
-    private String getRequestString(HttpServletRequest request) {
-        String line = null;
-        StringBuffer sb = new StringBuffer();
-        try {
-            request.setCharacterEncoding("UTF-8");
-            InputStream stream = request.getInputStream();
-            InputStreamReader isr = new InputStreamReader(stream);
-            BufferedReader br = new BufferedReader(isr);
-            while ((line = br.readLine()) != null) {
-                sb.append(line).append("\r\n");
-            }
-            System.out.println("The original data is : " + sb.toString());
-            br.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-
-        return sb.toString();
     }
 }

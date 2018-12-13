@@ -1,6 +1,6 @@
 package com.qinglan.sdk.server.presentation.channel.entity;
 
-import com.qinglan.sdk.server.presentation.basic.dto.OrderGenerateRequest;
+import com.qinglan.sdk.server.presentation.dto.OrderGenerateRequest;
 
 public class UCOrderSignRequest extends BaseRequest {
     private String uid;

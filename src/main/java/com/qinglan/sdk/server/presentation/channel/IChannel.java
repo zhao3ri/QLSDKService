@@ -1,9 +1,10 @@
 package com.qinglan.sdk.server.presentation.channel;
 
 import com.qinglan.sdk.server.BasicRepository;
-import com.qinglan.sdk.server.application.basic.OrderService;
+import com.qinglan.sdk.server.application.OrderService;
 import com.qinglan.sdk.server.domain.basic.ChannelEntity;
 import com.qinglan.sdk.server.domain.basic.ChannelGameEntity;
+import com.qinglan.sdk.server.domain.basic.Order;
 import com.qinglan.sdk.server.presentation.channel.entity.BaseRequest;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,4 +23,5 @@ public interface IChannel {
 
     String returnPayResult(HttpServletRequest request, OrderService service);
 
+    String queryOrder(Order order);
 }

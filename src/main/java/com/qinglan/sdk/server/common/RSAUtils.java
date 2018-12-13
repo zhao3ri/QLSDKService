@@ -45,29 +45,28 @@ public class RSAUtils {
 
     /**
      * 使用公钥对RSA签名有效性进行检查
-     * @param content 待签名数据
-     * @param sign 签名值
-     * @param publicKey  爱贝公钥
+     *
+     * @param content       待签名数据
+     * @param sign          签名值
+     * @param publicKey     爱贝公钥
      * @param input_charset 编码格式
      * @return 布尔值
      */
-    public static boolean verify(String content, String sign, String publicKey, String input_charset)
-    {
+    public static boolean verify(String content, String sign, String publicKey, String input_charset) {
         return verify(content, sign, publicKey, input_charset, SIGNATURE_ALGORITHM_MD5);
     }
 
     /**
      * 使用公钥对RSA签名有效性进行检查
-     * @param content 待签名数据
-     * @param sign 签名值
-     * @param publicKey  爱贝公钥
+     *
+     * @param content       待签名数据
+     * @param sign          签名值
+     * @param publicKey     爱贝公钥
      * @param input_charset 编码格式
      * @return 布尔值
      */
-    public static boolean verify(String content, String sign, String publicKey, String input_charset, String algorithm)
-    {
-        try
-        {
+    public static boolean verify(String content, String sign, String publicKey, String input_charset, String algorithm) {
+        try {
             KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
             byte[] encodedKey = Base64.decode2Bytes(publicKey);
             PublicKey pubKey = keyFactory.generatePublic(new X509EncodedKeySpec(encodedKey));
@@ -77,13 +76,11 @@ public class RSAUtils {
                     .getInstance(algorithm);
 
             signature.initVerify(pubKey);
-            signature.update( content.getBytes(input_charset));
+            signature.update(content.getBytes(input_charset));
 
-            return signature.verify( Base64.decode2Bytes(sign) );
+            return signature.verify(Base64.decode2Bytes(sign));
 
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -92,43 +89,40 @@ public class RSAUtils {
 
     /**
      * 使用私钥对数据进行RSA签名
-     * @param content 待签名数据
-     * @param privateKey 商户私钥
+     *
+     * @param content       待签名数据
+     * @param privateKey    商户私钥
      * @param input_charset 编码格式
      * @return 签名值
      */
-    public static String sign(String content, String privateKey, String input_charset)
-    {
+    public static String sign(String content, String privateKey, String input_charset) {
         return sign(content, privateKey, input_charset, SIGNATURE_ALGORITHM_MD5);
     }
 
     /**
      * 使用私钥对数据进行RSA签名
-     * @param content 待签名数据
-     * @param privateKey 商户私钥
+     *
+     * @param content       待签名数据
+     * @param privateKey    商户私钥
      * @param input_charset 编码格式
      * @return 签名值
      */
-    public static String sign(String content, String privateKey, String input_charset, String algorithm)
-    {
-        try
-        {
-            PKCS8EncodedKeySpec priPKCS8 	= new PKCS8EncodedKeySpec( Base64.decode2Bytes(privateKey) );
-            KeyFactory keyf 				= KeyFactory.getInstance(KEY_ALGORITHM);
-            PrivateKey priKey 				= keyf.generatePrivate(priPKCS8);
+    public static String sign(String content, String privateKey, String input_charset, String algorithm) {
+        try {
+            PKCS8EncodedKeySpec priPKCS8 = new PKCS8EncodedKeySpec(Base64.decode2Bytes(privateKey));
+            KeyFactory keyf = KeyFactory.getInstance(KEY_ALGORITHM);
+            PrivateKey priKey = keyf.generatePrivate(priPKCS8);
 
             java.security.Signature signature = java.security.Signature
                     .getInstance(algorithm);
 
             signature.initSign(priKey);
-            signature.update( content.getBytes(input_charset) );
+            signature.update(content.getBytes(input_charset));
 
             byte[] signed = signature.sign();
 
             return Base64.encode(signed);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

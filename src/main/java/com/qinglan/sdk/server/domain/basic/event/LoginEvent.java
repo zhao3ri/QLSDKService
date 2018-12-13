@@ -1,7 +1,7 @@
 package com.qinglan.sdk.server.domain.basic.event;
 
 import com.qinglan.sdk.server.data.annotation.event.Event;
-import com.qinglan.sdk.server.presentation.basic.dto.LoginPattern;
+import com.qinglan.sdk.server.presentation.dto.LoginPattern;
 
 @Event
 public class LoginEvent implements java.io.Serializable{

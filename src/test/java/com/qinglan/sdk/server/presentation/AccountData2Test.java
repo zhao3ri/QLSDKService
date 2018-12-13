@@ -9,10 +9,9 @@ import java.util.UUID;
 import javax.annotation.Resource;
 
 import com.qinglan.sdk.server.common.HttpUtils;
-import com.qinglan.sdk.server.application.basic.AccountService;
+import com.qinglan.sdk.server.application.AccountService;
 import com.qinglan.sdk.server.domain.UserTest;
-import com.qinglan.sdk.server.presentation.basic.dto.*;
-import com.qinglan.sdk.server.presentation.basic.dto.OrderGenerateRequest;
+import com.qinglan.sdk.server.presentation.dto.OrderGenerateRequest;
 
 public class AccountData2Test {
 	

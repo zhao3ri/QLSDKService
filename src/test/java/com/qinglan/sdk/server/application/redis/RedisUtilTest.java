@@ -7,7 +7,6 @@ import com.qinglan.sdk.server.common.DateUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import com.qinglan.sdk.server.release.BaseTestCase;
-import com.qinglan.sdk.server.application.basic.redis.RedisUtil;
 
 import java.util.Date;
 

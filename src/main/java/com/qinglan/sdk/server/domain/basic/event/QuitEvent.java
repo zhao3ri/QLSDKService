@@ -1,7 +1,7 @@
 package com.qinglan.sdk.server.domain.basic.event;
 
 import com.qinglan.sdk.server.data.annotation.event.Event;
-import com.qinglan.sdk.server.presentation.basic.dto.QuitPattern;
+import com.qinglan.sdk.server.presentation.dto.QuitPattern;
 
 @Event
 public class QuitEvent implements java.io.Serializable{

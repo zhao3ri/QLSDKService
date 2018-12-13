@@ -17,7 +17,7 @@ import org.springframework.util.CollectionUtils;
 
 import com.qinglan.sdk.server.common.DateUtils;
 import com.qinglan.sdk.server.common.JsonMapper;
-import com.qinglan.sdk.server.application.basic.redis.RedisUtil;
+import com.qinglan.sdk.server.application.redis.RedisUtil;
 
 @Repository
 public class BasicRepositoryImpl implements BasicRepository {

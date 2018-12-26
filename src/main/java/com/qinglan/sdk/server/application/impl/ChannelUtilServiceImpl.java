@@ -24,7 +24,7 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 
 import com.qinglan.sdk.server.application.ChannelUtilsService;
-import com.qinglan.sdk.server.utils.channel.utils.Base64;
+import com.qinglan.sdk.server.utils.Base64;
 import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

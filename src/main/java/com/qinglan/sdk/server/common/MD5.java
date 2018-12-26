@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 
 public class MD5 {
-
 	private static final Logger logger = LoggerFactory.getLogger(MD5.class);
 
 	public static String encode(String raw) {

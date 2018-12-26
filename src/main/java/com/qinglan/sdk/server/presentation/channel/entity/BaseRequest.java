@@ -8,7 +8,7 @@ public class BaseRequest {
     /**
      * 管理后台的渠道Id
      * */
-    private int platformId;
+    private int channelId;
 
     public long getGameId() {
         return gameId;
@@ -18,11 +18,11 @@ public class BaseRequest {
         this.gameId = gameId;
     }
 
-    public int getPlatformId() {
-        return platformId;
+    public int getChannelId() {
+        return channelId;
     }
 
-    public void setPlatformId(int platformId) {
-        this.platformId = platformId;
+    public void setChannelId(int channelId) {
+        this.channelId = channelId;
     }
 }

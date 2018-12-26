@@ -5,4 +5,7 @@ public interface ChannelConstants {
 
     String UC_PAY_RESULT_FAILED = "FAILURE";
     String UC_PAY_RESULT_SUCCESS = "SUCCESS";
+
+    String HUOSDK_PAY_RESULT_FAILED = "failure";
+    String HUOSDK_PAY_RESULT_SUCCESS = "success";
 }

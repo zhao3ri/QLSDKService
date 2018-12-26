@@ -14,7 +14,6 @@ import java.util.*;
 
 import static com.qinglan.sdk.server.Constants.RESPONSE_KEY_SIGN;
 import static com.qinglan.sdk.server.Constants.RESPONSE_KEY_SIGN_TYPE;
-import static com.qinglan.sdk.server.utils.channel.fansdk.EncryptUtils.md5;
 
 
 public class Sign {
@@ -354,7 +353,7 @@ public class Sign {
         stringBuilder.append(signKey);
         //剔除参数中含有的'&'符号
         String signSrc = stringBuilder.toString().replaceAll("&", "");
-        return md5(signSrc).toLowerCase();
+        return MD5.encode(signSrc).toLowerCase();
     }
 
     public static void main(String[] args) {

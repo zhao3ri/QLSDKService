@@ -29,8 +29,6 @@
 	
 	<bean class="com.qinglan.sdk.server.application.task.LoggerTask" init-method="init" lazy-init="false" scope="singleton" />
 	
-	<bean class="com.qinglan.sdk.server.application.task.TencentPollNotifyTask" init-method="init" lazy-init="false" scope="singleton" />
-
 	<bean id="kafkaProducerClient" class="com.qinglan.sdk.server.application.kafka.KafkaProducerClient" init-method="init" lazy-init="false" scope="singleton" >
 		<property name="brokerList" value="${kafka.metadata.broker.list}"></property>
 		<property name="defaultTopic" value="${kafka.defaultTopic}"></property>  

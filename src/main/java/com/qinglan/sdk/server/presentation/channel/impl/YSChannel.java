@@ -38,6 +38,15 @@ public class YSChannel extends BaseChannel {
     public static final int PAY_STATUS_SUCCESS = 2;//支付成功
     public static final int PAY_STATUS_FAILED = 3;//支付失败
 
+    /**
+     * 返回json示例
+     * {
+     *      "errNum":	"0",
+     *      "transdata":	{
+     *              "isValidate":	1
+     *        }
+     * }
+     * */
     @Override
     public String verifySession(String... args) {
         checkInit();

@@ -134,6 +134,7 @@ public class ChannelServiceImpl implements ChannelService {
         }
         return UC_PAY_RESULT_FAILED;
     }
+
     @Override
     public String signOrderHuawei(HMSPaySignRequest request) {
         IChannel channel = new HmsChannel();
@@ -144,7 +145,7 @@ public class ChannelServiceImpl implements ChannelService {
     @Override
     public String huaweiPayReturn(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ChannelStatsLogger.info(ChannelStatsLogger.HMS, HttpUtils.getRequestParams(request).toString());
-        IChannel channel = new HmsChannel();
+        IChannel channel = getChannel(HmsChannel.class);
         channel.init(basicRepository);
         String result = channel.returnPayResult(request, orderService);
 
@@ -160,7 +161,7 @@ public class ChannelServiceImpl implements ChannelService {
 
     @Override
     public String verifyHuawei(HMSVerifyRequest request) {
-        IChannel channel = new HmsChannel();
+        IChannel channel = getChannel(HmsChannel.class);
         channel.init(basicRepository, request.getGameId(), request.getChannelId());
         //顺序需相同
         String result = channel.verifySession(request.getAppID(), request.getCpID(), request.getTs()
@@ -187,7 +188,11 @@ public class ChannelServiceImpl implements ChannelService {
 
     @Override
     public String huoSdkPayReturn(HttpServletRequest request) {
-        return null;
+        ChannelStatsLogger.info(ChannelStatsLogger.YESHEN, HttpUtils.getRequestParams(request).toString());
+        IChannel channel = getChannel(HuoSdkChannel.class);
+        channel.init(basicRepository);
+        String result = channel.returnPayResult(request, orderService);
+        return result;
     }
 
     @Override

@@ -14,10 +14,10 @@ public class HuoSdkSignHelper {
         return sign;
     }
 
-    public static String md5(String name) {
+    public static String md5(String content) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] buffers = md.digest(name.getBytes());
+            byte[] buffers = md.digest(content.getBytes());
             StringBuffer sb = new StringBuffer();
             for (int i = 0; i < buffers.length; i++) {
                 String s = Integer.toHexString(0xff & buffers[i]);

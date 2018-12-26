@@ -12,16 +12,6 @@ import javax.annotation.Resource;
 
 import com.qinglan.sdk.server.application.ChannelUtilsService;
 import com.qinglan.sdk.server.domain.basic.ChannelGameEntity;
-import com.qinglan.sdk.server.utils.channel.qq.JSONException;
-import com.qinglan.sdk.server.application.log.ChannelStatsLogger;
-import com.qinglan.sdk.server.presentation.dto.channel.WdjPayCallback;
-import com.qinglan.sdk.server.presentation.dto.channel.YunxiaotanSession;
-import com.qinglan.sdk.server.utils.channel.ibei.SignHelper;
-import com.qinglan.sdk.server.utils.channel.lewan.util.encrypt.EncryUtil;
-import com.qinglan.sdk.server.utils.channel.qq.JSONObject;
-import com.qinglan.sdk.server.utils.channel.quicksdk.QuickXmlBean;
-import com.qinglan.sdk.server.utils.channel.quicksdk.XmlUtils;
-import com.qinglan.sdk.server.utils.channel.xiao7.VerifyXiao7;
 import junit.framework.Assert;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -45,8 +35,6 @@ import com.qinglan.sdk.server.application.ChannelService;
 import com.qinglan.sdk.server.BasicRepository;
 import com.qinglan.sdk.server.domain.basic.Order;
 import com.qinglan.sdk.server.domain.platform.MMYPayResult;
-import com.qinglan.sdk.server.presentation.dto.channel.PlaySession;
-import com.qinglan.sdk.server.presentation.dto.channel.VivoPaySign;
 
 import egame.openapi.common.RequestParasUtil;
 import sun.misc.BASE64Encoder;
@@ -125,54 +113,6 @@ public class PlatformControllerTest extends BaseTestCase {
         }
     }
 
-    @Test
-    public void testLetv() throws Exception {
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("sign", "b99184f1b1af51ab799f9dc58b1076a7");
-        params.put("price", 0.01);
-        params.put("product_id", 0);
-        params.put("letv_user_id", 106931470);
-        params.put("trade_result", "TRADE_SUCCESS");
-        params.put("sign_type", "MD5");
-        params.put("app_id", 200007);
-        params.put("pay_time", "2015-05-18 16:55:18");
-        params.put("lepay_order_no", "3551");
-        params.put("out_trade_no", "20150518165507382742588038201996");
-        params.put("version", "1.0");
-
-        String sign = params.get("sign").toString();
-        String out_trade_no = params.get("out_trade_no").toString();
-
-        Order order = basicRepository.getOrderByOrderId(out_trade_no);
-        if (null == order) {
-        }
-
-        ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(order.getChannelId(), order.getGameId());
-        if (null == channelGame) {
-        }
-
-        if (!"TRADE_SUCCESS".equals(params.get("trade_result"))) {
-        }
-        try {
-            String secretKey = channelGame.getConfigParamsList().get(0);
-            params.remove("sign");
-
-            String authSign = Sign.encode(getSourceFromMap(params) + "&key=" + secretKey);
-
-            String authSign2 = Sign.encode(getSourceFromMap(params) + "&key=" + secretKey);
-            if (StringUtils.equalsIgnoreCase(authSign, sign)) {
-                if (order.getAmount() > Double.valueOf((String) params.get("price")) * 100) {
-                    ChannelStatsLogger.info(ChannelStatsLogger.LETV, "order amount error");
-                    orderService.payFail(order.getOrderId(), "order amount error");
-                }
-                orderService.paySuccess(order.getOrderId());
-            } else {
-            }
-        } catch (Exception e) {
-            ChannelStatsLogger.error(ChannelStatsLogger.LETV, params.toString(), "verifyLetv error :" + e);
-        }
-    }
-
     /**
      * 生成签名原串
      *
@@ -193,36 +133,6 @@ public class PlatformControllerTest extends BaseTestCase {
             }
         }
         return buf.toString();
-    }
-
-    @Test
-    public void testPlay() {
-        PlaySession session = new PlaySession();
-        session.setZdappId("150212661932");
-        session.setPlatformId("1035");
-        session.setCode("2da75adb072b5d823a16e91dbd6a904e");
-
-        if (StringUtils.isBlank(session.getZdappId()) || StringUtils.isBlank(session.getPlatformId()) || StringUtils.isBlank(session.getCode())) {
-        }
-        ChannelGameEntity channelGame = basicRepository.getByChannelAndGameId(Integer.valueOf(session.getPlatformId()), Long.valueOf(session.getZdappId()));
-        if (channelGame == null) {
-        }
-        String client_id = channelGame.getConfigParamsList().get(0);
-        String client_secret = channelGame.getConfigParamsList().get(1);
-        String verifyUrl = channelGame.getConfigParamsList().get(2);
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("grant_type", "authorization_code");
-        params.put("code", session.getCode());
-        params.put("client_secret", client_secret);
-        try {
-            // 进行数字签名，并把签名相关字段放入请求参数MAP
-            RequestParasUtil.signature("2", client_id, client_secret, "MD5", "v1.0", params);
-            // 发起请求
-            String temp = RequestParasUtil.sendPostRequest(verifyUrl, params);
-            System.out.println(temp);
-        } catch (Exception e) {
-            logger.error("verifyPlaySession error", e);
-        }
     }
 
     @Test
@@ -374,15 +284,6 @@ public class PlatformControllerTest extends BaseTestCase {
     }
 
     @Test
-    public void testVivoPaySign() {
-        String data = "{\"zdappId\":\"151110191986\",\"platformId\":\"1018\",\"cpOrderNumber\":\"20151118094814642913686750422000\",\"cpId\":\"20150403171244382610\",\"appId\":\"285f886432c87f3698b3779cdff7faa7\",\"orderTitle\":\"20钻石\",\"orderDesc\":\"货币\",\"cpExtInfo\":\"normal notes\"}";
-        VivoPaySign vivoPaySign = JsonMapper.toObject(data, VivoPaySign.class);
-        String result = channelService.vivoPaySign(vivoPaySign);
-        System.out.println("============================");
-        System.err.println(result);
-    }
-
-    @Test
     public void paojiao() {
         //{sign=e72eb1349ccc1cfe61603a3a4ce924d0, uid=5146345, orderNo=PG_1447845305232, price=6.0, status=5, remark=no,
         //subject=元宝, gameId=1472, payTime=2015-11-18 19:15:05, ext=20151118191500791563781986812756}
@@ -455,21 +356,6 @@ public class PlatformControllerTest extends BaseTestCase {
         String result = HttpUtils.doPost(url, params);
         System.out.println(result);
 
-    }
-
-    @Test
-    public void testYunxiaoTanSession() throws JSONException {
-        YunxiaotanSession session = new YunxiaotanSession();
-        session.setAppId("5432");
-        session.setZdAppId("151110191986");
-        session.setPlatformId("1095");
-        session.setSid("8a42aqjJDqx9Bc4IkE8jK5X2XgOdEs7582feBbVHQ6FMZNJY5sHYL1bz%2F%2FEShSRPoX3zQ554RtTNOBep%2Biif6oxX");
-        String result = channelService.verifyYunxiaotanSession(session);
-        System.out.println("-----------");
-        System.out.println(result);
-        System.out.println("-----------");
-        JSONObject jsonObject = new JSONObject(result);
-        Assert.assertEquals(1, jsonObject.optInt("code"));
     }
 
     @Test
@@ -575,17 +461,6 @@ public class PlatformControllerTest extends BaseTestCase {
     }
 
     @Test
-    public void testLewan() throws Exception {
-        String data = "DyLZTH4BfB2LlxmJWnlTdY8MxjbAsUAUyRreC0eGT4gH4pSxNNWHSvV/BOxziEMdLC2fnyqMQvCXAx5eG1OjKSk5pWcTTzlfi+NovlRA72A0HWoDgP/vd2di4niNhh5/OQcoPWuoO+I/a5PIBsQ87JQ4XrA9T7mlpEm0u3ZFInmA3R/RiHvup2i1F77i2sC2JfVQwMP04xdapZ779v9vjPHtq6SIv4rpXqOHFQ2RCIoOiZaOC6dAbUHjPGhLkelwDOzGgY6nZC2vADt9tJmdFo+98BnttThRhWJiN/t8NwUxpp1xHPmmd+QYaRDuQgTsFznac9AcZCOCHQNK7Bw3IKaD1qPwNGaBISOTgKBeDqiMiP96kB5WZRzPR1ClfNpEWL1gyNySiMteUMXRaZ1DydvqcCjeadmMvZbhTcCsZTy7CjQAVijmdGTBTEx+8hITUby7VIcG5TnwpB7z2g7+FbA5KYA6+PgWRe2CcNOn9bliidNf7n3BOO8ZAbBsc0IJ+ZjJY4sW14InaU3GDLwOSw==";
-        String encryptkey = "n/4lifWS8UNW+BPYupj5uSuW0DuGB1ocz/DCcRsT/r0F30XuOoBsU8oiYeGD8Y7zTUOYphAqYx+mO9JvIdimC4M/iYe4ggylFVvi8C0kjrE4ZDjpf3jodcCdJ1IXtVNvmloQ6l1K3YrH6Rv6bOFSnzQeOh5/T/OgvPh41sxmHOo=";
-        String lewanpublickKey = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC+GY2/8wJuINxzJo9uWoMRUDcxONuK/48Fikze8EFpKWLLr6mBpqeoDVvZQoqGhGKn5wdtHujiCUYSn6pcWKY2Fz2Rxw6/1uA1gzKcLE36KLUkqvFbA3gItSiO3ADNCwJ1ochhdfcEnH2dtbiv5+f7m+xv5B1aEP142v2CtYKFFQIDAQAB";
-        String gameprivateKey = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAMEXRA81AwYSW9b6UmyBHhFwCAqZ76T1WAB05myssl7M8S/c81X7lo5rDQMZ6+Z9taItGbbNf8Zg55xwTu+9NQAU9bNg2BuepNGu1phDspn8KtDVrBDq4PorW4BY94M8p+M5VED8bCAF61y4PiBUSaGw2JbD/4gwa0ZUFtlIX8ApAgMBAAECgYEAgSOFUkJbJllq8Olz7LuiF3l891Ii04l+9Lc6UN5jYUHh4Of+Grhr5g40oqlYe0wCCVfuhbMEzPGMlbULJg29/obMdXnK2vQ1gLtWtU4HerUqNpttin9ayUHucA0pXvqRxGi6GJQjj9zCEh1fGGAZaAyVU3zpT4j4qzWq4vvRVB0CQQD/MuDywua2ujlkxoZuJqvbs8qan9jZrDoPeqYJnk4CUJGuNSBA2LJLVSYAWofSefo8MdyRmNdXFLuJK9rV9BWjAkEAwbJ3d4B3F2XeA/eMCHXjpR4ROAz2EaF5yh+Iy3oCDAPKwbX7uyYRplH6hDpCoCMLqcT8tVrQce9C8f24klH3wwJBAODhXdaupw4IZkEGrDluvGy7L2M4TqfqG7O+OYgqRsXFZ8qiqAxcqCi4HOec3yk7MaZPrfVjQQdMjsGespVtJI8CQEejqTnioqldvMp80ScD6ylTwIyZhp0ouvG9zgtr2bv13xTcKPmj790y7tPe9Gtj6tlkiQ7OQtAQ7RKxg4VimZ8CQFginXwEudBeZlDuhlkf/CAuCb8tgdfsL39lE085bniQm5cX1xzwxA8ee5RWdozmqTud3DZYTXMubL9fvT1nUTw=";
-        boolean isRight = true;
-        isRight = EncryUtil.checkDecryptAndSign(data, encryptkey, lewanpublickKey, gameprivateKey);
-        Assert.assertTrue(isRight);
-    }
-
-    @Test
     public void testWxdl() {
         String orderId = "201607181739456641143";
         String cpOrderId = "20160718173941104614824552864545";
@@ -614,58 +489,6 @@ public class PlatformControllerTest extends BaseTestCase {
         paramMap.put("attach", "20160711145135587328122993530027");
         paramMap.put("appkey", "e072d570baf69eaa6d8b72701ce499dc");
         Assert.assertEquals("0a54b51214214d706578f00a50d05f42", Sign.signByMD5Unsort(paramMap, ""));
-    }
-
-    @Test
-    public void testwdj() {
-        String content = "{\"orderId\":339451820,\"appKeyId\":100037442,\"buyerId\":208291576,\"cardNo\":null,\"money\":1200,\"chargeType\":\"BALANCEPAY\",\"timeStamp\":1479781822721,\"out_trade_no\":null,\"discount\":null,\"settlement\":null}";
-        WdjPayCallback callback = JsonMapper.toObject(content, WdjPayCallback.class);
-        Assert.assertNotNull(callback);
-    }
-
-    @Test
-    public void testXiao7() {
-        Map<String, String> paramMap = new TreeMap<String, String>();
-        paramMap.put("encryp_data", "IfVXsWGhcLXS+bfI5u227tcf8slXVTqHqGIblh9TUgaBqeZjF/gNivLrcqBbAvBOUIzKLuxi/dqXkyodhUJ0101F+VNcqZVZUHCf01FcpIgV4Eku3T8XzG6UyN8GF2L6qtQdEeGav16pTKQ/9D6gGKk34ZKmSwcvs+q6xqp1ArA=");
-        paramMap.put("xiao7_goid", "43061");
-        paramMap.put("game_orderid", "20160816104943608879722826722240");
-        paramMap.put("guid", "23306");
-        paramMap.put("subject", "钻石");
-        VerifyXiao7.PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDZfYMI9FzwaovaF8TARRcaVxjlTxa+9s2QpOoYoh4nNrAblbmQyRqvlgRGJFdkb/8kyrZnSCwxhFl9rmE20/Qfy5toZCNb19BVWxylu5fw9gTKpnt/im/dJV5JULVcUcwrCEdNgKeg0jy3NfKiMiHoIfQMu7St+pooxeSZvu03AQIDAQAB";
-        String sign_data = "y4jgdqCAGQhgfmBixFMhF7Q5G26STndB22ASE1LR2PUZxsC4fbrRvDqvlUWM6wXZryJU9PhkmvAG+mW+0+moO7oqcsVFclVdkFfFmFlCgsLRxy6Yb1deL4StGG3/rpQLWDPpyrW3V6gHvfL1BU1C/onDTExNpyq7DMR78ZSeaTs=";
-        ;
-        try {
-            String httpstring = VerifyXiao7.buildHttpQuery(paramMap);
-            boolean checked = VerifyXiao7.doCheck(httpstring, sign_data, VerifyXiao7.loadPublicKeyByStr());
-            String decryptData = new String(VerifyXiao7.decrypt(VerifyXiao7.loadPublicKeyByStr(), VerifyXiao7.decode(paramMap.get("encryp_data"))));
-            Map<String, String> decryptMap = VerifyXiao7.decodeHttpQuery(decryptData);
-            boolean flag = (decryptMap.containsKey("game_orderid") && decryptMap.get("game_orderid").equals(paramMap.get("game_orderid")) && decryptMap.get("payflag").equals("1"));
-            Assert.assertEquals(true, 1 >= Float.parseFloat(decryptMap.get("pay")) * 100);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Test
-    public void testQuickXml() {
-        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
-                "<quicksdk_message>\n" +
-                "<message>\n" +
-                "<is_test>0</is_test>\n" +
-                "<channel>8888</channel>\n" +
-                "<channel_uid>231845</channel_uid>\n" +
-                "<game_order>123456789</game_order>\n" +
-                "<order_no>12520160612114220441168433</order_no>\n" +
-                "<pay_time>2016-06-12 11:42:20</pay_time>\n" +
-                "<amount>1.00</amount>\n" +
-                "<status>0</status>\n" +
-                "<extras_params>{1}_{2}</extras_params>\n" +
-                "</message>\n" +
-                "</quicksdk_message> ";
-        QuickXmlBean bean = XmlUtils.parserXML(xml);
-        Assert.assertEquals("0", bean.getStatus());
     }
 
     @Test
@@ -796,111 +619,6 @@ public class PlatformControllerTest extends BaseTestCase {
     }
 
     @Test
-    public void testLingdongPay() {
-        String keyValue = "{sign=8e4247d921197268047f4d04db61b333}";
-        String bodyJson = "{\"user_id\":5480181,\"role_id\":111111,\"pay_no\":\"170428152159000548018165\",\"cp_ext\":\"20170428152158941136244097729343\",\"product_id\":\"2009_7_0_10\",\"currency\":\"CNY\",\"amount\":0.01,\"amount_usd\":0.01,\"coin\":10,\"pay_channel\":\"ipaynow\",\"cp_role_id\":\"111111\",\"cp_group_id\":\"15001\"}";
-        String appkey = "cb398d62efe24f6b9fca5a037ee27db8";
-
-        JSONObject bodyObj = null;
-        JSONObject keyValueObj = null;
-        try {
-            bodyObj = new JSONObject(bodyJson);
-            keyValueObj = new JSONObject(keyValue);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        Double amount = bodyObj.optDouble("amount");
-        Double amount_usd = bodyObj.optDouble("amount_usd");
-        int coin = bodyObj.optInt("coin");
-        String cp_ext = bodyObj.optString("cp_ext");
-        String cp_role_id = bodyObj.optString("cp_role_id");
-        String currency = bodyObj.optString("currency");
-        String pay_channel = bodyObj.optString("pay_channel");
-        String pay_no = bodyObj.optString("pay_no");
-        String product_id = bodyObj.optString("product_id");
-        int role_id = bodyObj.optInt("role_id");
-        int user_id = bodyObj.optInt("user_id");
-
-        Map<String, Object> body = new LinkedHashMap<String, Object>();
-        body.put("amount", amount);
-        body.put("amount_usd", amount_usd);
-        body.put("coin", coin);
-        body.put("cp_ext", cp_ext);
-        body.put("cp_role_id", cp_role_id);
-        body.put("currency", currency);
-        body.put("pay_channel", pay_channel);
-        body.put("pay_no", pay_no);
-        body.put("product_id", product_id);
-        body.put("role_id", role_id);
-        body.put("user_id", user_id);
-        String jsonStr = JsonMapper.toJson(body);
-        StringBuilder sb = new StringBuilder();
-        sb.append(bodyJson);
-        sb.append(appkey);
-        String validSign = MD5.encode(sb.toString());
-        String sign = keyValueObj.optString("sign");
-        System.out.println("signValue:" + sb.toString());
-        System.out.println("sign1:" + sign);
-        System.out.println("sign2:" + validSign);
-        //Assert.assertEquals(sign, validSign);
-    }
-
-    @Test
-    public void testZhizhuyouLogin() {
-
-        long loginTime = System.currentTimeMillis();
-        String zzyAppId = "157";
-        String ac = "check";
-        String sdkversion = "4.1";
-        String time = "1493784237";
-        String url = "http://api.zhizhuy.com/sdkapi.php";
-        String appkey = "3095c0598a04218c948c92ca43841ce3";
-        String sessionId = "1205Ww6HfOi%2FT7IgKAplfVvWi4tiGPlAdtCXWDqS4JfylMwY6uRrw21KreDNG%2FImGgAT8M18RYKeTIZ14Y2NY3Fi";
-        String sessionIdDecode = URLDecoder.decode(sessionId);
-        //String sessionIdEndcode = URLEncoder.encode(sessionId);
-
-        StringBuffer sb = new StringBuffer();
-        sb.append("ac=").append(ac).append("&");
-        sb.append("appid=").append(zzyAppId).append("&");
-        sb.append("sdkversion=").append(sdkversion).append("&");
-        sb.append("sessionid=").append(sessionId).append("&");
-        sb.append("time=").append(time).append(appkey);
-
-        String signStr = sb.toString();
-        String sign = MD5.encode(signStr);
-
-        Map<String, Object> params = new LinkedHashMap<String, Object>();
-        params.put("ac", ac);
-        params.put("appid", zzyAppId);
-        params.put("sdkversion", sdkversion);
-        params.put("sessionid", sessionIdDecode);
-        params.put("time", time);
-        params.put("sign", sign);
-
-        try {
-            String msg = HttpUtils.doPost(url, params);
-            System.out.println("**********[ac]:" + ac);
-            System.out.println("**********[appid]:" + zzyAppId);
-            System.out.println("**********[time]:" + time);
-            System.out.println("**********[url]:" + url);
-            System.out.println("**********[appkey]:" + appkey);
-            System.out.println("**********[sessionId]:" + sessionIdDecode);
-            System.out.println("**********[sessionIdEndcode]:" + sessionId);
-            System.out.println("**********[signStr]:" + signStr);
-            System.out.println("**********[sign]:" + sign);
-            System.out.println("**********[params]:" + params);
-            System.out.println("**********[msg]:" + msg);
-            JSONObject msgJson = new JSONObject(msg);
-            int code = msgJson.optInt("code");
-            JSONObject userInfo = msgJson.optJSONObject("userInfo");
-            System.out.println("**********[code]:" + code);
-            System.out.println("**********[userInfo]:" + userInfo);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Test
     public void testZhizhuyouPay() {
         String amount = "0.01";
         String appid = "157";
@@ -928,29 +646,6 @@ public class PlatformControllerTest extends BaseTestCase {
         sb.append("uid=").append(uid);
         sb.append(pay_key);
         String validSigin = MD5.encode(sb.toString());
-        try {
-            System.out.println("**********[sign]:" + sign);
-            System.out.println("**********[validSigin]:" + validSigin);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Test
-    public void testXingkongshijiePay() {
-
-        String json = "{\"appid\":\"3012639381\",\"appuserid\":\"111111#1\",\"cporderid\":\"20170510174553300934085140558995\",\"cpprivate\":\"qq\",\"currency\":\"RMB\",\"feetype\":0,\"money\":0.01,\"paytype\":103,\"result\":0,\"transid\":\"32421705101745531764\",\"transtime\":\"2017-05-10 17:46:42\",\"transtype\":0,\"waresid\":1}";
-        String APPV_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCve8IsUih5wbC9C3t/nENz2mWnBfEmq6ToJmNlTM6mfOxMbwHBm7RsWFfm8EaqtrpI95pwbU1ofKSky6x1qTgVQLBphtwVG+xatgxMBIkkxEafuh+VSKf/cLwsCOJXdO/inTWodnEGx9hk+u3b+fglqeLRf/YyU1wcGzGYF+H6DwIDAQAB";
-        String sign = "WnFgH3PnQFdqxMg5ZYF+3F0oZ1hPP6mVjEsAeMrvHLP3e3mjaIoqj+iS5UV5Kcga7CL1qD14CzdFFpTIx7zwWxajfmow0PzG3QBOu79F9beNdXby05tqKQmb1KfqxnvBdKRo1BTAMHvs6wPKzebZevUJOIX2U2CLJ1ZMXMehjW0=";
-
-        JSONObject transdata = null;
-        try {
-            transdata = new JSONObject(json);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        System.out.println("**********[transdata]:" + transdata);
-        boolean validSigin = SignHelper.verify(transdata.toString(), sign, APPV_KEY);
         try {
             System.out.println("**********[sign]:" + sign);
             System.out.println("**********[validSigin]:" + validSigin);

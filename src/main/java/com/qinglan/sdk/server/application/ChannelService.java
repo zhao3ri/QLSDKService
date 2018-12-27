@@ -28,4 +28,8 @@ public interface ChannelService {
     String huoSdkPayReturn(HttpServletRequest request);
 
     String verifyHuoSdk(HuoSdkVerifyRequest request);
+
+    String hanfengPayReturn(HttpServletRequest request);
+
+    String verifyHangfeng(HanfengVerifyRequest request);
 }

@@ -7,15 +7,12 @@ import com.qinglan.sdk.server.common.*;
 import com.qinglan.sdk.server.domain.basic.ChannelGameEntity;
 import com.qinglan.sdk.server.presentation.channel.IChannel;
 import com.qinglan.sdk.server.presentation.channel.entity.*;
-import com.qinglan.sdk.server.presentation.channel.impl.HmsChannel;
-import com.qinglan.sdk.server.presentation.channel.impl.HuoSdkChannel;
-import com.qinglan.sdk.server.presentation.channel.impl.UCChannel;
+import com.qinglan.sdk.server.presentation.channel.impl.*;
 import com.qinglan.sdk.server.application.redis.RedisUtil;
 import com.qinglan.sdk.server.application.ChannelService;
 import com.qinglan.sdk.server.BasicRepository;
 import com.qinglan.sdk.server.domain.basic.Order;
 import com.qinglan.sdk.server.domain.platform.YaoyueCallback;
-import com.qinglan.sdk.server.presentation.channel.impl.YSChannel;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,22 +110,13 @@ public class ChannelServiceImpl implements ChannelService {
                 || StringUtils.isEmpty(ucSession.getSid()) || StringUtils.isEmpty(ucSession.getAppID())) {
             return "";
         }
-        IChannel channel = getChannel(UCChannel.class);
-        if (channel == null) {
-            return "";
-        }
-        channel.init(basicRepository, ucSession.getGameId(), ucSession.getChannelId());
-        String result = channel.verifySession(ucSession.getSid(), ucSession.getAppID());
-        return result;
+        return verify(UCChannel.class, ucSession, ucSession.getSid(), ucSession.getAppID());
     }
 
     @Override
     public String ucPayReturn(HttpServletRequest request) {
         try {
-            IChannel channel = getChannel(UCChannel.class);
-            channel.init(basicRepository);
-            String result = channel.returnPayResult(request, orderService);
-            return result;
+            return payReturn(UCChannel.class,request);
         } catch (Exception e) {
             ChannelStatsLogger.error(ChannelStatsLogger.UC, request.getQueryString(), "uc ucPayReturn error:" + e);
         }
@@ -145,9 +133,8 @@ public class ChannelServiceImpl implements ChannelService {
     @Override
     public String huaweiPayReturn(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ChannelStatsLogger.info(ChannelStatsLogger.HMS, HttpUtils.getRequestParams(request).toString());
-        IChannel channel = getChannel(HmsChannel.class);
-        channel.init(basicRepository);
-        String result = channel.returnPayResult(request, orderService);
+
+        String result = payReturn(HmsChannel.class, request);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
@@ -161,45 +148,60 @@ public class ChannelServiceImpl implements ChannelService {
 
     @Override
     public String verifyHuawei(HMSVerifyRequest request) {
-        IChannel channel = getChannel(HmsChannel.class);
-        channel.init(basicRepository, request.getGameId(), request.getChannelId());
-        //顺序需相同
-        String result = channel.verifySession(request.getAppID(), request.getCpID(), request.getTs()
+        return verify(HmsChannel.class, request, request.getAppID(), request.getCpID(), request.getTs()
                 , request.getPlayerId(), request.getPlayerLevel(), request.getPlayerSSign());
-        return result;
     }
 
     @Override
     public String yeshenPayReturn(HttpServletRequest request) {
         ChannelStatsLogger.info(ChannelStatsLogger.YESHEN, HttpUtils.getRequestParams(request).toString());
-        IChannel channel = new YSChannel();
-        channel.init(basicRepository);
-        String result = channel.returnPayResult(request, orderService);
-        return result;
+        return payReturn(YSChannel.class, request);
     }
 
     @Override
     public String verifyYeshen(YSVerifyRequest request) {
-        IChannel channel = new YSChannel();
-        channel.init(basicRepository, request.getGameId(), request.getChannelId());
-        String result = channel.verifySession(request.getAccessToken(), request.getUid(), request.getAppID());
-        return result;
+        return verify(YSChannel.class, request, request.getAccessToken(), request.getUid(), request.getAppID());
     }
 
     @Override
     public String huoSdkPayReturn(HttpServletRequest request) {
         ChannelStatsLogger.info(ChannelStatsLogger.YESHEN, HttpUtils.getRequestParams(request).toString());
-        IChannel channel = getChannel(HuoSdkChannel.class);
-        channel.init(basicRepository);
-        String result = channel.returnPayResult(request, orderService);
-        return result;
+        return payReturn(HuoSdkChannel.class, request);
     }
 
     @Override
     public String verifyHuoSdk(HuoSdkVerifyRequest request) {
-        IChannel channel = new HuoSdkChannel();
+        return verify(HuoSdkChannel.class, request, request.getAppId(), request.getMemId(), request.getUserToken());
+    }
+
+    @Override
+    public String hanfengPayReturn(HttpServletRequest request) {
+        return null;
+    }
+
+    @Override
+    public String verifyHangfeng(HanfengVerifyRequest request) {
+        return verify(HanfengChannel.class, request, JsonMapper.toJson(request));
+    }
+
+    private <T extends IChannel> String verify(Class<T> cls, BaseRequest request, String... args) {
+        IChannel channel = getChannel(cls);
+        if (channel == null) {
+            return null;
+        }
         channel.init(basicRepository, request.getGameId(), request.getChannelId());
-        String result = channel.verifySession(request.getAppId(), request.getMemId(), request.getUserToken());
+        //顺序需相同
+        String result = channel.verifySession(args);
+        return result;
+    }
+
+    private <T extends IChannel> String payReturn(Class<T> cls, HttpServletRequest request) {
+        IChannel channel = getChannel(cls);
+        if (channel == null) {
+            return null;
+        }
+        channel.init(basicRepository);
+        String result = channel.returnPayResult(request, orderService);
         return result;
     }
 

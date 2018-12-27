@@ -65,7 +65,9 @@ sourceSets {
             srcDirs = ['src/main/java']
         }
         resources {
-            srcDirs = ['src/main/resources'/*, 'src/main/config/prod'*/, 'src/main/config/dev']
+            srcDirs = ['src/main/resources', 'src/main/config/local']
+//            srcDirs = ['src/main/resources', 'src/main/config/dev']
+//            srcDirs = ['src/main/resources', 'src/main/config/prod']
         }
     }
 }

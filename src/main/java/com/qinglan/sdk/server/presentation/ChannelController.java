@@ -3,12 +3,8 @@ package com.qinglan.sdk.server.presentation;
 import com.qinglan.sdk.server.application.ChannelService;
 import com.qinglan.sdk.server.application.ChannelServicePartTwo;
 import com.qinglan.sdk.server.domain.platform.YaoyueCallback;
-import com.qinglan.sdk.server.domain.platform.YouleCallback;
 import com.qinglan.sdk.server.presentation.channel.entity.*;
-import com.qinglan.sdk.server.presentation.channel.impl.HmsChannel;
-import com.qinglan.sdk.server.presentation.channel.impl.HuoSdkChannel;
-import com.qinglan.sdk.server.presentation.channel.impl.UCChannel;
-import com.qinglan.sdk.server.presentation.channel.impl.YSChannel;
+import com.qinglan.sdk.server.presentation.channel.impl.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -108,5 +104,19 @@ public class ChannelController {
     public String huoSdkSession(HuoSdkVerifyRequest req) {
         logger.debug(req.toString());
         return channelService.verifyHuoSdk(req);
+    }
+
+
+    @RequestMapping(value = HanfengChannel.VERIFY_URL, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String hanfengSession(HanfengVerifyRequest req) {
+        logger.debug(req.toString());
+        return channelService.verifyHangfeng(req);
+    }
+
+    @RequestMapping(value = HanfengChannel.PAY_RETURN_URL, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String hanfengPayReturn(HttpServletRequest request) {
+        return channelService.hanfengPayReturn(request);
     }
 }

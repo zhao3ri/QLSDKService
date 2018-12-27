@@ -8,4 +8,6 @@ public interface ChannelConstants {
 
     String HUOSDK_PAY_RESULT_FAILED = "failure";
     String HUOSDK_PAY_RESULT_SUCCESS = "success";
+
+    String HANFENG_PAY_RESULT_FAILED = "-1";
 }

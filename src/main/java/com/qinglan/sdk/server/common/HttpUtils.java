@@ -431,8 +431,6 @@ public class HttpUtils {
     }
 
     public static String post(String reqUrl, String data) throws Exception {
-        String invokeUrl = reqUrl;
-        URL serverUrl = new URL(invokeUrl);
         HttpURLConnection conn = getHttpConnection(reqUrl, "", 5000);
 
         conn.getOutputStream().write(data.getBytes(CharEncoding.UTF_8));

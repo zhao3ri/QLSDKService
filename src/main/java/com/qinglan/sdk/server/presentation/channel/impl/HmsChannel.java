@@ -52,6 +52,15 @@ public class HmsChannel extends BaseChannel {
     private static final int RESULT_PAY_CODE_SUCCESS = 0;
     private static final int RESULT_PAY_CODE_FAIL = 1;
 
+    /**
+     * 返回json示例
+     * {
+     *      "rtnCode":	"0",
+     *      "ts":	"999999993222",
+     *      "rtnSign":"dfdsr34235etdd",
+     *      "errMsg":""
+     * }
+     * */
     @Override
     public String verifySession(String... args) {
         checkInit();

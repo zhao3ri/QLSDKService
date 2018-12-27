@@ -48,12 +48,12 @@ public class UCChannel extends BaseChannel {
      * 第三方平台认证
      * 请求参数json示例如下：
      * {
-     * "id":1332406591685,
-     * "game":{"gameId":5},
-     * "data":{
-     * "sid":"110adf4c-f2d3-4be5-8a9c-3741a83e5853"
-     * },
-     * "sign":"bb926c2a9944e9b4f2f6639d928dc95c"
+     *   "id":1332406591685,
+     *   "game":{"gameId":5},
+     *   "data":{
+     *     "sid":"110adf4c-f2d3-4be5-8a9c-3741a83e5853"
+     *   },
+     *   "sign":"bb926c2a9944e9b4f2f6639d928dc95c"
      * }
      */
     @Override

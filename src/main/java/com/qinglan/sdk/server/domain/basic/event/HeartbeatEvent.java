@@ -1,7 +1,7 @@
 package com.qinglan.sdk.server.domain.basic.event;
 
 import com.qinglan.sdk.server.data.annotation.event.Event;
-import com.qinglan.sdk.server.presentation.dto.HeartbeatPattern;
+import com.qinglan.sdk.server.dto.HeartbeatPattern;
 
 @Event
 public class HeartbeatEvent implements java.io.Serializable{

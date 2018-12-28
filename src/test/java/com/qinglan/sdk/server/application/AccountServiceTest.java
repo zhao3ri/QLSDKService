@@ -12,13 +12,13 @@ import org.junit.Test;
 
 import com.qinglan.sdk.server.common.HttpUtils;
 import com.qinglan.sdk.server.release.BaseTestCase;
-import com.qinglan.sdk.server.presentation.dto.HeartbeatPattern;
-import com.qinglan.sdk.server.presentation.dto.InitialPattern;
-import com.qinglan.sdk.server.presentation.dto.LoginPattern;
-import com.qinglan.sdk.server.presentation.dto.LogoutPattern;
-import com.qinglan.sdk.server.presentation.dto.OrderGenerateRequest;
-import com.qinglan.sdk.server.presentation.dto.QuitPattern;
-import com.qinglan.sdk.server.presentation.dto.RoleCreatePattern;
+import com.qinglan.sdk.server.dto.HeartbeatPattern;
+import com.qinglan.sdk.server.dto.InitialPattern;
+import com.qinglan.sdk.server.dto.LoginPattern;
+import com.qinglan.sdk.server.dto.LogoutPattern;
+import com.qinglan.sdk.server.dto.OrderGenerateRequest;
+import com.qinglan.sdk.server.dto.QuitPattern;
+import com.qinglan.sdk.server.dto.RoleCreatePattern;
 
 public class AccountServiceTest  extends BaseTestCase{
 

@@ -11,7 +11,7 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 
-import com.qinglan.sdk.server.presentation.dto.LoginPattern;
+import com.qinglan.sdk.server.dto.LoginPattern;
 import com.qinglan.sdk.server.application.AccountService;
 import org.junit.Test;
 import org.slf4j.Logger;

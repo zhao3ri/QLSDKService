@@ -1,7 +1,7 @@
 package com.qinglan.sdk.server.application;
 
 import com.qinglan.sdk.server.domain.basic.Order;
-import com.qinglan.sdk.server.presentation.dto.OrderGenerateRequest;
+import com.qinglan.sdk.server.dto.OrderGenerateRequest;
 
 public interface OrderService {
 	

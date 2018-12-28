@@ -3,8 +3,7 @@ package com.qinglan.sdk.server.common;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -124,7 +123,7 @@ public class Tools {
     /**
      * 检查字符串是否表示金额，此金额小数点后最多带2位
      *
-     * @param str 需要被检查的字符串
+     * @param amount 需要被检查的字符串
      * @return ： true－表示金额，false-不表示金额
      */
     public static boolean checkAmount(String amount) {
@@ -197,5 +196,65 @@ public class Tools {
 
         return map;
     }
+
+    public static Map<String, Object> getMapByParams(String content, boolean allowEmpty, String... filter) {
+        Map<String, Object> map = new HashMap<>();
+        List<String> filterList = null;
+        if (filter != null) {
+            filterList = Arrays.asList(filter);
+        }
+        String[] params = content.split("&");
+        for (String param : params) {
+            int index = param.indexOf("=");
+            if (index < 0) {
+                continue;
+            }
+            String key = param.substring(0, index);
+            if (isStrEmpty(key)) {
+                continue;
+            }
+            if (!isEmptyCollection(filterList)) {
+                if (filterList.contains(key))
+                    continue;
+            }
+            String value = param.substring(index + 1);
+            if (isStrEmpty(value)) {
+                if (!allowEmpty) {
+                    continue;
+                }
+                map.put(key, "");
+            }
+            map.put(key, value);
+        }
+        return map;
+    }
+
+    public static boolean isEmptyCollection(Collection c) {
+        if (null == c || c.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+
+    public static String getParamsString(Map<String, Object> params) {
+        Iterator<Map.Entry<String, Object>> entries = params.entrySet().iterator();
+        StringBuffer sb = new StringBuffer();
+        while (entries.hasNext()) {
+            Map.Entry<String, Object> entry = entries.next();
+            sb.append(entry.getKey() + "=" + entry.getValue());
+            if (entries.hasNext()) {
+                sb.append("&");
+            }
+        }
+        return sb.toString();
+    }
+
+    public static void main(String[] args) {
+        String content = "amount=100&channelId=1009&clientType=1&goodsId=1607041649533883&notifyUrl=";
+        Map<String, Object> map = new TreeMap<>(getMapByParams(content, true, "notifyUrl"));
+        System.out.println(map);
+        System.out.println(getParamsString(map));
+    }
+
 }
 

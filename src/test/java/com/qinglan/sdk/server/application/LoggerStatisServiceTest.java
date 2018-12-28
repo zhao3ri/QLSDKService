@@ -6,11 +6,11 @@ import org.junit.Test;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import com.qinglan.sdk.server.release.BaseTestCase;
-import com.qinglan.sdk.server.presentation.dto.HeartbeatPattern;
-import com.qinglan.sdk.server.presentation.dto.InitialPattern;
-import com.qinglan.sdk.server.presentation.dto.LoginPattern;
-import com.qinglan.sdk.server.presentation.dto.QuitPattern;
-import com.qinglan.sdk.server.presentation.dto.RoleCreatePattern;
+import com.qinglan.sdk.server.dto.HeartbeatPattern;
+import com.qinglan.sdk.server.dto.InitialPattern;
+import com.qinglan.sdk.server.dto.LoginPattern;
+import com.qinglan.sdk.server.dto.QuitPattern;
+import com.qinglan.sdk.server.dto.RoleCreatePattern;
 
 public class LoggerStatisServiceTest extends BaseTestCase{
 	@Resource

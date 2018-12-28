@@ -10,4 +10,7 @@ public interface ChannelConstants {
     String HUOSDK_PAY_RESULT_SUCCESS = "success";
 
     String HANFENG_PAY_RESULT_FAILED = "-1";
+
+    String CC_PAY_RESULT_SUCCESS = "success";
+    String CC_PAY_RESULT_FAILED = "fail";
 }

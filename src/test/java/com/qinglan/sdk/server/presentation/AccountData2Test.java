@@ -11,7 +11,7 @@ import javax.annotation.Resource;
 import com.qinglan.sdk.server.common.HttpUtils;
 import com.qinglan.sdk.server.application.AccountService;
 import com.qinglan.sdk.server.domain.UserTest;
-import com.qinglan.sdk.server.presentation.dto.*;
+import com.qinglan.sdk.server.dto.*;
 
 public class AccountData2Test {
 	

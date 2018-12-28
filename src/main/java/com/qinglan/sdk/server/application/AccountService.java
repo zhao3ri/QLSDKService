@@ -3,7 +3,7 @@ package com.qinglan.sdk.server.application;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import com.qinglan.sdk.server.presentation.dto.*;
+import com.qinglan.sdk.server.dto.*;
 
 import com.qinglan.sdk.server.domain.basic.ChannelGameEntity;
 

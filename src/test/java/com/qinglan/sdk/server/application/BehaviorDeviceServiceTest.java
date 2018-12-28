@@ -1,7 +1,7 @@
 package com.qinglan.sdk.server.application;
 
 
-import com.qinglan.sdk.server.presentation.dto.InitialPattern;
+import com.qinglan.sdk.server.dto.InitialPattern;
 import org.junit.Test;
 
 import com.qinglan.sdk.server.release.BaseTestCase;

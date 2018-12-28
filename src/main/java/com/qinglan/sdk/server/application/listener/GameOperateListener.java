@@ -13,7 +13,7 @@ import com.qinglan.sdk.server.common.MD5;
 import com.qinglan.sdk.server.data.annotation.event.EventListener;
 import com.qinglan.sdk.server.StatsLogger;
 import com.qinglan.sdk.server.domain.basic.*;
-import com.qinglan.sdk.server.presentation.dto.*;
+import com.qinglan.sdk.server.dto.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

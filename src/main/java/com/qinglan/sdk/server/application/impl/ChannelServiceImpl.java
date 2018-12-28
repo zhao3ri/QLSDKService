@@ -3,11 +3,11 @@ package com.qinglan.sdk.server.application.impl;
 import com.qinglan.sdk.server.application.OrderService;
 import com.qinglan.sdk.server.application.ChannelUtilsService;
 import com.qinglan.sdk.server.application.log.ChannelStatsLogger;
+import com.qinglan.sdk.server.channel.entity.*;
+import com.qinglan.sdk.server.channel.impl.*;
 import com.qinglan.sdk.server.common.*;
 import com.qinglan.sdk.server.domain.basic.ChannelGameEntity;
-import com.qinglan.sdk.server.presentation.channel.IChannel;
-import com.qinglan.sdk.server.presentation.channel.entity.*;
-import com.qinglan.sdk.server.presentation.channel.impl.*;
+import com.qinglan.sdk.server.channel.IChannel;
 import com.qinglan.sdk.server.application.redis.RedisUtil;
 import com.qinglan.sdk.server.application.ChannelService;
 import com.qinglan.sdk.server.BasicRepository;
@@ -116,7 +116,7 @@ public class ChannelServiceImpl implements ChannelService {
     @Override
     public String ucPayReturn(HttpServletRequest request) {
         try {
-            return payReturn(UCChannel.class,request);
+            return payReturn(UCChannel.class, request);
         } catch (Exception e) {
             ChannelStatsLogger.error(ChannelStatsLogger.UC, request.getQueryString(), "uc ucPayReturn error:" + e);
         }
@@ -176,12 +176,22 @@ public class ChannelServiceImpl implements ChannelService {
 
     @Override
     public String hanfengPayReturn(HttpServletRequest request) {
-        return null;
+        return payReturn(HanfengChannel.class, request);
     }
 
     @Override
     public String verifyHangfeng(HanfengVerifyRequest request) {
         return verify(HanfengChannel.class, request, JsonMapper.toJson(request));
+    }
+
+    @Override
+    public String chongchongPayReturn(HttpServletRequest request) {
+        return payReturn(ChongchongChannel.class, request);
+    }
+
+    @Override
+    public String verifyChongchong(ChongchongVerifyRequest request) {
+        return verify(ChongchongChannel.class, request, request.getUserId(), request.getToken());
     }
 
     private <T extends IChannel> String verify(Class<T> cls, BaseRequest request, String... args) {

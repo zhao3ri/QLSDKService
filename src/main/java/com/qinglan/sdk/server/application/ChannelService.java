@@ -1,7 +1,7 @@
 package com.qinglan.sdk.server.application;
 
+import com.qinglan.sdk.server.channel.entity.*;
 import com.qinglan.sdk.server.domain.platform.YaoyueCallback;
-import com.qinglan.sdk.server.presentation.channel.entity.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,4 +32,8 @@ public interface ChannelService {
     String hanfengPayReturn(HttpServletRequest request);
 
     String verifyHangfeng(HanfengVerifyRequest request);
+
+    String chongchongPayReturn(HttpServletRequest request);
+
+    String verifyChongchong(ChongchongVerifyRequest request);
 }

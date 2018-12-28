@@ -15,7 +15,7 @@ import com.qinglan.sdk.server.domain.basic.Order;
 import com.qinglan.sdk.server.domain.basic.event.CPAsyncNotifyEvent;
 import com.qinglan.sdk.server.domain.basic.event.OraderCountEvent;
 import com.qinglan.sdk.server.domain.basic.event.OrderGenerateEvent;
-import com.qinglan.sdk.server.presentation.dto.OrderGenerateRequest;
+import com.qinglan.sdk.server.dto.OrderGenerateRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

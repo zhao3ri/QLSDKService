@@ -31,7 +31,7 @@ public class GameServiceImpl implements GameService {
 	@Override
 	public boolean notifyGame(Order order, Game game) throws Exception{
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("platformId", order.getChannelId());
+		params.put("channelId", order.getChannelId());
 		params.put("uid", order.getUid());
 		params.put("zoneId", order.getZoneId());
 		params.put("roleId", order.getRoleId());
@@ -59,7 +59,7 @@ public class GameServiceImpl implements GameService {
 	}
 	public static void main(String[] args) {
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("platformId", "1009");
+		params.put("channelId", "1009");
 		params.put("uid", "6113843");
 		params.put("zoneId", "4");
 		params.put("roleId", "12222");

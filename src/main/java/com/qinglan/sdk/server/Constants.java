@@ -6,6 +6,8 @@ import java.util.Map;
 public class Constants {
 
     public static final String RESPONSE_KEY_CODE = "code";
+    public static final String RESPONSE_KEY_MESSAGE = "msg";
+    public static final String RESPONSE_KEY_DATA = "data";
     public static final String RESPONSE_KEY_CREATE_TIME = "createTime";
     public static final String RESPONSE_KEY_LOGIN_TIME = "loginTime";
     public static final String RESPONSE_KEY_ORDER_ID = "orderId";
@@ -22,6 +24,8 @@ public class Constants {
     public static final int RESPONSE_CODE_SERVER_EXCEPTION = 2;
     public static final int RESPONSE_CODE_CHANEL_SELF_PAY = 3;
     public static final int RESPONSE_CODE_BLANCE_ERROR = 4;
+    public static final int RESPONSE_CODE_UNKNOWN = 5;
+    public static final int RESPONSE_CODE_VERIFY_ERROR = 6;
 
     public static final int GAME_CHANNEL_CODE_REGISTE_STATUS_DEFAULT = 0;
     public static final int GAME_CHANNEL_CODE_REGISTE_STATUS_DISABLE = 1;

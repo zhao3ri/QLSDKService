@@ -1,6 +1,8 @@
 package com.qinglan.sdk.server.channel.entity;
 
-public class YSBaseResponseEntity {
+import java.io.Serializable;
+
+public class YSBaseResponseEntity implements Serializable {
     private static final long serialVersionUID = -487043331378327791L;
     private Integer errNum;// 错误码
     private String errMsg;// 错误信息

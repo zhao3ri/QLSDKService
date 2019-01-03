@@ -15,6 +15,8 @@ import java.util.Map;
 
 import static com.qinglan.sdk.server.ChannelConstants.HUOSDK_PAY_RESULT_FAILED;
 import static com.qinglan.sdk.server.ChannelConstants.HUOSDK_PAY_RESULT_SUCCESS;
+import static com.qinglan.sdk.server.Constants.RESPONSE_CODE_SUCCESS;
+import static com.qinglan.sdk.server.Constants.RESPONSE_CODE_VERIFY_ERROR;
 
 public class HuoSdkChannel extends BaseChannel {
     /**
@@ -38,6 +40,10 @@ public class HuoSdkChannel extends BaseChannel {
     private static final String REQUEST_PARAM_ORDER_STATUS = "order_status";
     private static final String REQUEST_PARAM_PAYTIME = "paytime";
     private static final String REQUEST_PARAM_ATTACH = "attach";
+
+    private static final int RESULT_STATUS_SUCCESS = 1;
+    private static final String RESULT_STATUS = "status";
+    private static final String RESULT_MSG = "msg";
 
     private static final int STATUS_ORDER_WAITING = 0;
     private static final int STATUS_ORDER_SUCCESS = 1;
@@ -63,12 +69,21 @@ public class HuoSdkChannel extends BaseChannel {
         params.put(REQUEST_PARAM_MEM_ID, memId);
         params.put(REQUEST_PARAM_USER_TOKEN, userToken);
         params.put(REQUEST_PARAM_SIGN, sign);
+
+        int code = RESPONSE_CODE_VERIFY_ERROR;
+        String message = "";
         try {
-            return HttpUtils.doPostToJson(channel.getVerifyUrl(), JsonMapper.toJson(params), 30 * 1000);
+            String result = HttpUtils.doPostToJson(channel.getVerifyUrl(), JsonMapper.toJson(params), 30 * 1000);
+            Map<String, Object> responseParams = getResponseParams(result);
+            String status = String.valueOf(responseParams.get(RESULT_STATUS));
+            if (status.equals(RESULT_STATUS_SUCCESS)) {
+                code = RESPONSE_CODE_SUCCESS;
+            }
+            message = String.valueOf(responseParams.get(RESULT_MSG));
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
+        return JsonMapper.toJson(getResult(code, message));
     }
 
     @Override

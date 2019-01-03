@@ -2,7 +2,6 @@ package com.qinglan.sdk.server.channel.impl;
 
 import com.qinglan.sdk.server.application.OrderService;
 import com.qinglan.sdk.server.channel.entity.BaseRequest;
-import com.qinglan.sdk.server.channel.entity.ChongchongPayResult;
 import com.qinglan.sdk.server.common.HttpUtils;
 import com.qinglan.sdk.server.common.JsonMapper;
 import com.qinglan.sdk.server.common.MD5;
@@ -17,6 +16,8 @@ import java.util.TreeMap;
 
 import static com.qinglan.sdk.server.ChannelConstants.CC_PAY_RESULT_FAILED;
 import static com.qinglan.sdk.server.ChannelConstants.CC_PAY_RESULT_SUCCESS;
+import static com.qinglan.sdk.server.Constants.RESPONSE_CODE_SUCCESS;
+import static com.qinglan.sdk.server.Constants.RESPONSE_CODE_VERIFY_ERROR;
 
 public class ChongchongChannel extends BaseChannel {
     /**
@@ -37,6 +38,7 @@ public class ChongchongChannel extends BaseChannel {
     private static final String REQUEST_PARAM_STATUS_CODE = "statusCode";
     private static final String REQUEST_PARAM_ORDER_PRICE = "orderPrice";
     private static final String CODE_PAY_SUCCESS = "0000";
+    private static final String VERIFY_SUCCESS = "success";
 
     /**
      * 返回结果：success表示已登录 fail表示未登录
@@ -49,7 +51,12 @@ public class ChongchongChannel extends BaseChannel {
         String userId = args[0];
         String token = args[1];
         String verifyUrl = channel.getVerifyUrl();
-        return HttpUtils.get(verifyUrl + String.format(VERIFY_PARAM, userId, token));
+        String result = HttpUtils.get(verifyUrl + String.format(VERIFY_PARAM, userId, token));
+        int code = RESPONSE_CODE_VERIFY_ERROR;
+        if (StringUtils.isEmpty(result) && result.equals(VERIFY_SUCCESS)) {
+            code = RESPONSE_CODE_SUCCESS;
+        }
+        return JsonMapper.toJson(getResult(code, result));
     }
 
     @Override

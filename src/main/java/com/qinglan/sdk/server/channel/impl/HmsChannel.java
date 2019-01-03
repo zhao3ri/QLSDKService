@@ -11,12 +11,12 @@ import com.qinglan.sdk.server.channel.entity.HMSPaySignRequest;
 import com.qinglan.sdk.server.channel.utils.HmsSignHelper;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.qinglan.sdk.server.Constants.RESPONSE_KEY_SIGN;
-import static com.qinglan.sdk.server.Constants.RESPONSE_KEY_SIGN_TYPE;
+import static com.qinglan.sdk.server.Constants.*;
 
 public class HmsChannel extends BaseChannel {
     /**
@@ -49,6 +49,13 @@ public class HmsChannel extends BaseChannel {
     private static final int RESULT_PAY_CODE_SUCCESS = 0;
     private static final int RESULT_PAY_CODE_FAIL = 1;
 
+    private static final String RETURN_CODE_SUCCEED = "0";
+    private static final int RETURN_CODE_ERROR = -1;
+    private static final String RETURN_KEY_CODE = "rtnCode";
+    private static final String RETURN_KEY_TS = "ts";
+    private static final String RETURN_KEY_SIGN = "rtnSign";
+    private static final String RETURN_KEY_ERROR_MSG = "errMsg";
+
     /**
      * 返回json示例
      * {
@@ -78,7 +85,29 @@ public class HmsChannel extends BaseChannel {
         mockRequestParams.put(REQUEST_PARAM_PLAYER_LEVEL, args[4]);
         mockRequestParams.put(REQUEST_PARAM_PLAYER_SIGN, args[5]);
         mockRequestParams.put(REQUEST_PARAM_CP_SIGN, HmsSignHelper.generateCPSign(mockRequestParams, priKey));
-        return HttpUtils.post(verUrl, mockRequestParams);
+        String result = HttpUtils.post(verUrl, mockRequestParams);
+        int code = RESPONSE_CODE_VERIFY_ERROR;
+        String msg = "";
+        Map<String, Object> data = new HashMap<>();
+        try {
+            Map<String, Object> responseParams = getResponseParams(result);
+            String rtnCode = String.valueOf(responseParams.get(RETURN_KEY_CODE));
+            if (rtnCode.equals(RETURN_CODE_SUCCEED)) {
+                code = RESPONSE_CODE_SUCCESS;
+            }
+            msg = String.valueOf(responseParams.get(RETURN_KEY_ERROR_MSG));
+            String ts = String.valueOf(responseParams.get(RETURN_KEY_TS));
+            String sign = String.valueOf(responseParams.get(RETURN_KEY_SIGN));
+            addData(data, RETURN_KEY_TS, ts);
+            addData(data, RETURN_KEY_SIGN, sign);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Map<String, Object> res = getResult(code, msg);
+        if (!data.isEmpty()) {
+            res.put(RESPONSE_KEY_DATA, data);
+        }
+        return JsonMapper.toJson(res);
     }
 
     @Override

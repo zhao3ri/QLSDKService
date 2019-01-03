@@ -12,7 +12,13 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.qinglan.sdk.server.ChannelConstants.HANFENG_PAY_RESULT_FAILED;
+import static com.qinglan.sdk.server.Constants.RESPONSE_CODE_SUCCESS;
+import static com.qinglan.sdk.server.Constants.RESPONSE_CODE_VERIFY_ERROR;
+import static com.qinglan.sdk.server.Constants.RESPONSE_KEY_DATA;
 
 public class HanfengChannel extends BaseChannel {
     /**
@@ -25,15 +31,20 @@ public class HanfengChannel extends BaseChannel {
     public static final String PAY_RETURN_URL = "/hanfeng/pay/return";
     private static final String SEPARATOR = "|";
     private static final String STATUS_PAY_SUCCESS = "0";
+    private static final String STATUS_VERIFY_SUCCESS = "YHYZ_000";
+
+    private static final String RESPONSE_USER_ID = "userId";
+    private static final String RESPONSE_STATUS = "status";
+    private static final String RESPONSE_MSG = "msg";
 
     /**
-     * 返回json示例
+     * 第三方返回json示例
      * {
-     *      "status":	"YHYZ_000",
-     *      "msg":	"",
-     *      "userId":"dfdsr34235etdd",
+     * "status":	"YHYZ_000",
+     * "msg":	"",
+     * "userId":"dfdsr34235etdd",
      * }
-     * */
+     */
     @Override
     public String verifySession(String... args) {
         checkInit();
@@ -49,12 +60,28 @@ public class HanfengChannel extends BaseChannel {
         }
         request.setSign(sign);
         String verifyUrl = channel.getVerifyUrl();
+        int code = RESPONSE_CODE_VERIFY_ERROR;
+        String message = "";
+        String userId = "";
         try {
-            return HttpUtils.post(verifyUrl, JsonMapper.toJson(request));
+            String result = HttpUtils.post(verifyUrl, JsonMapper.toJson(request));
+            Map<String, Object> responseParams = getResponseParams(result);
+            String status = String.valueOf(responseParams.get(RESPONSE_STATUS));
+            if (status.equals(STATUS_VERIFY_SUCCESS)) {
+                code = RESPONSE_CODE_SUCCESS;
+                userId = String.valueOf(responseParams.get(RESPONSE_USER_ID));
+            }
+            message = String.valueOf(responseParams.get(RESPONSE_MSG));
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
+        Map<String, Object> res = getResult(code, message);
+        if (!StringUtils.isEmpty(userId)) {
+            Map<String, Object> data = new HashMap<>();
+            addData(data, RESPONSE_USER_ID, userId);
+            res.put(RESPONSE_KEY_DATA, data);
+        }
+        return JsonMapper.toJson(res);
     }
 
     @Override

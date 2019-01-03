@@ -3,6 +3,7 @@ package com.qinglan.sdk.server.channel.impl;
 import com.qinglan.sdk.server.application.OrderService;
 import com.qinglan.sdk.server.application.log.ChannelStatsLogger;
 import com.qinglan.sdk.server.channel.entity.BaseRequest;
+import com.qinglan.sdk.server.channel.entity.UCResponse;
 import com.qinglan.sdk.server.common.*;
 import com.qinglan.sdk.server.domain.basic.Order;
 import com.qinglan.sdk.server.channel.entity.UCOrderSignRequest;
@@ -18,6 +19,9 @@ import java.util.TreeMap;
 
 import static com.qinglan.sdk.server.ChannelConstants.UC_PAY_RESULT_FAILED;
 import static com.qinglan.sdk.server.ChannelConstants.UC_PAY_RESULT_SUCCESS;
+import static com.qinglan.sdk.server.Constants.RESPONSE_CODE_SUCCESS;
+import static com.qinglan.sdk.server.Constants.RESPONSE_CODE_VERIFY_ERROR;
+import static com.qinglan.sdk.server.Constants.RESPONSE_KEY_DATA;
 
 public class UCChannel extends BaseChannel {
     /**
@@ -50,12 +54,24 @@ public class UCChannel extends BaseChannel {
      * 第三方平台认证
      * 请求参数json示例如下：
      * {
-     *   "id":1332406591685,
-     *   "game":{"gameId":5},
-     *   "data":{
-     *     "sid":"110adf4c-f2d3-4be5-8a9c-3741a83e5853"
-     *   },
-     *   "sign":"bb926c2a9944e9b4f2f6639d928dc95c"
+     * "id":1332406591685,
+     * "game":{"gameId":5},
+     * "data":{
+     * "sid":"110adf4c-f2d3-4be5-8a9c-3741a83e5853"
+     * },
+     * "sign":"bb926c2a9944e9b4f2f6639d928dc95c"
+     * }
+     * 返回json示例：
+     * {
+     * "id":1332406591685,
+     * "state":{
+     * "code":1,
+     * "msg":"jjjjj"
+     * },
+     * "data":{
+     * "accountId":"110adf4c-f2d3-4be5-8a9c-3741a83e5853"，
+     * "creator":"tt",
+     * "nickName":"yoyo"
      * }
      */
     @Override
@@ -81,12 +97,25 @@ public class UCChannel extends BaseChannel {
         params.put(REQUEST_KEY_DATA, data);
         params.put(REQUEST_KEY_GAME, game);
         params.put(REQUEST_KEY_SIGN, MD5.encode(SIGN_PREFIX + sid + appKey));
+        int code = RESPONSE_CODE_VERIFY_ERROR;
+        String msg = "";
+        Map<String, Object> resData = new HashMap<>();
         try {
-            return HttpUtils.doPostToJson(channel.getVerifyUrl(), JsonMapper.toJson(params), 10000);
+            String result = HttpUtils.doPostToJson(channel.getVerifyUrl(), JsonMapper.toJson(params), 10000);
+            UCResponse response = JsonMapper.toObject(result, UCResponse.class);
+            if (null != response) {
+                if (Integer.valueOf(response.state.get(UCResponse.RESPONSE_KEY_CODE).toString()) == UCResponse.RESPONSE_SUCCESS_CODE) {
+                    code = RESPONSE_CODE_SUCCESS;
+                    resData = response.data;
+                }
+                msg = String.valueOf(response.state.get(UCResponse.RESPONSE_KEY_MSG));
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
         }
+        Map<String, Object> res = getResult(code, msg);
+        res.put(RESPONSE_KEY_DATA, resData);
+        return JsonMapper.toJson(res);
     }
 
     @Override

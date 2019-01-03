@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.qinglan.sdk.server.application.OrderService;
 import com.qinglan.sdk.server.channel.entity.BaseRequest;
+import com.qinglan.sdk.server.channel.entity.YSVerifyResponse;
 import com.qinglan.sdk.server.common.HttpUtils;
+import com.qinglan.sdk.server.common.JsonMapper;
 import com.qinglan.sdk.server.common.StringUtil;
 import com.qinglan.sdk.server.domain.basic.Order;
 import com.qinglan.sdk.server.channel.entity.YSPayResponseEntity;
@@ -14,6 +16,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.qinglan.sdk.server.Constants.RESPONSE_CODE_SUCCESS;
+import static com.qinglan.sdk.server.Constants.RESPONSE_CODE_VERIFY_ERROR;
 
 /**
  * 夜神渠道
@@ -29,10 +34,14 @@ public class YSChannel extends BaseChannel {
     public static final String PAY_RETURN_URL = "/yeshen/pay/return";
 
     public static final String QUERY_PAY_RESULT_URL = "https://pay.yeshen.com/ws/payapi/v3/trade/query";
+    public static final String REQUEST_PARAMS = "?accessToken=%s&uid=%s&appId=%s";
     public static final int SUCCESS = 0;
     public static final int FAILED = -1;
-    public static final String MSG_SUCCESS = "SUCCESS";
+    private static final String MSG_PASSPORT_VALID = "1";
+    private static final String MSG_PASSPORT_INVALID = "0";
+    private static final String RESULT_PARAM_VALIDATE = "isValidate";
     public static final String MSG_FAILURE = "FAILURE";
+    public static final String MSG_SUCCESS = "SUCCESS";
 
     public static final int PAY_STATUS_WAITING = 1;//待支付
     public static final int PAY_STATUS_SUCCESS = 2;//支付成功
@@ -41,12 +50,12 @@ public class YSChannel extends BaseChannel {
     /**
      * 返回json示例
      * {
-     *      "errNum":	"0",
-     *      "transdata":	{
-     *              "isValidate":	1
-     *        }
+     * "errNum":	"0",
+     * "transdata":	{
+     * "isValidate":	1
      * }
-     * */
+     * }
+     */
     @Override
     public String verifySession(String... args) {
         checkInit();
@@ -58,16 +67,29 @@ public class YSChannel extends BaseChannel {
         if (StringUtil.isNullOrEmpty(appId)) {
             appId = channelGame.getAppID();
         }
+        int code = RESPONSE_CODE_VERIFY_ERROR;
+        String msg = "";
         try {
-            String paramsJoin = "?accessToken=" + accessToken + "&uid=" + uid + "&appId=" + appId;
+            String paramsJoin = String.format(REQUEST_PARAMS, accessToken, uid, appId);
             String verifyUrl = channel.getVerifyUrl() + paramsJoin;
             String resultJson = HttpUtils.get(verifyUrl);
-            return resultJson;
+
+            YSVerifyResponse response = JsonMapper.toObject(resultJson, YSVerifyResponse.class);
+            if (response != null) {
+                if (response.getErrNum() == SUCCESS) {
+                    Map<String, Object> transdata = response.getTransdata();
+                    if (transdata != null && transdata.containsKey(RESULT_PARAM_VALIDATE)) {
+                        if (MSG_PASSPORT_VALID.equals(transdata.get(RESULT_PARAM_VALIDATE).toString())) {
+                            code = RESPONSE_CODE_SUCCESS;
+                        }
+                    }
+                }
+                msg = response.getErrMsg();
+            }
         } catch (Exception e) {
             e.printStackTrace();
-
         }
-        return null;
+        return JsonMapper.toJson(getResult(code, msg));
     }
 
     @Override

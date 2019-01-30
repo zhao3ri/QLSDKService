@@ -8,6 +8,8 @@ public class Constants {
     public static final String RESPONSE_KEY_CODE = "code";
     public static final String RESPONSE_KEY_MESSAGE = "msg";
     public static final String RESPONSE_KEY_DATA = "data";
+    public static final String RESPONSE_KEY_TOKEN = "token";
+    public static final String RESPONSE_KEY_UID = "uid";
     public static final String RESPONSE_KEY_CREATE_TIME = "createTime";
     public static final String RESPONSE_KEY_LOGIN_TIME = "loginTime";
     public static final String RESPONSE_KEY_ORDER_ID = "orderId";

@@ -197,7 +197,7 @@ public class AccountServiceTest  extends BaseTestCase{
 
 	@Test
 	public void testUpdateBalance(){
-//		int result  = accountService.checkPlatformBalance(100,0,4);
+//		int result  = accountService.checkChannelBalance(100,0,4);
 //		logger.info("testUpdateBalance "+result);
 	}
 }

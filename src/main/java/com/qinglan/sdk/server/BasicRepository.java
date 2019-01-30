@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface BasicRepository {
     //查询创建角色时间
-    Account getRoleCreateTime(Long appId, Integer channelId, String zoneId, String roleId, String roleName);
+    Account getRoleCreateTime(Long gameId, Integer channelId, String zoneId, String roleId, String roleName);
 
     /*******用户表*******/
     int saveAccount(Account account);

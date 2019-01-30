@@ -60,7 +60,7 @@ public class AccountController {
         return accountService.quit(quit);
     }
 
-    @RequestMapping("/account/role/establish")
+    @RequestMapping("/account/role/create")
     @ResponseBody
     public Map<String, Object> roleEstablish(RoleCreatePattern roleEstablish) {
         logger.debug("params: {}", roleEstablish);

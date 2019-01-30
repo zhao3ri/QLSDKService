@@ -19,10 +19,14 @@ import com.qinglan.sdk.server.common.DateUtils;
 import com.qinglan.sdk.server.common.JsonMapper;
 import com.qinglan.sdk.server.application.redis.RedisUtil;
 
+import static com.qinglan.sdk.server.domain.basic.Order.ORDER_NOTIFY_STATUS_WAITING;
+import static com.qinglan.sdk.server.domain.basic.Order.ORDER_STATUS_PAYMENT_SUCCESS;
+
 @Repository
 public class BasicRepositoryImpl implements BasicRepository {
     private static final String PARAM_CHANNEL_ID = "channelId";
     private static final String PARAM_UID = "uid";
+    private static final String PARAM_PID = "pid";
     private static final String PARAM_GAME_ID = "gameId";
     private static final String PARAM_ZONE_ID = "zoneId";
     private static final String PARAM_ROLE_ID = "roleId";
@@ -71,7 +75,7 @@ public class BasicRepositoryImpl implements BasicRepository {
         ChannelGameEntity channelGame = mybatisRepository.findOne(ChannelGameEntity.class, "getByChannelAndGameId", params);
         if (channelGame == null) return null;
 
-        //redisUtil.setKeyValue("pg_"+platformId+"_"+gameId, JsonMapper.toJson(channelGame));
+        //redisUtil.setKeyValue("pg_"+channelId+"_"+gameId, JsonMapper.toJson(channelGame));
         return channelGame;
     }
 
@@ -133,8 +137,8 @@ public class BasicRepositoryImpl implements BasicRepository {
     @Override
     public List<String> getNotifyOrder() {
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put(PARAM_STATUS, 2);
-        params.put(PARAM_NOTIFY_STATUS, 1);
+        params.put(PARAM_STATUS, ORDER_STATUS_PAYMENT_SUCCESS);
+        params.put(PARAM_NOTIFY_STATUS, ORDER_NOTIFY_STATUS_WAITING);
         return mybatisRepository.findList(Order.class, "getNotifyOrder", params);
     }
 
@@ -168,15 +172,15 @@ public class BasicRepositoryImpl implements BasicRepository {
         return result;
     }
 
-    public BehaviorUser getUserBehavior(Integer clientType, String uid, Integer platformId, Long appId, String zoneId) {
+    public BehaviorUser getUserBehavior(Integer clientType, String uid, Integer channelId, Long gameId, String zoneId) {
         BehaviorUser result = null;
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(PARAM_OS, clientType);
         params.put(PARAM_UID, uid);
-        params.put(PARAM_CHANNEL_ID, platformId);
-        params.put(PARAM_GAME_ID, appId);
+        params.put(PARAM_CHANNEL_ID, channelId);
+        params.put(PARAM_GAME_ID, gameId);
         params.put(PARAM_ZONE_ID, zoneId);
-        String key = "userBehavior_" + clientType + SEPARATOR + uid + SEPARATOR + platformId + SEPARATOR + appId + SEPARATOR + zoneId;
+        String key = "userBehavior_" + clientType + SEPARATOR + uid + SEPARATOR + channelId + SEPARATOR + gameId + SEPARATOR + zoneId;
         String userBehaviorJson = redisUtil.getValue(key);
         BehaviorUser behaviorUser = null;
         if (StringUtils.isEmpty(userBehaviorJson)) {
@@ -271,7 +275,7 @@ public class BasicRepositoryImpl implements BasicRepository {
         params.put(PARAM_ROLE_DATA, behaviorUser.getRoleData());
         BehaviorUserRedis redis = toRedis(behaviorUser);
         redisUtil.setKeyValue("userBehavior_" + behaviorUser.getClientType() + "_" + behaviorUser.getUid() + "_" + behaviorUser.getChannelId() + "_" + behaviorUser.getGameId() + "_" + behaviorUser.getZoneId(), JsonMapper.toJson(redis));
-        mybatisRepository.insert(BehaviorUser.class, "insert", params);
+        mybatisRepository.insert(BehaviorUser.class, params);
     }
 
     @Override
@@ -287,13 +291,13 @@ public class BasicRepositoryImpl implements BasicRepository {
         params.put(PARAM_ROLE_DATA, behaviorUser.getRoleData());
         BehaviorUserRedis redis = toRedis(behaviorUser);
         redisUtil.setKeyValue("userBehavior_" + behaviorUser.getClientType() + "_" + behaviorUser.getUid() + "_" + behaviorUser.getChannelId() + "_" + behaviorUser.getGameId() + "_" + behaviorUser.getZoneId(), JsonMapper.toJson(redis));
-        return mybatisRepository.update(BehaviorUser.class, "update", params);
+        return mybatisRepository.update(BehaviorUser.class, params);
     }
 
     @Override
     public void save(BehaviorDevice behaviorDevice) {
         behaviorDevice.jsonAttribute();
-        mybatisRepository.insert(BehaviorDevice.class, "insert", behaviorDevice);
+        mybatisRepository.insert(BehaviorDevice.class, behaviorDevice);
     }
 
     @Override
@@ -316,7 +320,7 @@ public class BasicRepositoryImpl implements BasicRepository {
         data.setClientType(behaviorDevice.getClientType());
         data.setDevice(behaviorDevice.getDevice());
         data.setChannels(JsonMapper.toJson(behaviorDevice.getChannelIds()));
-        mybatisRepository.update(BehaviorDevice.class, "update", data);
+        mybatisRepository.update(BehaviorDevice.class, data);
     }
 
     @Override
@@ -326,7 +330,7 @@ public class BasicRepositoryImpl implements BasicRepository {
         data.setClientType(behaviorDevice.getClientType());
         data.setDevice(behaviorDevice.getDevice());
         data.setLoginZones(JsonMapper.toJson(behaviorDevice.getLoginZoneIds()));
-        mybatisRepository.update(BehaviorDevice.class, "update", data);
+        mybatisRepository.update(BehaviorDevice.class, data);
     }
 
     @Override
@@ -336,7 +340,7 @@ public class BasicRepositoryImpl implements BasicRepository {
         data.setClientType(behaviorDevice.getClientType());
         data.setDevice(behaviorDevice.getDevice());
         data.setRoleZones(JsonMapper.toJson(behaviorDevice.getRoleZoneIds()));
-        mybatisRepository.update(BehaviorDevice.class, "update", data);
+        mybatisRepository.update(BehaviorDevice.class, data);
     }
 
     @Override
@@ -346,7 +350,7 @@ public class BasicRepositoryImpl implements BasicRepository {
         data.setClientType(behaviorDevice.getClientType());
         data.setDevice(behaviorDevice.getDevice());
         data.setLoginChannels(JsonMapper.toJson(behaviorDevice.getLoginChannelIds()));
-        mybatisRepository.update(BehaviorDevice.class, "update", data);
+        mybatisRepository.update(BehaviorDevice.class, data);
     }
 
     @Override
@@ -356,11 +360,11 @@ public class BasicRepositoryImpl implements BasicRepository {
             GameTrace gameTrace = JsonMapper.toObject(json, GameTrace.class);
             Integer loginDel = DateUtils.getIntervalDays(gameTrace.getLastLoginTime(), System.currentTimeMillis());
             if (loginDel > 0) {
-                String record = Long.toBinaryString(gameTrace.getLoginRecord());
+                String record = Long.toBinaryString(gameTrace.getLogin35DaysRecord());
                 if (record.length() > 34) {
                     record = record.substring(record.length() - 34);
                 }
-                gameTrace.setLoginRecord((Long.parseLong(record, 2) << loginDel));
+                gameTrace.setLogin35DaysRecord((Long.parseLong(record, 2) << loginDel));
             }
             return gameTrace;
         } else {
@@ -427,7 +431,7 @@ public class BasicRepositoryImpl implements BasicRepository {
                 gameTrace.setFirstPayTime(firstPayTime);
                 gameTrace.setLastPayTime(lastPayTime);
                 gameTrace.setPayTimesToday(payTimesToday);
-                gameTrace.setLoginRecord(loginRecord);
+                gameTrace.setLogin35DaysRecord(loginRecord);
             }
             return gameTrace;
         }
@@ -515,44 +519,44 @@ public class BasicRepositoryImpl implements BasicRepository {
     @Override
     public HLastLogin getLastLogin(String uid, Integer pid, Integer clientType, Long gameId, String zoneId) {
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("uid", uid);
-        params.put("pid", pid);
-        params.put("clientType", clientType);
-        params.put("gameId", gameId);
-        params.put("zoneId", zoneId);
-        return mybatisRepository.findOne(HLastLogin.class, "findOne", params);
+        params.put(PARAM_UID, uid);
+        params.put(PARAM_PID, pid);
+        params.put(PARAM_OS, clientType);
+        params.put(PARAM_GAME_ID, gameId);
+        params.put(PARAM_ZONE_ID, zoneId);
+        return mybatisRepository.findOne(HLastLogin.class, params);
     }
 
     @Override
     public int insertHLastLogin(HLastLogin lastLogin) {
-        return mybatisRepository.insert(HLastLogin.class, "insert", lastLogin);
+        return mybatisRepository.insert(HLastLogin.class, lastLogin);
     }
 
     @Override
     public int updateIsPaidUser(String uid, Integer pid, Integer clientType, Long gameId, String zoneId) {
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("uid", uid);
-        params.put("pid", pid);
-        params.put("clientType", clientType);
-        params.put("gameId", gameId);
-        params.put("zoneId", zoneId);
+        params.put(PARAM_UID, uid);
+        params.put(PARAM_PID, pid);
+        params.put(PARAM_OS, clientType);
+        params.put(PARAM_GAME_ID, gameId);
+        params.put(PARAM_ZONE_ID, zoneId);
         return mybatisRepository.update(HLastLogin.class, "updateIsPaidUser", params);
     }
 
     @Override
     public int updateLastLoginDate(String uid, Integer pid, Integer clientType, Long gameId, String zoneId) {
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("uid", uid);
-        params.put("pid", pid);
-        params.put("clientType", clientType);
-        params.put("gameId", gameId);
-        params.put("zoneId", zoneId);
+        params.put(PARAM_UID, uid);
+        params.put(PARAM_PID, pid);
+        params.put(PARAM_OS, clientType);
+        params.put(PARAM_GAME_ID, gameId);
+        params.put(PARAM_ZONE_ID, zoneId);
         return mybatisRepository.update(HLastLogin.class, "updateLastLoginDate", params);
     }
 
     @Override
     public void insertRole(Role role) {
-        mybatisRepository.insert(Role.class, "insert", role);
+        mybatisRepository.insert(Role.class, role);
     }
 
     /**

@@ -37,5 +37,5 @@ public interface AccountService {
 
     String orderSuccessNotify(HttpServletRequest request);
 
-    boolean checkPlatformBalance(int money, ChannelGameEntity channelGame);
+    boolean checkChannelBalance(int money, ChannelGameEntity channelGame);
 }

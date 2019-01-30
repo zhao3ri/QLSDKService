@@ -67,23 +67,4 @@ public class HeartbeatPattern extends BaseDto implements Serializable {
 		if(null == getClientType()) return true;
 		return false;
 	}
-	
-	public static void main(String[] args) {
-		String b = null;
-		System.out.println(b);
-		System.out.println(bb("bbrr"));
-		System.out.println(bb("1001_bb"));
-		System.out.println(bb("1001_"));
-		System.out.println(bb("1001_b"));
-		System.out.println(bb("bbrrbbbbb"));
-	}
-	
-	public static String bb(String uid) {
-		if(null == uid) return uid;
-		
-		if(uid.trim().length() > 5 && uid.trim().charAt(4) == '_') {
-			return uid.substring(5, uid.length());
-		}
-		return uid;
-	}
 }

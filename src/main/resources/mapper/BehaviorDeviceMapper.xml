@@ -4,7 +4,7 @@
     <resultMap id="BaseResultMap" type="com.qinglan.sdk.server.domain.basic.BehaviorDevice">
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="device" property="device" jdbcType="VARCHAR"/>
-        <result column="appID" property="appID" jdbcType="BIGINT"/>
+        <result column="gameId" property="gameId" jdbcType="BIGINT"/>
         <result column="clientType" property="clientType" jdbcType="TINYINT"/>
         <result column="channels" property="channels" jdbcType="VARCHAR"/>
         <result column="loginChannels" property="loginChannels" jdbcType="VARCHAR"/>

@@ -147,7 +147,7 @@ public class AccountServiceImpl implements AccountService {
      * @param money
      * @return 0 ：余额不足 2：扣款失败  1：成功
      */
-    public boolean checkPlatformBalance(int money, ChannelGameEntity channelGame) {
+    public boolean checkChannelBalance(int money, ChannelGameEntity channelGame) {
         ChannelEntity channel = basicRepository.getChannel(channelGame.getChannelId());
         money = money * channelGame.getDiscount() / 100;
         if (money > channel.getBalance()) {
@@ -323,7 +323,7 @@ public class AccountServiceImpl implements AccountService {
             return result;
         }
 
-        if (!this.checkPlatformBalance(params.getAmount(), channelGame)) {
+        if (!this.checkChannelBalance(params.getAmount(), channelGame)) {
             result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_BLANCE_ERROR);
             return result;
         }
@@ -364,16 +364,16 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Map<String, Object> loginSuccess(LoginSuccessPattern params) {
         Map<String, Object> result = new HashMap<String, Object>();
-        result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SUCCESS);
         if (params.isEmpty()) {
             result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SERVER_EXCEPTION);
-            result.put("msg", "param errro");
+            result.put(Constants.RESPONSE_KEY_MESSAGE, "param error");
             return result;
         }
         String token = UUID.randomUUID().toString();
         String key = params.getChannelId() + "_" + params.getGameId() + "_" + token;
         redisUtil.setKeyValue(key, params.getExtend(), 120);
-        result.put("token", token);
+        result.put(Constants.RESPONSE_KEY_TOKEN, token);
+        result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SUCCESS);
         return result;
     }
 
@@ -381,10 +381,9 @@ public class AccountServiceImpl implements AccountService {
     public Map<String, Object> getUserIdByToken(GetUserInfoPattern params) {
         logger.info("--getUserIdByToken--");
         Map<String, Object> result = new HashMap<String, Object>();
-        result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SUCCESS);
         if (params.isEmpty()) {
             result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SERVER_EXCEPTION);
-            result.put("msg", "param errro");
+            result.put(Constants.RESPONSE_KEY_MESSAGE, "param error");
             return result;
         }
         String key = params.getChannelId() + "_" + params.getGameId() + "_" + params.getSessionId();
@@ -393,19 +392,23 @@ public class AccountServiceImpl implements AccountService {
         logger.info("userid:{}", userid);
         if (null == userid || StringUtil.isNullOrEmpty(userid)) {
             result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_PARAMETER_ILLEGAL);
-            result.put("msg", "token errro");
+            result.put(Constants.RESPONSE_KEY_MESSAGE, "token error");
             return result;
         }
         result.put("userid", userid);
         if (params.getChannelId() == 38 && params.getGameId().longValue() == Long.parseLong("180830054479")) {
             result.put("userid", getUUWdqkUserid(userid));
         }
+        result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SUCCESS);
         return result;
     }
 
     @Override
     public Map<String, Object> queryOrder(QueryOrderRequest request) {
         Map<String, Object> result = new HashMap<>();
+        if (request.isEmpty()){
+
+        }
         Order order = basicRepository.getOrderStatus(request.getOrderId(), request.getGameId(), request.getChannelId());
         result.put(RESPONSE_KEY_ORDER_STATUS, order.getStatus());
         result.put(RESPONSE_KEY_ORDER_NOTIFY_STATUS, order.getNotifyStatus());
@@ -424,13 +427,12 @@ public class AccountServiceImpl implements AccountService {
         String token = UUID.randomUUID().toString();
         String key = params.getChannelId() + "_" + params.getGameId() + "_" + token;
         String uid = redisUtil.getValue(key);
-        result.put("uid", uid);
+        result.put(Constants.RESPONSE_KEY_UID, uid);
         if (uid != null) {
             result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SUCCESS);
-            result.put("msg", "");
+            result.put(Constants.RESPONSE_KEY_MESSAGE, "");
         } else {
-
-            result.put("msg", "token 无效");
+            result.put(Constants.RESPONSE_KEY_MESSAGE, "token 无效");
             result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SERVER_EXCEPTION);
         }
         return result;

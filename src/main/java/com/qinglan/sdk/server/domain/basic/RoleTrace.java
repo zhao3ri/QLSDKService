@@ -3,22 +3,12 @@ package com.qinglan.sdk.server.domain.basic;
 import java.util.Date;
 
 import com.qinglan.sdk.server.common.DateUtils;
-import com.qinglan.sdk.server.common.JsonMapper;
 
-public class RoleTrace {
+public class RoleTrace extends Trace {
     private String rid;//角色ID
     private String rname;//角色名
-    private Long fltime;//首次登录时间
-    private Long lltime;//最后登录时间
-    private Long fctime;//首次创建角色时间
-    private Long lutime;//最后退出时间
-    private Integer lttoday;//登录次数
-    private Long lhtime;//最后心跳时间
-    private Long fptime;//首次支付时间
-    private Long lptime;//最后支付时间
-    private Integer pttoday;//今天支付次数
-    private Long precord;//支付35天记录
-    private Long lrecord;//登录35天记录
+    private Long lastHeartTime;//最后心跳时间
+    private Long pay35DaysRecord;//支付35天记录
 
     /**
      * @return the rid
@@ -50,211 +40,64 @@ public class RoleTrace {
 
 
     /**
-     * @return the fltime
+     * @return the lastHeartTime
      */
-    public Long getFltime() {
-        return fltime;
+    public Long getLastHeartTime() {
+        return lastHeartTime;
     }
 
     /**
-     * @param fltime the fltime to set
+     * @param lastHeartTime the lastHeartTime to set
      */
-    public void setFltime(Long fltime) {
-        this.fltime = fltime;
+    public void setLastHeartTime(Long lastHeartTime) {
+        this.lastHeartTime = lastHeartTime;
     }
 
     /**
-     * @return the lltime
+     * @return the pay35DaysRecord
      */
-    public Long getLltime() {
-        return lltime;
+    public Long getPay35DaysRecord() {
+        return pay35DaysRecord;
     }
 
     /**
-     * @param lltime the lltime to set
+     * @param pay35DaysRecord the pay35DaysRecord to set
      */
-    public void setLltime(Long lltime) {
-        this.lltime = lltime;
+    public void setPay35DaysRecord(Long pay35DaysRecord) {
+        this.pay35DaysRecord = pay35DaysRecord;
     }
+
 
     /**
-     * @return the fctime
+     * 是否角色首次登陆游戏
      */
-    public Long getFctime() {
-        return fctime;
-    }
-
-    /**
-     * @param fctime the fctime to set
-     */
-    public void setFctime(Long fctime) {
-        this.fctime = fctime;
-    }
-
-    /**
-     * @return the lutime
-     */
-    public Long getLutime() {
-        return lutime;
-    }
-
-    /**
-     * @param lutime the lutime to set
-     */
-    public void setLutime(Long lutime) {
-        this.lutime = lutime;
-    }
-
-    /**
-     * @return the lttoday
-     */
-    public Integer getLttoday() {
-        return lttoday;
-    }
-
-    /**
-     * @param lttoday the lttoday to set
-     */
-    public void setLttoday(Integer lttoday) {
-        this.lttoday = lttoday;
-    }
-
-    /**
-     * @return the lhtime
-     */
-    public Long getLhtime() {
-        return lhtime;
-    }
-
-    /**
-     * @param lhtime the lhtime to set
-     */
-    public void setLhtime(Long lhtime) {
-        this.lhtime = lhtime;
-    }
-
-    /**
-     * @return the fptime
-     */
-    public Long getFptime() {
-        return fptime;
-    }
-
-    /**
-     * @param fptime the fptime to set
-     */
-    public void setFptime(Long fptime) {
-        this.fptime = fptime;
-    }
-
-    /**
-     * @return the lptime
-     */
-    public Long getLptime() {
-        return lptime;
-    }
-
-    /**
-     * @param lptime the lptime to set
-     */
-    public void setLptime(Long lptime) {
-        this.lptime = lptime;
-    }
-
-    /**
-     * @return the pttoday
-     */
-    public Integer getPttoday() {
-        return pttoday;
-    }
-
-    /**
-     * @param pttoday the pttoday to set
-     */
-    public void setPttoday(Integer pttoday) {
-        this.pttoday = pttoday;
-    }
-
-    /**
-     * @return the precord
-     */
-    public Long getPrecord() {
-        return precord;
-    }
-
-    /**
-     * @param precord the precord to set
-     */
-    public void setPrecord(Long precord) {
-        this.precord = precord;
-    }
-
-    /**
-     * @return the lrecord
-     */
-    public Long getLrecord() {
-        return lrecord;
-    }
-
-    /**
-     * @param lrecord the lrecord to set
-     */
-    public void setLrecord(Long lrecord) {
-        this.lrecord = lrecord;
-    }
-
-    //是否角色首次登陆游戏
     public int isFirstRoleLogin() {
-        if (fltime == null || fltime == 0) {
+        if (firstInTime == null || firstInTime == 0) {
             return 1;
         }
         return 0;
     }
 
     public int isFirstLoginMonth() {
-        if (fltime == null || fltime == 0 || lltime == null || lltime == 0) {
+        if (firstInTime == null || firstInTime == 0 || lastLoginTime == null || lastLoginTime == 0) {
             return 1;
         }
-        if (DateUtils.sameMonth(lltime, new Date().getTime())) {
+        if (DateUtils.sameMonth(lastLoginTime, new Date().getTime())) {
             return 0;
         }
         return 1;
     }
 
-    //最近35天登陆情况
-    public Long late35Login() {
-        if (lrecord == null) {
-            return 1L;
-        }
-        Integer loginDel = DateUtils.getIntervalDays(lltime, System.currentTimeMillis());
-        if (loginDel > 0) {
-            String record = Long.toBinaryString(lrecord);
-            if (record.length() > 34) {
-                record = record.substring(record.length() - 34);
-            }
-            return (Long.parseLong(record, 2) << loginDel) + 1;
-        }
-        return lrecord;
-    }
-
     //最近35天支付情况
     public Long late35Pay() {
-        if (precord == null) {
+        if (pay35DaysRecord == null) {
             return 1L;
         }
-        Integer loginDel = DateUtils.getIntervalDays(lptime, System.currentTimeMillis());
+        Integer loginDel = DateUtils.getIntervalDays(lastPayTime, System.currentTimeMillis());
         if (loginDel > 0) {
-            String record = Long.toBinaryString(precord);
-            if (record.length() > 34) {
-                record = record.substring(record.length() - 34);
-            }
-            return (Long.parseLong(record, 2) << loginDel) + 1;
+            return updateRecord(pay35DaysRecord, loginDel);
         }
-        return precord;
+        return pay35DaysRecord;
     }
 
-    @Override
-    public String toString() {
-        return JsonMapper.toJson(this);
-    }
 }

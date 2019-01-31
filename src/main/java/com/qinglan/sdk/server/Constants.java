@@ -10,24 +10,24 @@ public class Constants {
     public static final String RESPONSE_KEY_DATA = "data";
     public static final String RESPONSE_KEY_TOKEN = "token";
     public static final String RESPONSE_KEY_UID = "uid";
-    public static final String RESPONSE_KEY_CREATE_TIME = "createTime";
-    public static final String RESPONSE_KEY_LOGIN_TIME = "loginTime";
+    public static final String RESPONSE_KEY_CREATE_TIME = "roleCreateTime";
+    public static final String RESPONSE_KEY_START_TIME = "gameStartTime";
     public static final String RESPONSE_KEY_ORDER_ID = "orderId";
-    public static final String RESPONSE_KEY_ORDER_STATUS = "status";
-    public static final String RESPONSE_KEY_ORDER_NOTIFY_STATUS = "notifyStatus";
+    public static final String RESPONSE_KEY_ORDER_STATUS = "orderStatus";
+    public static final String RESPONSE_KEY_ORDER_NOTIFY_STATUS = "orderNotifyStatus";
     public static final String RESPONSE_KEY_NOTIFY_URL = "notifyUrl";
 
     public static final String RESPONSE_KEY_SIGN = "sign";
     public static final String RESPONSE_KEY_SIGN_TYPE = "signType";
 
     public static final int RESPONSE_CODE_SUCCESS = 0;
-    public static final int RESPONSE_CODE_PARAMETER_ILLEGAL = 1;
-    public static final int RESPONSE_CODE_STOP_REGIST = 3;
-    public static final int RESPONSE_CODE_SERVER_EXCEPTION = 2;
+    public static final int RESPONSE_CODE_PARAMETER_ILLEGAL = 1001;
+    public static final int RESPONSE_CODE_SERVER_EXCEPTION = 1002;
+    public static final int RESPONSE_CODE_BLANCE_ERROR = 1003;
+    public static final int RESPONSE_CODE_STOP_REGIST = 1004;
+    public static final int RESPONSE_CODE_VERIFY_ERROR = 1005;
+    public static final int RESPONSE_CODE_UNKNOWN = 1006;
     public static final int RESPONSE_CODE_CHANEL_SELF_PAY = 3;
-    public static final int RESPONSE_CODE_BLANCE_ERROR = 4;
-    public static final int RESPONSE_CODE_UNKNOWN = 5;
-    public static final int RESPONSE_CODE_VERIFY_ERROR = 6;
 
     public static final int GAME_CHANNEL_CODE_REGISTE_STATUS_DEFAULT = 0;
     public static final int GAME_CHANNEL_CODE_REGISTE_STATUS_DISABLE = 1;

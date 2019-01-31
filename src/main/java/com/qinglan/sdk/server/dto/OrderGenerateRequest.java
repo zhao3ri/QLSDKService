@@ -238,6 +238,7 @@ public class OrderGenerateRequest extends BaseDto implements Serializable {
         if (null == getFixed()) return true;
         if (null == getLoginTime() || getLoginTime().trim().isEmpty()) return true;
         if (null == getDeviceId() || getDeviceId().trim().isEmpty()) return true;
+        if (null == getGoodsId() || getGoodsId().trim().isEmpty()) return true;
         if (null == getClientType()) return true;
         return false;
     }

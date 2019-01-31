@@ -38,13 +38,13 @@ class RoleCreateStatsLog extends BaseStatsLog<RoleCreatePattern> {
     @Override
     protected <E> void handleExtras(String key, E val) {
         if (key.equals(EXTRA_GAME_FIRST_ROLE) && val instanceof Integer) {
-            this.isGameFirstRole = (int) val;
+            this.isGameFirstRole = (Integer) val;
         } else if (key.equals(EXTRA_ZONE_FIRST_ROLE) && val instanceof Integer) {
-            this.isZoneFirstRole = (int) val;
+            this.isZoneFirstRole = (Integer) val;
         } else if (key.equals(EXTRA_DEVICE_GAME_CREATE_ROLE) && val instanceof Boolean) {
-            this.isDeviceGameFirstCreateRole = (boolean) val;
+            this.isDeviceGameFirstCreateRole = (Boolean) val;
         } else if (key.equals(EXTRA_DEVICE_ZONE_CREATE_ROLE) && val instanceof Boolean) {
-            this.isDeviceZoneFirstCreateRole = (boolean) val;
+            this.isDeviceZoneFirstCreateRole = (Boolean) val;
         }
     }
 

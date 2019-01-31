@@ -80,9 +80,9 @@ public class OrderStatsLog extends BaseStatsLog<OrderGenerateRequest> {
             RoleTrace roleTrace = (RoleTrace) val;
             this.totalPayCountToday = roleTrace.getPayTimesToday();
             this.firstPayTime = DateUtils.toStringDate(new Date(roleTrace.getFirstPayTime()));
-            this.rolePayDaysRecord = roleTrace.getPay35DaysRecord();
+            this.rolePayDaysRecord = roleTrace.getPayRecord();
         } else if (key.equals(EXTRA_DISTANCE_DAY) && val instanceof Integer) {
-            this.distanceDay = (int) val;
+            this.distanceDay = (Integer) val;
         } else if (key.equals(EXTRA_FIRST_DAY_LOGIN_TIME) && val instanceof String) {
             this.firstDayLoginTime = (String) val;
         }

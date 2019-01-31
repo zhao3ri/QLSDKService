@@ -25,14 +25,14 @@ public class BehaviorDeviceServiceTest  extends BaseTestCase{
 	
 	@Test
 	public void loginBehaviorDeviceTest(){
-//		LoginPattern login =new LoginPattern();
-//		login.setAppID("1");
-//		login.setChannelId("2");
-//		login.setDeviceId("923456789");
-//		login.setClientType("1");
-//		login.setRoleId("22222");
-//		login.setZoneId("33333");
-//		behaviorService.loginBehaviorDevice(login);
+//		GameStartPattern join =new GameStartPattern();
+//		join.setAppID("1");
+//		join.setChannelId("2");
+//		join.setDeviceId("923456789");
+//		join.setClientType("1");
+//		join.setRoleId("22222");
+//		join.setZoneId("33333");
+//		behaviorService.loginBehaviorDevice(join);
 	}
 	
 }

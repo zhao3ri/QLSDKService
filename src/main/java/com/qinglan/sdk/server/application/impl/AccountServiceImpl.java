@@ -1,7 +1,7 @@
 package com.qinglan.sdk.server.application.impl;
 
 import com.qinglan.sdk.server.BasicRepository;
-import com.qinglan.sdk.server.ChannelConstants;
+import com.qinglan.sdk.server.channel.ChannelConstants;
 import com.qinglan.sdk.server.HeepayTradeConfig;
 import com.qinglan.sdk.server.application.AccountService;
 import com.qinglan.sdk.server.application.OrderService;
@@ -61,7 +61,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Map<String, Object> login(LoginPattern params) {
+    public Map<String, Object> join(GameStartPattern params) {
         Map<String, Object> result = new HashMap<String, Object>();
 
         if (!isParameterValid(params)) {
@@ -69,13 +69,13 @@ public class AccountServiceImpl implements AccountService {
             return result;
         }
 
-        publisher.publish(new LoginEvent(params));
+        publisher.publish(new GameStartEvent(params));
         result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SUCCESS);
-        result.put(RESPONSE_KEY_LOGIN_TIME, System.currentTimeMillis());
+        result.put(RESPONSE_KEY_START_TIME, System.currentTimeMillis());
 
-        Account account = basicRepository.getRoleCreateTime(params.getGameId(), params.getChannelId(), params.getZoneId(), params.getRoleId(), params.getRoleName());
-        if (account != null && account.getCreateTime() != null) {
-            result.put(RESPONSE_KEY_CREATE_TIME, account.getCreateTime().getTime());
+        Role role = basicRepository.getRoleCreateTime(params.getGameId(), params.getChannelId(), params.getZoneId(), params.getRoleId(), params.getRoleName());
+        if (role != null && role.getCreateTime() != null) {
+            result.put(RESPONSE_KEY_CREATE_TIME, role.getCreateTime().getTime());
         } else {
             result.put(RESPONSE_KEY_CREATE_TIME, 0);
         }
@@ -133,13 +133,13 @@ public class AccountServiceImpl implements AccountService {
             result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_PARAMETER_ILLEGAL);
             return result;
         }
-        Date creatTime = new Date();
-        params.setCreatTime(creatTime);
+        Date createTime = new Date();
+        params.setCreateTime(createTime);
 
         publisher.publish(new RoleEstablishEvent(params));
         //listener.handleRoleEstablishEvent(new RoleEstablishEvent(params));
         result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SUCCESS);
-        result.put(RESPONSE_KEY_CREATE_TIME, creatTime.getTime());
+        result.put(RESPONSE_KEY_CREATE_TIME, createTime.getTime());
         return result;
     }
 
@@ -362,11 +362,10 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Map<String, Object> loginSuccess(LoginSuccessPattern params) {
+    public Map<String, Object> getToken(TokenPattern params) {
         Map<String, Object> result = new HashMap<String, Object>();
         if (params.isEmpty()) {
-            result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SERVER_EXCEPTION);
-            result.put(Constants.RESPONSE_KEY_MESSAGE, "param error");
+            result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_PARAMETER_ILLEGAL);
             return result;
         }
         String token = UUID.randomUUID().toString();
@@ -382,7 +381,7 @@ public class AccountServiceImpl implements AccountService {
         logger.info("--getUserIdByToken--");
         Map<String, Object> result = new HashMap<String, Object>();
         if (params.isEmpty()) {
-            result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SERVER_EXCEPTION);
+            result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_PARAMETER_ILLEGAL);
             result.put(Constants.RESPONSE_KEY_MESSAGE, "param error");
             return result;
         }
@@ -406,10 +405,15 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Map<String, Object> queryOrder(QueryOrderRequest request) {
         Map<String, Object> result = new HashMap<>();
-        if (request.isEmpty()){
-
+        if (request.isEmpty()) {
+            result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_PARAMETER_ILLEGAL);
+            return result;
         }
         Order order = basicRepository.getOrderStatus(request.getOrderId(), request.getGameId(), request.getChannelId());
+        if (order == null) {
+            result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SERVER_EXCEPTION);
+            return result;
+        }
         result.put(RESPONSE_KEY_ORDER_STATUS, order.getStatus());
         result.put(RESPONSE_KEY_ORDER_NOTIFY_STATUS, order.getNotifyStatus());
         result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SUCCESS);
@@ -419,9 +423,8 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Map<String, Object> validateSession(ValidateSessionPattern params) {
         Map<String, Object> result = new HashMap<String, Object>();
-        result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SUCCESS);
         if (params.isEmpty()) {
-            result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SERVER_EXCEPTION);
+            result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_PARAMETER_ILLEGAL);
             return result;
         }
         String token = UUID.randomUUID().toString();
@@ -430,9 +433,7 @@ public class AccountServiceImpl implements AccountService {
         result.put(Constants.RESPONSE_KEY_UID, uid);
         if (uid != null) {
             result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SUCCESS);
-            result.put(Constants.RESPONSE_KEY_MESSAGE, "");
         } else {
-            result.put(Constants.RESPONSE_KEY_MESSAGE, "token 无效");
             result.put(Constants.RESPONSE_KEY_CODE, Constants.RESPONSE_CODE_SERVER_EXCEPTION);
         }
         return result;

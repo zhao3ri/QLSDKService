@@ -16,7 +16,7 @@ public class Trace {
     protected Long firstPayTime;//首次支付时间
     protected Long lastPayTime;//最后支付时间
     protected Integer payTimesToday;//今日支付次数
-    protected Long login35DaysRecord;//登录35天记录
+    protected Long loginRecord;//登录记录
 
     public Long getFirstInTime() {
         return firstInTime;
@@ -82,12 +82,12 @@ public class Trace {
         this.payTimesToday = payTimesToday;
     }
 
-    public Long getLogin35DaysRecord() {
-        return login35DaysRecord;
+    public Long getLoginRecord() {
+        return loginRecord;
     }
 
-    public void setLogin35DaysRecord(Long login35DaysRecord) {
-        this.login35DaysRecord = login35DaysRecord;
+    public void setLoginRecord(Long loginRecord) {
+        this.loginRecord = loginRecord;
     }
 
     /**
@@ -195,14 +195,14 @@ public class Trace {
      * 最近35天登陆情况
      */
     public Long late35Login() {
-        if (login35DaysRecord == null) {
+        if (loginRecord == null) {
             return 1L;
         }
         Integer loginDel = DateUtils.getIntervalDays(lastLoginTime, System.currentTimeMillis());
         if (loginDel > 0) {
-            return updateRecord(login35DaysRecord, loginDel);
+            return updateRecord(loginRecord, loginDel);
         }
-        return login35DaysRecord;
+        return loginRecord;
     }
 
     protected long updateRecord(long record, int interval) {

@@ -6,19 +6,14 @@ import java.util.UUID;
 import javax.annotation.Resource;
 
 import com.qinglan.sdk.server.common.JsonMapper;
+import com.qinglan.sdk.server.dto.*;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.qinglan.sdk.server.common.HttpUtils;
 import com.qinglan.sdk.server.release.BaseTestCase;
-import com.qinglan.sdk.server.dto.HeartbeatPattern;
-import com.qinglan.sdk.server.dto.InitialPattern;
-import com.qinglan.sdk.server.dto.LoginPattern;
-import com.qinglan.sdk.server.dto.LogoutPattern;
-import com.qinglan.sdk.server.dto.OrderGenerateRequest;
-import com.qinglan.sdk.server.dto.QuitPattern;
-import com.qinglan.sdk.server.dto.RoleCreatePattern;
+import com.qinglan.sdk.server.dto.GameStartPattern;
 
 public class AccountServiceTest  extends BaseTestCase{
 
@@ -50,16 +45,16 @@ public class AccountServiceTest  extends BaseTestCase{
 		initial.setClientType(1);
 		initial.setManufacturer("samsung");
 		initial.setModel("n7100");
-		initial.setSystemVersion("3.1.1");
-		initial.setPlatform("android");
+		initial.setApiVersion("3.1.1");
+		initial.setOsVersion("android");
 		initial.setLatitude(Math.random()*10+"");
 		initial.setLongitude(Math.random()*10+"");
 		initial.setImsi("46007929717691");
 		initial.setLocation("广东");
 		initial.setNetworkCountryIso("86");
 		initial.setNetworkType("0");
-		initial.setPhonetype("TD-LTE");
-		initial.setSimoperatorname("China Mobile");
+		initial.setPhoneType("TD-LTE");
+		initial.setSimOperatorName("China Mobile");
 		initial.setResolution("480");
 		
 		//first initial
@@ -72,7 +67,7 @@ public class AccountServiceTest  extends BaseTestCase{
 	@Test
 	public void login() {
 //SELECT * FROM b_role where appId='151110191986' and platformId='1001' and zoneId='1' and roleId='123456' and roleName='123456'
-		LoginPattern login = new LoginPattern();
+		GameStartPattern login = new GameStartPattern();
 		login.setGameId(Long.parseLong("151110191986"));
 		login.setUid("c0e8ef9ed18edfc9553182f266bd6b0c");
 		login.setChannelId(1001);
@@ -84,14 +79,14 @@ public class AccountServiceTest  extends BaseTestCase{
 		login.setZoneId("1");
 		login.setZoneName("test分区");
 		
-		//login zone 1
-		accountService.login(login);
+		//join zone 1
+		accountService.join(login);
 		
-		//login zone 2
-//		LoginPattern login2 = new LoginPattern();
-//		BeanUtils.copyProperties(login, login2);
+		//join zone 2
+//		GameStartPattern login2 = new GameStartPattern();
+//		BeanUtils.copyProperties(join, login2);
 //		login2.setZoneId("2");
-//		System.out.println(accountService.login(login2));
+//		System.out.println(accountService.join(login2));
 	}
 	
 	@Test

@@ -360,11 +360,11 @@ public class BasicRepositoryImpl implements BasicRepository {
             GameTrace gameTrace = JsonMapper.toObject(json, GameTrace.class);
             Integer loginDel = DateUtils.getIntervalDays(gameTrace.getLastLoginTime(), System.currentTimeMillis());
             if (loginDel > 0) {
-                String record = Long.toBinaryString(gameTrace.getLogin35DaysRecord());
+                String record = Long.toBinaryString(gameTrace.getLoginRecord());
                 if (record.length() > 34) {
                     record = record.substring(record.length() - 34);
                 }
-                gameTrace.setLogin35DaysRecord((Long.parseLong(record, 2) << loginDel));
+                gameTrace.setLoginRecord((Long.parseLong(record, 2) << loginDel));
             }
             return gameTrace;
         } else {
@@ -431,7 +431,7 @@ public class BasicRepositoryImpl implements BasicRepository {
                 gameTrace.setFirstPayTime(firstPayTime);
                 gameTrace.setLastPayTime(lastPayTime);
                 gameTrace.setPayTimesToday(payTimesToday);
-                gameTrace.setLogin35DaysRecord(loginRecord);
+                gameTrace.setLoginRecord(loginRecord);
             }
             return gameTrace;
         }
@@ -439,14 +439,14 @@ public class BasicRepositoryImpl implements BasicRepository {
 
     @Override
     public RoleTrace getRoleTrace(Integer clientType, String uid,
-                                  Integer platformId, Long gameId, String zoneId, String roleId, String roleName) {
+                                  Integer channelId, Long gameId, String zoneId, String roleId, String roleName) {
         RoleTrace roleTrace = null;
-        String json = redisUtil.getValue("roleTrace" + clientType + SEPARATOR + uid + SEPARATOR + platformId + SEPARATOR + gameId + SEPARATOR + zoneId);
+        String json = redisUtil.getValue("roleTrace" + clientType + SEPARATOR + uid + SEPARATOR + channelId + SEPARATOR + gameId + SEPARATOR + zoneId);
         if (StringUtils.isNoneBlank(json)) {
             roleTrace = getRoleTraceByJson(json, roleId);
             if (roleTrace != null) return roleTrace;
         }
-        BehaviorUser behaviorUser = getUserBehavior(clientType, uid, platformId, gameId, zoneId);
+        BehaviorUser behaviorUser = getUserBehavior(clientType, uid, channelId, gameId, zoneId);
         if (StringUtils.isNotEmpty(behaviorUser.getRoleData())) {
             roleTrace = getRoleTraceByJson(behaviorUser.getRoleData(), roleId);
         }
@@ -563,15 +563,15 @@ public class BasicRepositoryImpl implements BasicRepository {
      * 获取创建角色的时间
      */
     @Override
-    public Account getRoleCreateTime(Long appId, Integer platformId,
-                                     String zoneId, String roleId, String roleName) {
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put(PARAM_CHANNEL_ID, platformId);
-        params.put(PARAM_GAME_ID, appId);
+    public Role getRoleCreateTime(Long gameId, Integer channelId,
+                                  String zoneId, String roleId, String roleName) {
+        Map<String, Object> params = new HashMap<>();
+        params.put(PARAM_CHANNEL_ID, channelId);
+        params.put(PARAM_GAME_ID, gameId);
         params.put(PARAM_ZONE_ID, zoneId);
         params.put(PARAM_ROLE_ID, roleId);
         params.put(PARAM_ROLE_NAME, roleName);
-        return mybatisRepository.findOne(Account.class, "getRoleCreateTime", params);
+        return mybatisRepository.findOne(Role.class, "getRoleCreateTime", params);
     }
 
 }

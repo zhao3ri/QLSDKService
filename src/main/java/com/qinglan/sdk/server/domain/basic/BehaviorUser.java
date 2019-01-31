@@ -22,17 +22,16 @@ public class BehaviorUser implements Serializable {
 	@JsonIgnore
 	private String roleData;
 	
-	private Long firstInTime;
-	private Long lastLoginTime;
-	private Integer loginTimesToday;
-	private Long lastHeartTime;
-	private Long lastLogoutTime;
-	private Long firstRoleTime;
-	private Long firstPayTime;
-	private Long lastPayTime;
-	private Integer payTimesToday;
-	private Long loginRecord;
-	
+	private long firstInTime;
+	private long lastLoginTime;
+	private int loginTimesToday;
+	private long lastHeartTime;
+	private long lastLogoutTime;
+	private long firstRoleTime;
+	private long firstPayTime;
+	private long lastPayTime;
+	private int payTimesToday;
+	private long loginRecord;
 
 	public String getUid() {
 		return uid;
@@ -171,7 +170,7 @@ public class BehaviorUser implements Serializable {
 	}
 
 	public Long late35Login(){
-		if (loginRecord == null || loginRecord == 0) {
+		if (loginRecord == 0) {
 			return 0L;
 		}
 		Integer loginDel = DateUtils.getIntervalDays(lastLoginTime, System.currentTimeMillis());

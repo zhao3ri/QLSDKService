@@ -13,8 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.qinglan.sdk.server.ChannelConstants.HUOSDK_PAY_RESULT_FAILED;
-import static com.qinglan.sdk.server.ChannelConstants.HUOSDK_PAY_RESULT_SUCCESS;
+import static com.qinglan.sdk.server.channel.ChannelConstants.HUOSDK_PAY_RESULT_FAILED;
+import static com.qinglan.sdk.server.channel.ChannelConstants.HUOSDK_PAY_RESULT_SUCCESS;
 import static com.qinglan.sdk.server.Constants.RESPONSE_CODE_SUCCESS;
 import static com.qinglan.sdk.server.Constants.RESPONSE_CODE_VERIFY_ERROR;
 

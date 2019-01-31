@@ -12,16 +12,16 @@ public class InitialPattern extends BaseDto implements Serializable {
 	private Integer clientType;
 	private String manufacturer;
 	private String model;
-	private String systemVersion;
-	private String platform;
+	private int apiVersion;
+	private String osVersion;
 	private String latitude;
 	private String longitude;
 	private String imsi;
 	private String location;
 	private String networkCountryIso;
 	private String networkType;
-	private String phonetype;
-	private String simoperatorname;
+	private String phoneType;
+	private String simOperatorName;
 	private String resolution;
 	
 	public String getDeviceId() {
@@ -48,17 +48,17 @@ public class InitialPattern extends BaseDto implements Serializable {
 	public void setModel(String model) {
 		this.model = model;
 	}
-	public String getSystemVersion() {
-		return systemVersion;
+	public int getApiVersion() {
+		return apiVersion;
 	}
-	public void setSystemVersion(String systemVersion) {
-		this.systemVersion = systemVersion;
+	public void setApiVersion(int apiVersion) {
+		this.apiVersion = apiVersion;
 	}
-	public String getPlatform() {
-		return platform;
+	public String getOsVersion() {
+		return osVersion;
 	}
-	public void setPlatform(String platform) {
-		this.platform = platform;
+	public void setOsVersion(String osVersion) {
+		this.osVersion = osVersion;
 	}
 	public String getLatitude() {
 		return latitude;
@@ -96,17 +96,17 @@ public class InitialPattern extends BaseDto implements Serializable {
 	public void setNetworkType(String networkType) {
 		this.networkType = networkType;
 	}
-	public String getPhonetype() {
-		return phonetype;
+	public String getPhoneType() {
+		return phoneType;
 	}
-	public void setPhonetype(String phonetype) {
-		this.phonetype = phonetype;
+	public void setPhoneType(String phoneType) {
+		this.phoneType = phoneType;
 	}
-	public String getSimoperatorname() {
-		return simoperatorname;
+	public String getSimOperatorName() {
+		return simOperatorName;
 	}
-	public void setSimoperatorname(String simoperatorname) {
-		this.simoperatorname = simoperatorname;
+	public void setSimOperatorName(String simOperatorName) {
+		this.simOperatorName = simOperatorName;
 	}
 	public String getResolution() {
 		return resolution;

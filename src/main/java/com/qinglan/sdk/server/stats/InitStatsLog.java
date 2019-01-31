@@ -5,8 +5,8 @@ import com.qinglan.sdk.server.dto.InitialPattern;
 class InitStatsLog extends BaseStatsLog<InitialPattern> {
     private String manufacturer;
     private String model;
-    private String systemVersion;
-    private String platform;
+    private int apiVersion;
+    private String osVersion;
     private String latitude;
     private String longitude;
     private String imsi;
@@ -35,25 +35,25 @@ class InitStatsLog extends BaseStatsLog<InitialPattern> {
         this.deviceId = dto.getDeviceId();
         this.manufacturer = dto.getManufacturer();
         this.model = dto.getModel();
-        this.systemVersion = dto.getSystemVersion();
-        this.platform = dto.getPlatform();
+        this.apiVersion = dto.getApiVersion();
+        this.osVersion = dto.getOsVersion();
         this.latitude = dto.getLatitude();
         this.longitude = dto.getLongitude();
         this.imsi = dto.getImsi();
         this.location = dto.getLocation();
         this.networkCountryIso = dto.getNetworkCountryIso();
         this.networkType = dto.getNetworkType();
-        this.phoneType = dto.getPhonetype();
-        this.simOperatorName = dto.getSimoperatorname();
+        this.phoneType = dto.getPhoneType();
+        this.simOperatorName = dto.getSimOperatorName();
         this.resolution = dto.getResolution();
     }
 
     @Override
     protected <E> void handleExtras(String key, E val) {
         if (key.equals(EXTRA_FIRST_INIT_GAME) && val instanceof Boolean) {
-            this.isFirstInitGame = (boolean) val;
+            this.isFirstInitGame = (Boolean) val;
         } else if (key.equals(EXTRA_FIRST_INIT_CHANNEL) && val instanceof Boolean) {
-            this.isFirstInitChannel = (boolean) val;
+            this.isFirstInitChannel = (Boolean) val;
         }
     }
 
@@ -62,8 +62,8 @@ class InitStatsLog extends BaseStatsLog<InitialPattern> {
         buffer.append(deviceId).append(SEPARATOR);
         buffer.append(manufacturer).append(SEPARATOR);
         buffer.append(model).append(SEPARATOR);
-        buffer.append(systemVersion).append(SEPARATOR);
-        buffer.append(platform).append(SEPARATOR);
+        buffer.append(apiVersion).append(SEPARATOR);
+        buffer.append(osVersion).append(SEPARATOR);
         buffer.append(latitude).append(SEPARATOR);
         buffer.append(longitude).append(SEPARATOR);
         buffer.append(imsi).append(SEPARATOR);

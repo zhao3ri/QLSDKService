@@ -6,7 +6,7 @@ import lombok.ToString;
 import java.io.Serializable;
 
 @ToString(callSuper = true)
-public class LoginSuccessPattern extends BaseDto implements Serializable {
+public class TokenPattern extends BaseDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 

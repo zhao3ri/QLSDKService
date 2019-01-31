@@ -26,7 +26,7 @@ import com.qinglan.sdk.server.BasicRepository;
 import com.qinglan.sdk.server.domain.basic.ChannelGameEntity;
 import com.qinglan.sdk.server.domain.basic.event.HeartbeatEvent;
 import com.qinglan.sdk.server.domain.basic.event.InitialEvent;
-import com.qinglan.sdk.server.domain.basic.event.LoginEvent;
+import com.qinglan.sdk.server.domain.basic.event.GameStartEvent;
 import com.qinglan.sdk.server.domain.basic.event.LogoutEvent;
 import com.qinglan.sdk.server.domain.basic.event.OraderCountEvent;
 import com.qinglan.sdk.server.domain.basic.event.OrderGenerateEvent;
@@ -79,8 +79,8 @@ public class GameOperateListener {
     }
 
     @EventListener(asynchronous = true)
-    public void handleLoginEvent(LoginEvent event) {
-        LoginPattern params = event.getHelper();
+    public void handleGameStartEvent(GameStartEvent event) {
+        GameStartPattern params = event.getHelper();
 
         boolean isNewUser = false;
         Account account = basicRepository.getAccount(params.getChannelId(), params.getUid());
@@ -152,7 +152,7 @@ public class GameOperateListener {
         } else {
             roleTrace.setLoginTimesToday(1);
         }
-        roleTrace.setLogin35DaysRecord(roleTrace.late35Login());
+        roleTrace.setLoginRecord(roleTrace.late35Login());
 
         String log = StatsLogger.login(params, gameTrace, zoneTrace, roleTrace, isNewUser, isGameActiveDevice, isPlatformActiveDevice, isZoneActiveDevice);
         kafkaProducerClient.send(log);
@@ -189,7 +189,7 @@ public class GameOperateListener {
         }
     }
 
-    private void updateLastLoginDate(LoginPattern params, GameTrace gameTrace, RoleTrace roleTrace, BehaviorUser behaviorUser) {
+    private void updateLastLoginDate(GameStartPattern params, GameTrace gameTrace, RoleTrace roleTrace, BehaviorUser behaviorUser) {
         if (roleTrace.getFirstInTime() == null || roleTrace.getFirstInTime() == 0) {
             roleTrace.setFirstInTime(System.currentTimeMillis());
         }
@@ -198,7 +198,7 @@ public class GameOperateListener {
 
         gameTrace.setLastLoginTime(System.currentTimeMillis());
         gameTrace.setLoginTimesToday(gameTrace.getLoginTimesToday() == null ? 0 : gameTrace.getLoginTimesToday() + 1);
-        gameTrace.setLogin35DaysRecord(gameTrace.late35Login());
+        gameTrace.setLoginRecord(gameTrace.late35Login());
         if (null == gameTrace.getFirstInTime() || gameTrace.getFirstInTime() == 0) {
             gameTrace.setFirstInTime(System.currentTimeMillis());
         }
@@ -239,7 +239,7 @@ public class GameOperateListener {
         ZoneTrace zoneTrace = basicRepository.getZoneTrace(params.getClientType(), params.getUid(), params.getChannelId(), params.getGameId(), params.getZoneId());
         RoleTrace roleTrace = basicRepository.getRoleTrace(params.getClientType(), params.getUid(), params.getChannelId(), params.getGameId(), params.getZoneId(), params.getRoleId(), "");
         if (null == zoneTrace.getLastLoginTime() || null == roleTrace.getLastLoginTime()) {
-            logger.warn("channelId: {}, uid: {} request hearbeat, but don't login", params.getChannelId(), params.getUid());
+            logger.warn("channelId: {}, uid: {} request hearbeat, but don't join", params.getChannelId(), params.getUid());
             return;
         }
 
@@ -267,14 +267,14 @@ public class GameOperateListener {
     public void handleLogoutEvent(LogoutEvent event) {
         LogoutPattern params = event.getHelper();
         if (StringUtils.isBlank(params.getZoneId()) || "null".equalsIgnoreCase(params.getZoneId().trim())) {
-            logger.warn("channelId: {}, uid: {} zoneId:{} request logout, but don't login", params.getChannelId(), params.getUid() + "zoneId:" + params.getZoneId());
+            logger.warn("channelId: {}, uid: {} zoneId:{} request logout, but don't join", params.getChannelId(), params.getUid() + "zoneId:" + params.getZoneId());
             return;
         }
         ZoneTrace zoneTrace = basicRepository.getZoneTrace(params.getClientType(), params.getUid(), params.getChannelId(), params.getGameId(), params.getZoneId());
         RoleTrace roleTrace = basicRepository.getRoleTrace(params.getClientType(), params.getUid(), params.getChannelId(), params.getGameId(), params.getZoneId(), params.getRoleId(), "");
 
         if (null == zoneTrace.getLastLoginTime() || null == roleTrace.getLastLoginTime()) {
-            logger.warn("channelId: {}, uid: {} request logout, but don't login", params.getChannelId(), params.getUid());
+            logger.warn("channelId: {}, uid: {} request logout, but don't join", params.getChannelId(), params.getUid());
             return;
         }
         if (null != zoneTrace.getLastLogoutTime() && zoneTrace.getLastLoginTime() < zoneTrace.getLastLogoutTime()) {
@@ -305,14 +305,14 @@ public class GameOperateListener {
     public void handleQuitEvent(QuitEvent event) {
         QuitPattern params = event.getHelper();
         if (StringUtils.isBlank(params.getZoneId()) || "null".equalsIgnoreCase(params.getZoneId().trim())) {
-            logger.warn("channelId: {}, uid: {} zoneId:{} request logout, but don't login", params.getChannelId(), params.getUid() + "zoneId:" + params.getZoneId());
+            logger.warn("channelId: {}, uid: {} zoneId:{} request logout, but don't join", params.getChannelId(), params.getUid() + "zoneId:" + params.getZoneId());
             return;
         }
         ZoneTrace zoneTrace = basicRepository.getZoneTrace(params.getClientType(), params.getUid(), params.getChannelId(), params.getGameId(), params.getZoneId());
         RoleTrace roleTrace = basicRepository.getRoleTrace(params.getClientType(), params.getUid(), params.getChannelId(), params.getGameId(), params.getZoneId(), params.getRoleId(), "");
 
         if (null == zoneTrace.getLastLoginTime() || null == roleTrace.getLastLoginTime()) {
-            logger.warn("channelId: {}, uid: {} request quit, but don't login", params.getChannelId(), params.getUid());
+            logger.warn("channelId: {}, uid: {} request quit, but don't join", params.getChannelId(), params.getUid());
             return;
         }
         if (null != zoneTrace.getLastLogoutTime() && zoneTrace.getLastLoginTime() < zoneTrace.getLastLogoutTime()) {
@@ -344,7 +344,7 @@ public class GameOperateListener {
         RoleCreatePattern params = event.getHelper();
 
         Role role = new Role(params.getClientType(), params.getGameId(), params.getChannelId(), params.getZoneId(), params.getRoleId(), params.getRoleName());
-        role.setCreateTime(params.getCreatTime());
+        role.setCreateTime(params.getCreateTime());
         basicRepository.insertRole(role);
 
         boolean isDeviceGameFirstEstaRole = false;
@@ -395,7 +395,7 @@ public class GameOperateListener {
             behaviorUser.setFirstRoleTime(System.currentTimeMillis());
         }
         if (null == gameTrace.getFirstRoleTime() || gameTrace.getFirstRoleTime() == 0) {
-            gameTrace.setFirstRoleTime(params.getCreatTime().getTime());
+            gameTrace.setFirstRoleTime(params.getCreateTime().getTime());
         }
 
         refreshCache(behaviorUser, gameTrace);
@@ -433,7 +433,7 @@ public class GameOperateListener {
         if (roleTrace.getFirstPayTime() == null || roleTrace.getFirstPayTime() == 0) {
             roleTrace.setFirstPayTime(System.currentTimeMillis());
         }
-        roleTrace.setPay35DaysRecord(roleTrace.late35Pay());
+        roleTrace.setPayRecord(roleTrace.late35Pay());
 
         String log = StatsLogger.paySuccess(params,gameTrace,zoneTrace,roleTrace);
         kafkaProducerClient.send(log);

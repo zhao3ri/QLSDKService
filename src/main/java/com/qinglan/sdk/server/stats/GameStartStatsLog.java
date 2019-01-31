@@ -4,12 +4,12 @@ import com.qinglan.sdk.server.common.DateUtils;
 import com.qinglan.sdk.server.domain.basic.GameTrace;
 import com.qinglan.sdk.server.domain.basic.RoleTrace;
 import com.qinglan.sdk.server.domain.basic.ZoneTrace;
-import com.qinglan.sdk.server.dto.LoginPattern;
+import com.qinglan.sdk.server.dto.GameStartPattern;
 
 import java.util.Date;
 import java.util.Map;
 
-class LoginStatsLog extends BaseStatsLog<LoginPattern> {
+class GameStartStatsLog extends BaseStatsLog<GameStartPattern> {
     private boolean isNewUser;
     private boolean isGameActiveDevice;
     private boolean isChannelActiveDevice;
@@ -30,7 +30,7 @@ class LoginStatsLog extends BaseStatsLog<LoginPattern> {
     private String roleName;
     private String firstRoleTime;
     private int roleLoginTodayTotal;
-    private long roleLogin35DaysRecord;
+    private long roleLoginRecord;
     private int isFirstRoleLogin;
     private int isFirstRoleLoginMonth;
 
@@ -42,12 +42,12 @@ class LoginStatsLog extends BaseStatsLog<LoginPattern> {
     static final String EXTRA_CHANNEL_ACTIVE_DEVICE = "isChannelActiveDevice";
     static final String EXTRA_ZONE_ACTIVE_DEVICE = "isZoneActiveDevice";
 
-    public LoginStatsLog(int code, int version, LoginPattern dto) {
+    public GameStartStatsLog(int code, int version, GameStartPattern dto) {
         super(code, version, dto);
     }
 
     @Override
-    public void setEntity(LoginPattern dto) {
+    public void setEntity(GameStartPattern dto) {
         if (dto == null) {
             return;
         }
@@ -79,17 +79,17 @@ class LoginStatsLog extends BaseStatsLog<LoginPattern> {
             RoleTrace roleTrace = (RoleTrace) val;
             this.firstRoleTime = DateUtils.toStringDate(new Date(roleTrace.getFirstRoleTime()));
             this.roleLoginTodayTotal = roleTrace.getLoginTimesToday();
-            this.roleLogin35DaysRecord = roleTrace.getLogin35DaysRecord();
+            this.roleLoginRecord = roleTrace.getLoginRecord();
             this.isFirstRoleLogin = roleTrace.isFirstRoleLogin();
             this.isFirstRoleLoginMonth = roleTrace.isFirstLoginMonth();
         } else if (key.equals(EXTRA_NEW_USER) && val instanceof Boolean) {
-            this.isNewUser = (boolean) val;
+            this.isNewUser = (Boolean) val;
         } else if (key.equals(EXTRA_GAME_ACTIVE_DEVICE) && val instanceof Boolean) {
-            this.isGameActiveDevice = (boolean) val;
+            this.isGameActiveDevice = (Boolean) val;
         } else if (key.equals(EXTRA_CHANNEL_ACTIVE_DEVICE) && val instanceof Boolean) {
-            this.isChannelActiveDevice = (boolean) val;
+            this.isChannelActiveDevice = (Boolean) val;
         } else if (key.equals(EXTRA_ZONE_ACTIVE_DEVICE) && val instanceof Boolean) {
-            this.isZoneActiveDevice = (boolean) val;
+            this.isZoneActiveDevice = (Boolean) val;
         }
     }
 
@@ -113,7 +113,7 @@ class LoginStatsLog extends BaseStatsLog<LoginPattern> {
         buffer.append(roleName).append(SEPARATOR);
         buffer.append(firstRoleTime).append(SEPARATOR);
         buffer.append(roleLoginTodayTotal).append(SEPARATOR);
-        buffer.append(roleLogin35DaysRecord).append(SEPARATOR);
+        buffer.append(roleLoginRecord).append(SEPARATOR);
         buffer.append(isFirstRoleLogin).append(SEPARATOR);
         buffer.append(isFirstRoleLoginMonth);
     }

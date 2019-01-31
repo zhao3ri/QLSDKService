@@ -11,7 +11,7 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 
-import com.qinglan.sdk.server.dto.LoginPattern;
+import com.qinglan.sdk.server.dto.GameStartPattern;
 import com.qinglan.sdk.server.application.AccountService;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -78,17 +78,17 @@ public class AccountControllerTest  extends BaseTestCase{
 
 	@Test
 	public void testLoginService(){
-		LoginPattern loginPattern= new LoginPattern();
-		loginPattern.setClientType(1);
-		loginPattern.setDeviceId("c1a73738-abcdea");
-		loginPattern.setRoleId("A_123456101");
-		loginPattern.setRoleName("A角色");
-		loginPattern.setRoleLevel("1");
-		loginPattern.setZoneId("A_123456101");
-		loginPattern.setZoneName("1");
-		loginPattern.setGameId(150212661932L);
-		loginPattern.setChannelId(1001);
-		accountService.login(loginPattern);
+		GameStartPattern gameStartPattern = new GameStartPattern();
+		gameStartPattern.setClientType(1);
+		gameStartPattern.setDeviceId("c1a73738-abcdea");
+		gameStartPattern.setRoleId("A_123456101");
+		gameStartPattern.setRoleName("A角色");
+		gameStartPattern.setRoleLevel("1");
+		gameStartPattern.setZoneId("A_123456101");
+		gameStartPattern.setZoneName("1");
+		gameStartPattern.setGameId(150212661932L);
+		gameStartPattern.setChannelId(1001);
+		accountService.join(gameStartPattern);
 	}
 
 	@Test @SuppressWarnings("unchecked")
@@ -106,7 +106,7 @@ public class AccountControllerTest  extends BaseTestCase{
 		params.put("deviceId", "c1a73738-abcdea");
 		logger.debug("params: {}", params);
 		
-		String url = host + "/account/login";
+		String url = host + "/account/join";
 		String result = HttpUtils.post(url, params);
 		logger.debug("result: {}", result);
 		

@@ -2,15 +2,12 @@ package com.qinglan.sdk.server.application;
 
 import javax.annotation.Resource;
 
+import com.qinglan.sdk.server.dto.*;
 import org.junit.Test;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import com.qinglan.sdk.server.release.BaseTestCase;
-import com.qinglan.sdk.server.dto.HeartbeatPattern;
-import com.qinglan.sdk.server.dto.InitialPattern;
-import com.qinglan.sdk.server.dto.LoginPattern;
-import com.qinglan.sdk.server.dto.QuitPattern;
-import com.qinglan.sdk.server.dto.RoleCreatePattern;
+import com.qinglan.sdk.server.dto.GameStartPattern;
 
 public class LoggerStatisServiceTest extends BaseTestCase{
 	@Resource
@@ -28,16 +25,16 @@ public class LoggerStatisServiceTest extends BaseTestCase{
 		initial.setClientType(1);
 		initial.setManufacturer("samsung");
 		initial.setModel("n7100");
-		initial.setSystemVersion("3.1.1");
-		initial.setPlatform("android");
+		initial.setApiVersion("3.1.1");
+		initial.setOsVersion("android");
 		initial.setLatitude("100");
 		initial.setLongitude("100");
 		initial.setImsi("46007929717691");
 		initial.setLocation("广东");
 		initial.setNetworkCountryIso("86");
 		initial.setNetworkType("0");
-		initial.setPhonetype("TD-LTE");
-		initial.setSimoperatorname("China Mobile");
+		initial.setPhoneType("TD-LTE");
+		initial.setSimOperatorName("China Mobile");
 		initial.setResolution("480");
 		//loggerStatisService.initialLogger(initial);
 		
@@ -46,7 +43,7 @@ public class LoggerStatisServiceTest extends BaseTestCase{
 	
 	@Test
 	public void loginLogger() throws InterruptedException{
-		LoginPattern login =new LoginPattern();
+		GameStartPattern login =new GameStartPattern();
 		login.setGameId(150212661932L);
 		login.setUid("U19238709741111111111111111111111111");
 		login.setChannelId(1001);
@@ -57,7 +54,7 @@ public class LoggerStatisServiceTest extends BaseTestCase{
 		login.setRoleLevel("");
 		login.setZoneId("1");
 		login.setZoneName("test分区");
-		accountService.login(login);
+		accountService.join(login);
 		Thread.sleep(10000);
 	}
 	

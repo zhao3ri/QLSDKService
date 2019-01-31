@@ -221,18 +221,18 @@ public class AccountData2Test {
 	}
 	
 	public void login(String deviceId,String uid,String roleId) {
-		LoginPattern loginPattern=new LoginPattern();
-		loginPattern.setGameId(150212661932L);
-		loginPattern.setChannelId(1001);
-		loginPattern.setDeviceId(deviceId);
-		loginPattern.setUid(uid);
-		loginPattern.setZoneId("1");
-		loginPattern.setZoneName("测试分区");
-		loginPattern.setRoleId(roleId);
-		loginPattern.setRoleName("角色_"+roleId);
-		loginPattern.setRoleLevel("1");
-		loginPattern.setClientType(1);
-		accountService.login(loginPattern);
+		GameStartPattern gameStartPattern =new GameStartPattern();
+		gameStartPattern.setGameId(150212661932L);
+		gameStartPattern.setChannelId(1001);
+		gameStartPattern.setDeviceId(deviceId);
+		gameStartPattern.setUid(uid);
+		gameStartPattern.setZoneId("1");
+		gameStartPattern.setZoneName("测试分区");
+		gameStartPattern.setRoleId(roleId);
+		gameStartPattern.setRoleName("角色_"+roleId);
+		gameStartPattern.setRoleLevel("1");
+		gameStartPattern.setClientType(1);
+		accountService.join(gameStartPattern);
 	}
 	
 	public void roleEstablish(String deviceId,String uid,String roleId){
@@ -258,13 +258,13 @@ public class AccountData2Test {
 		initial.setClientType(1);
 		initial.setManufacturer("samsung");
 		initial.setModel("n7100");
-		initial.setSystemVersion("3.1.1");
-		initial.setPlatform("android");
+		initial.setApiVersion("3.1.1");
+		initial.setOsVersion("android");
 		initial.setImsi(imsi);
 		initial.setNetworkCountryIso("86");
 		initial.setNetworkType("wifi");
-		initial.setPhonetype("TD-LTE");
-		initial.setSimoperatorname("China Mobile");
+		initial.setPhoneType("TD-LTE");
+		initial.setSimOperatorName("China Mobile");
 		initial.setResolution("720 x 1280");
 		accountService.initial(initial);
 	}

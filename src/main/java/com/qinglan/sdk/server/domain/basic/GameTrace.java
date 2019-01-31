@@ -47,14 +47,14 @@ public class GameTrace extends Trace{
 
     @Override
     public Long late35Login() {
-        if (login35DaysRecord == null) {
+        if (loginRecord == null) {
             return 1L;
         }
         Integer loginDel = DateUtils.getIntervalDays(lastLoginTime, System.currentTimeMillis());
-        if (loginDel > 0 && (login35DaysRecord % 2 == 0)) {
-            login35DaysRecord = login35DaysRecord + 1;
+        if (loginDel > 0 && (loginRecord % 2 == 0)) {
+            loginRecord = loginRecord + 1;
         }
-        return login35DaysRecord;
+        return loginRecord;
     }
 
 }

@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 
-import static com.qinglan.sdk.server.ChannelConstants.UC_PAY_RESULT_FAILED;
+import static com.qinglan.sdk.server.channel.ChannelConstants.UC_PAY_RESULT_FAILED;
 
 @Service
 public class ChannelServiceImpl implements ChannelService {

@@ -1,4 +1,4 @@
-package com.qinglan.sdk.server;
+package com.qinglan.sdk.server.channel;
 
 public interface ChannelConstants {
     int CHANNEL_ID_UC = 5;

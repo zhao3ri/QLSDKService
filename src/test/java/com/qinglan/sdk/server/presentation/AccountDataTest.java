@@ -254,7 +254,7 @@ public class AccountDataTest {
 		params.put("clientType", "1");
 		params.put("deviceId", deviceId);
 		logger.debug("params: {}", params);
-		String url = host + "/account/login";
+		String url = host + "/account/join";
 		HttpUtils.post(url, params);
 	}
 	

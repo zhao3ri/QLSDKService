@@ -32,11 +32,11 @@ public class AccountController {
         return accountService.initial(initial);
     }
 
-    @RequestMapping("/account/login")
+    @RequestMapping("/account/join")
     @ResponseBody
-    public Map<String, Object> login(LoginPattern login) {
-        logger.debug("params: {}", login);
-        return accountService.login(login);
+    public Map<String, Object> join(GameStartPattern req) {
+        logger.debug("params: {}", req);
+        return accountService.join(req);
     }
 
     @RequestMapping("/account/heartbeat")
@@ -115,9 +115,9 @@ public class AccountController {
 
     @RequestMapping("/account/gettoken")
     @ResponseBody
-    public Map<String, Object> loginSuccess(LoginSuccessPattern loginSuccessPattern) {
-        logger.debug("zhidianparams: {}", loginSuccessPattern);
-        return accountService.loginSuccess(loginSuccessPattern);
+    public Map<String, Object> getToken(TokenPattern tokenPattern) {
+        logger.debug("zhidianparams: {}", tokenPattern);
+        return accountService.getToken(tokenPattern);
     }
 
     @RequestMapping("/cp/getuserid")

@@ -20,14 +20,14 @@ public class RoleCreatePattern extends BaseDto implements Serializable {
     private String roleLevel;
     private String deviceId;
     private Integer clientType;
-    private Date creatTime;
+    private Date createTime;
 
-    public Date getCreatTime() {
-        return creatTime;
+    public Date getCreateTime() {
+        return createTime;
     }
 
-    public void setCreatTime(Date creatTime) {
-        this.creatTime = creatTime;
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 
     public String getZoneName() {

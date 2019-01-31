@@ -8,7 +8,7 @@ public class RoleTrace extends Trace {
     private String rid;//角色ID
     private String rname;//角色名
     private Long lastHeartTime;//最后心跳时间
-    private Long pay35DaysRecord;//支付35天记录
+    private Long payRecord;//支付记录
 
     /**
      * @return the rid
@@ -54,17 +54,17 @@ public class RoleTrace extends Trace {
     }
 
     /**
-     * @return the pay35DaysRecord
+     * @return the payRecord
      */
-    public Long getPay35DaysRecord() {
-        return pay35DaysRecord;
+    public Long getPayRecord() {
+        return payRecord;
     }
 
     /**
-     * @param pay35DaysRecord the pay35DaysRecord to set
+     * @param payRecord the payRecord to set
      */
-    public void setPay35DaysRecord(Long pay35DaysRecord) {
-        this.pay35DaysRecord = pay35DaysRecord;
+    public void setPayRecord(Long payRecord) {
+        this.payRecord = payRecord;
     }
 
 
@@ -90,14 +90,14 @@ public class RoleTrace extends Trace {
 
     //最近35天支付情况
     public Long late35Pay() {
-        if (pay35DaysRecord == null) {
+        if (payRecord == null) {
             return 1L;
         }
         Integer loginDel = DateUtils.getIntervalDays(lastPayTime, System.currentTimeMillis());
         if (loginDel > 0) {
-            return updateRecord(pay35DaysRecord, loginDel);
+            return updateRecord(payRecord, loginDel);
         }
-        return pay35DaysRecord;
+        return payRecord;
     }
 
 }

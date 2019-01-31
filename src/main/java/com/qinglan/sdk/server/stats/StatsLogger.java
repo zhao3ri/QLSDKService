@@ -5,7 +5,6 @@ import com.qinglan.sdk.server.domain.basic.RoleTrace;
 import com.qinglan.sdk.server.domain.basic.ZoneTrace;
 import com.qinglan.sdk.server.dto.*;
 
-import com.sun.org.apache.xml.internal.resolver.readers.ExtendedXMLCatalogReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,13 +12,13 @@ import static com.qinglan.sdk.server.stats.HeartbeatStatsLog.EXTRA_LAST_LOGIN_TI
 import static com.qinglan.sdk.server.stats.HeartbeatStatsLog.EXTRA_ROLE_NAME;
 import static com.qinglan.sdk.server.stats.InitStatsLog.EXTRA_FIRST_INIT_CHANNEL;
 import static com.qinglan.sdk.server.stats.InitStatsLog.EXTRA_FIRST_INIT_GAME;
-import static com.qinglan.sdk.server.stats.LoginStatsLog.*;
+import static com.qinglan.sdk.server.stats.GameStartStatsLog.*;
 
 public class StatsLogger {
     private final static Logger STATIS_LOGGER = LoggerFactory.getLogger("statisLogger");
 
     private final static int LOGGER_CODE_INITIAL = 1001;
-    private final static int LOGGER_CODE_LOGIN = 1002;
+    private final static int LOGGER_CODE_START = 1002;
     private final static int LOGGER_CODE_HEARTBEAT = 1003;
     private final static int LOGGER_CODE_LOGOUT = 1004;
     private final static int LOGGER_CODE_QUIT = 1005;
@@ -35,9 +34,9 @@ public class StatsLogger {
         return msg;
     }
 
-    public static String login(LoginPattern param, GameTrace gameTrace, ZoneTrace zoneTrace, RoleTrace roleTrace,
+    public static String login(GameStartPattern param, GameTrace gameTrace, ZoneTrace zoneTrace, RoleTrace roleTrace,
                                boolean isNewUser, boolean isGameActiveDevice, boolean isChannelActiveDevice, boolean isZoneActiveDevice) {
-        LoginStatsLog log = new LoginStatsLog(LOGGER_CODE_LOGIN, 2, param);
+        GameStartStatsLog log = new GameStartStatsLog(LOGGER_CODE_START, 2, param);
         log.setExtras(EXTRA_GAME_TRACE, gameTrace)
                 .setExtras(EXTRA_ZONE_TRACE, zoneTrace)
                 .setExtras(EXTRA_ROLE_TRACE, roleTrace)

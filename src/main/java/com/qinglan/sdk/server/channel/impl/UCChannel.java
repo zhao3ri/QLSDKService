@@ -17,8 +17,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static com.qinglan.sdk.server.ChannelConstants.UC_PAY_RESULT_FAILED;
-import static com.qinglan.sdk.server.ChannelConstants.UC_PAY_RESULT_SUCCESS;
+import static com.qinglan.sdk.server.channel.ChannelConstants.UC_PAY_RESULT_FAILED;
+import static com.qinglan.sdk.server.channel.ChannelConstants.UC_PAY_RESULT_SUCCESS;
 import static com.qinglan.sdk.server.Constants.RESPONSE_CODE_SUCCESS;
 import static com.qinglan.sdk.server.Constants.RESPONSE_CODE_VERIFY_ERROR;
 import static com.qinglan.sdk.server.Constants.RESPONSE_KEY_DATA;

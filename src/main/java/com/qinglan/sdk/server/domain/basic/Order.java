@@ -8,15 +8,15 @@ public class Order implements Serializable {
 
     //订单状态
     public final static int ORDER_STATUS_SUBMIT_SUCCESS = 0;        //提交成功
-    public final static int ORDER_STATUS_SUBMIT_FAIL = 1;        //提交失败
-    public final static int ORDER_STATUS_PAYMENT_SUCCESS = 2;        //支付成功
-    public final static int ORDER_STATUS_PAYMENT_FAIL = 3;        //支付失败
+    public final static int ORDER_STATUS_SUBMIT_FAIL = 11;        //提交失败
+    public final static int ORDER_STATUS_PAYMENT_SUCCESS = 12;        //支付成功
+    public final static int ORDER_STATUS_PAYMENT_FAIL = 13;        //支付失败
     //通知CP状态
     public final static int ORDER_NOTIFY_STATUS_DEFAULT = 0;        //默认状态
-    public final static int ORDER_NOTIFY_STATUS_WAITING = 1;        //等待通知
-    public final static int ORDER_NOTIFY_STATUS_SUCCESS = 2;        //通知完成
-    public final static int ORDER_NOTIFY_STATUS_FAIL = 3;        //通知失败
-    public final static int ORDER_NOTIFY_STATUS_RESEND = 4;        //重发通知
+    public final static int ORDER_NOTIFY_STATUS_WAITING = 21;        //等待通知
+    public final static int ORDER_NOTIFY_STATUS_SUCCESS = 22;        //通知完成
+    public final static int ORDER_NOTIFY_STATUS_FAIL = 23;        //通知失败
+    public final static int ORDER_NOTIFY_STATUS_RESEND = 24;        //重发通知
 
     public final static int SUCCESS = 0;    //成功
     public final static int FAIL = 1;    //失败

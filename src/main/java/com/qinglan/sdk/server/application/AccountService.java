@@ -11,7 +11,7 @@ public interface AccountService {
 
     Map<String, Object> initial(InitialPattern params);
 
-    Map<String, Object> login(LoginPattern params);
+    Map<String, Object> join(GameStartPattern params);
 
     Map<String, Object> heartbeat(HeartbeatPattern params);
 
@@ -23,7 +23,7 @@ public interface AccountService {
 
     Map<String, Object> orderGenerate(OrderGenerateRequest params);
 
-    Map<String, Object> loginSuccess(LoginSuccessPattern params);
+    Map<String, Object> getToken(TokenPattern params);
 
     Map<String, Object> getUserIdByToken(GetUserInfoPattern params);
 

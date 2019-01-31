@@ -7,7 +7,7 @@ import com.qinglan.sdk.server.common.StringUtil;
 import lombok.ToString;
 
 @ToString(callSuper = true)
-public class LoginPattern extends BaseDto implements Serializable {
+public class GameStartPattern extends BaseDto implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private String uid;

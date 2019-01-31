@@ -4,7 +4,9 @@
     <resultMap id="BaseResultMap" type="com.qinglan.sdk.server.domain.basic.Account">
         <result column="id" jdbcType="BIGINT" property="id"/>
         <result column="channelId" jdbcType="INTEGER" property="channelId"/>
-        <result column="uid" jdbcType="VARCHAR" property="uid"/>
+        <result column="zoneId" jdbcType="VARCHAR" property="zoneId"/>
+        <result column="roleId" jdbcType="VARCHAR" property="roleId"/>
+        <result column="roleName" jdbcType="VARCHAR" property="roleName"/>
         <result column="createTime" jdbcType="TIMESTAMP" property="createTime"/>
     </resultMap>
 
@@ -20,16 +22,6 @@
   	select * from b_account 
   	where channelId = #{channelId,jdbcType=INTEGER} and uid = #{uid,jdbcType=VARCHAR}
   </select>
-
-    <select id="getRoleCreateTime" parameterType="java.util.Map"
-            resultType="com.qinglan.sdk.server.domain.basic.Account">
-        SELECT createTime FROM b_role where gameId=#{gameId} and channelId=#{channelId} and zoneId=#{zoneId} and
-        roleId=#{roleId}
-        <if test="roleName != null">
-            and roleName=#{roleName}
-        </if>
-        limit 0,1
-    </select>
 
     <insert id="insertbatch" parameterType="java.util.List">
         insert into b_account (id, channelId, uid, createTime) values
